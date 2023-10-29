@@ -9,7 +9,7 @@
         .sidebar-container {
             margin-right: 0;
             height: 100%;
-            width: 250px; /* Adjust the width as needed */
+            width: 300px; /* Adjust the width as needed */
             float: left;
         }
 
@@ -19,11 +19,42 @@
             width: 100%;
         }
 
-        .card {
-            padding: 20px 20px;
-            margin-bottom: 0;
-
+        .list {
+            overflow-y: auto; /* 세로 스크롤을 활성화합니다. */
+            max-height: 400px; /* 스크롤 영역의 최대 높이를 설정합니다. */
         }
+
+        .card {
+            padding: 20px 0;
+            margin: 20px 0;
+        }
+
+        /* 섹션 타이틀 스타일링 */
+        .featurette-heading {
+            font-size: 27px;
+            margin-bottom: 10px; /* 타이틀 아래 공백 추가 */
+        }
+
+        /* 가로선 스타일링 */
+        .featurette-divider {
+            border-color: black;
+            border-width: 2px;
+            margin-top: 10px; /* 가로선 위 공백 추가 */
+        }
+
+/*        !* 각 섹션 스타일링 *!
+        .in-progress,
+        .complete,
+        .refund-needed,
+        .refund-complete {
+            margin: 20px 0;
+        }*/
+
+        /* 버튼 스타일링 */
+        .btn {
+            margin-right: 10px; /* 버튼 사이의 간격 추가 */
+        }
+
     </style>
 </head>
 <body>
@@ -33,37 +64,43 @@
         <header th:replace="~{common/sidebar/sidebar.html :: commonsidebar}"></header>
     </div>
 
-    <div class="info-container">
-        <h2 class="featurette-heading fw-normal lh-1" style="font-size: 27px;">
-            참여하고 있는 펀딩
-        </h2>
-        <hr class="featurette-divider" style="border-color: black; border-width: 2px;">
-        <div class="in-progress">
+    <div class="list">
+        <div class="card" style="border: none;">
+            <h2 class="featurette-heading fw-normal lh-1" style="font-size: 27px;">
+                참여하고 있는 펀딩
+            </h2>
+            <hr class="featurette-divider">
+            <div class="in-progress">
+            </div>
         </div>
 
-        <h2 class="featurette-heading fw-normal lh-1" style="font-size: 27px;">
-            성공한 펀딩
-        </h2>
-        <hr class="featurette-divider" style="border-color: black; border-width: 2px;">
-        <div class="complete">
+        <div class="card" style="border: none;">
+            <h2 class="featurette-heading fw-normal lh-1" style="font-size: 27px;">
+                성공한 펀딩
+            </h2>
+            <hr class="featurette-divider">
+            <div class="complete">
+            </div>
         </div>
 
-        <h2 class="featurette-heading fw-normal lh-1" style="font-size: 27px;">
-            환불 신청 필요
-        </h2>
-        <hr class="featurette-divider" style="border-color: black; border-width: 2px;">
-        <div class="refund-needed">
-
+        <div class="card" style="border: none;">
+            <h2 class="featurette-heading fw-normal lh-1" style="font-size: 27px;">
+                환불 신청 필요
+            </h2>
+            <hr class="featurette-divider">
+            <div class="refund-needed">
+            </div>
         </div>
 
-
-        <h2 class="featurette-heading fw-normal lh-1" style="font-size: 27px;">
-            환불 완료된 펀딩
-        </h2>
-        <hr class="featurette-divider" style="border-color: black; border-width: 2px;">
-        <div class="refund-complete">
-
+        <div class="card" style="border: none;">
+            <h2 class="featurette-heading fw-normal lh-1" style="font-size: 27px;">
+                환불 완료된 펀딩
+            </h2>
+            <hr class="featurette-divider">
+            <div class="refund-complete">
+            </div>
         </div>
+
     </div>
 
 </div>
@@ -144,7 +181,7 @@
             });
     }
 
-    // Function to populate the specified section with data
+    // 내가 참여중인 펀딩 목록 출력
     function displayParticipantsInfo(data, sectionSelector) {
         var section = document.querySelector(sectionSelector);
         var userInfoHtml = '';
@@ -153,15 +190,10 @@
         for (var [index, item] of Object.entries(data)) {
             var buttonText = ''; // 버튼 텍스트 초기화
             console.log(item);
-            if (item.funding.state === 'ACTIVE') {
+            if (item.state === 'ACTIVE' && item.funding.state === 'IN_PROGRESS') {
                 // 펀딩이 진행 중인 경우
                 buttonText = '참여 취소';
-            } if (item.funding.state === 'REFUND_NEEDED') {
-                // 환불 필요한 경우
-                buttonText = '환불 취소';
-            }
 
-            if (buttonText) {
                 // buttonText 값이 존재하는 경우에만 버튼 생성
                 userInfoHtml += `
                 <div>
@@ -170,6 +202,28 @@
                                 id="cancelButton" data-funding-id="${item.funding.id}">
                             ${buttonText}
                         </button>
+                    </p>
+                </div>
+            `;
+            } else if (item.state === 'REFUND_NEEDED') {
+                // 환불 필요한 경우
+                buttonText = '환불 신청';
+
+                // buttonText 값이 존재하는 경우에만 버튼 생성
+                userInfoHtml += `
+                <div>
+                    <p>${item.funding.title}
+                        <button class="btn btn-outline-secondary" type="button"
+                                id="refundButton" data-funding-id="${item.funding.id}">
+                            ${buttonText}
+                        </button>
+                    </p>
+                </div>
+            `;
+            } else if (item.state === 'REFUND_COMPLETE') {
+                userInfoHtml += `
+                <div>
+                    <p>${item.funding.title}
                     </p>
                 </div>
             `;
@@ -190,6 +244,27 @@
                 if (data.isSuccess) {
                     alert('펀딩 취소가 완료 되었습니다.');
                     loadAndDisplayParticipants('/participants/currentuser?state=ACTIVE', '.in-progress');
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    });
+
+
+    /**************뷰 버튼 핸들러 끝**************/
+    // 펀딩 환볼 신청 버튼 클릭 핸들러
+    $(document).on('click', '#refundButton', function () {
+        var fundingId = $(this).data('funding-id');
+        var url = '/participants/refund?funding='+fundingId;
+
+        loadData(url)
+            .then(data => {
+                if (data.isSuccess) {
+                    alert('환불 신청이 완료되었습니다. 환불액은 2-3일내 계좌로 입금될 예정입니다.');
+                    loadAndDisplayParticipants('/participants/currentuser?state=REFUND_COMPLETE', '.refund-complete');
                 } else {
                     alert(data.message);
                 }

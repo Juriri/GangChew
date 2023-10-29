@@ -308,12 +308,24 @@
     }
 
     // 펀딩 정보를 동적으로 생성하고 HTML에 추가하는 함수
-    function displayFundingInfo(id, title, subtitle, thumbnail, liked, achievementrate, viewCount, likeCount, pageNumber) {
+    function displayFundingInfo(id, title, subtitle, thumbnail, liked, achievementrate, viewCount, likeCount, pageNumber, state) {
         var fundingInfoDiv = $('#funding-list');
+        var statusLabel = '';
+
+        if (state === 'IN_PROGRESS') {
+            statusLabel = '오픈 예정';
+        } else if (state === 'ACTIVE') {
+            statusLabel = '진행 중';
+        } else if (state === 'FAIL') {
+            statusLabel = '펀딩 마감';
+        } else if (state === 'COMPLETE') {
+            statusLabel = '펀딩 마감';
+        }
 
         // 좋아요 버튼
         var likeButton = '<button class="like-button" data-funding-id="' + id + '" data-funding-isLiked="' + liked + '" data-page="' + pageNumber + '">' +
             '<span class="like-icon">' + (liked ? '<span class="bi bi-heart-fill" style="padding: 5px; color: red">♥</span>' : '<span class="bi bi-heart" style="padding: 5px;">♡</span>') + '</span></button>';
+
 
         var fundingInfoHtml = `
             <div id="whole-card" class="col-md-4">
@@ -443,8 +455,8 @@
                                     var totalItems = funding.totalItems;
                                     var viewCount = funding.viewCount;
                                     var likeCount = funding.likeCount;
-
-                                    displayFundingInfo(id, title, subtitle, thumbnail, liked, achievementrate, viewCount, likeCount, pageNumber);
+                                    var state = funding.state;
+                                    displayFundingInfo(id, title, subtitle, thumbnail, liked, achievementrate, viewCount, likeCount, pageNumber, state);
 
                                 }
                             }

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>검색 결과</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <style>
+        ul.list-group li {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        ul.list-group li img{
+            margin-right: 50px;
+            height: 150px;
+            width: 200px;
+        }
+
+        .highlight {
+            background-color: yellow;
+        }
+    </style>
+</head>
+<body>
+<header th:replace="~{common/header/header.html :: commonheader}"></header>
+<div class="container">
+    <div class="album py-5 bg-white">
+    </div>
+</div>
+
+<header th:replace="~{common/footer/footer.html :: commonfooter}"></header>
+<!-- TUI 에디터 JS CDN -->
+<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+<script src="https://uicdn.toast.com/editor/latest/toastui-editor-viewer.min.js"></script>
+<!-- iamport.payment.js -->
+<script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
+<script type="module">
+    // common-ajax.js 모듈을 import
+    import { loadCall } from '/js/common-ajax.js';
+    import { insertCall} from '/js/common-ajax.js';
+    import { deleteCall } from '/js/common-ajax.js';
+
+    var searchParams = new URLSearchParams(window.location.search);
+    var checkkeyword = searchParams.get("keyword");
+    var keyword = "";
+
+    if (checkkeyword !== undefined && checkkeyword !== "") {
+        keyword = checkkeyword;
+    }
+
+    /**************서버 통신 함수 **************/
+    // 정보를 비동기적으로 불러오는 함수
+    function loadData(url) {
+        const detail_res = new loadCall(url, null);
+        return detail_res.detail
+            .then(data => {
+                return data;
+            })
+            .catch(error => {
+                console.error(error);
+                throw error; // 오류 다시 던지기
+            });
+    }
+
+    // 정보 삽입 요청 함수
+    function insertData(url, requestData) {
+        const insert_res = new insertCall(url, requestData);
+        return insert_res.detail
+            .then(data => {
+                return data;
+            })
+            .catch(error => {
+                console.error(error);
+                throw error; // 오류 다시 던지기
+            });
+    }
+
+    // 정보 삭제 요청 함수
+    function deleteData(url) {
+        const comment_res = new deleteCall(url, null);
+        return comment_res.detail
+            .then(data => {
+                return data;
+            })
+            .catch(error => {
+                console.error(error);
+                throw error; // 오류 다시 던지기
+            });
+    }
+    /**************서버 통신 함수 끝**************/
+
+    /**************뷰 버튼 핸들러 시작**************/
+    $(document).ready(function () {
+        loadAndDisplayFundingDetail();
+    });
+
+    /**************화면 출력 메서드**************/
+    // 펀딩 디테일 정보를 불러오고 화면에 표시
+    function loadAndDisplayFundingDetail() {
+        var url = '/fundingList?keyword=' + keyword;
+        console.log(keyword);
+        loadData(url, null)
+            .then(data => {
+                // fundingData --> 펀딩 게시글 디테일 반환 모델 데이터 값 BaseResponse<FundingDetailRes>()
+                if (data.isSuccess) {
+                    displayFundingDetailInfo(data.result, keyword);
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    }
+</script>
+<!-- TUI 에디터 JS CDN -->
+<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+<script src="https://uicdn.toast.com/editor/latest/toastui-editor-viewer.min.js"></script>
+<!-- iamport.payment.js -->
+<script>
+    // 펀딩 디테일 정보를 동적으로 생성하고 HTML에 추가하는 함수
+    function displayFundingDetailInfo(fundingData, keyword) {
+        var container = document.querySelector('.album');
+        container.innerHTML = ''; // 컨테이너 내용 초기화
+
+        var ul = document.createElement('ul'); // 목록 생성
+        ul.className = 'list-group';
+
+        for (var [index, item] of Object.entries(fundingData)) {
+            var title = item.title;
+            var writer = item.writer;
+            var description = item.description;
+            var thumbnail = item.thumbnail;
+
+            var li = document.createElement('li'); // 목록 항목 생성
+            li.className = 'list-group-item';
+
+            var image = document.createElement('img');
+            image.src = thumbnail;
+            image.alt = title;
+            image.className = 'card-img-top';
+            image.style.maxHeight = '100%'; // 사진 크기 조절
+            image.style.maxWidth = '200px'; // 사진 최대 너비 설정
+            image.style.float = 'left';
+
+            var titleElement = document.createElement('h5');
+            titleElement.className = 'card-title';
+            titleElement.textContent = title;
+
+            var writerElement = document.createElement('p');
+            writerElement.className = 'card-text';
+            writerElement.textContent = '펀딩 오픈 유저: ' + writer;
+
+            var descriptionElement = document.createElement('p');
+            descriptionElement.className = 'card-text';
+
+            li.appendChild(image);
+            li.appendChild(titleElement);
+            li.appendChild(writerElement);
+            li.appendChild(descriptionElement);
+
+            ul.appendChild(li); // 목록 항목을 목록에 추가
+        }
+
+        container.appendChild(ul); // 목록을 컨테이너에 추가
+    }
+
+</script>
+</body>
+</html>

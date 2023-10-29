@@ -87,7 +87,6 @@ public class FundingController {
                                                                     @RequestParam(name = "hours", required = false) Integer hoursAgo,
                                                                     @RequestParam(name = "top", required = false) Integer top_num) {
 
-        log.info(" condition={}, hours = {}", condition, hoursAgo);
 
         /*메인페이지 실시간 랭킹 펀딩 리스트 호출
 
@@ -670,6 +669,7 @@ public class FundingController {
      * @return BaseResponse<List < FundingParticipants>>
      */
     @ResponseBody
+    @Operation(summary = "jwt 인증 필요", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping("/participants/{forwardState}")
     public BaseResponse<String> updatePartipantsState(HttpServletRequest request, @PathVariable(name = "forwardState") String forwardState,
                                                       @RequestParam(name = "id", required = false) Long user_id,

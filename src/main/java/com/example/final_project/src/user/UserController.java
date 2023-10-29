@@ -171,20 +171,20 @@ public class UserController {
      */
     @ResponseBody
     @GetMapping(value = "/login/{socialLoginType}/callback")
-    public BaseResponse<GetUserRes> socialLoginCallback(
+    public void socialLoginCallback(
             HttpServletResponse response,
             @PathVariable(name = "socialLoginType") String socialLoginPath,
             @RequestParam(name = "code") String code) throws IOException, BaseException {
-        log.info("social "+socialLoginPath+ " callback login code={}", code);
+
         Constant.SocialLoginType socialLoginType = Constant.SocialLoginType.valueOf(socialLoginPath.toUpperCase());
         // 콜백 URL로부터 전달된 인증 코드(code)를 사용하여 액세스 토큰을 얻는 로직
         GetUserRes getUserRes = oAuthService.oAuthLoginOrJoin(socialLoginType, code);
         String jwtToken = getUserRes.getJwtToken();
         // 결과 반환
         CookieUtil.addCookie(response, "jwtToken", jwtToken, jwtUtil.getExpirationDateFromToken(jwtToken));
-        /*String redirectUrl = "http://localhost:9000/home";
-        response.sendRedirect(redirectUrl);*/
-        return new BaseResponse<>(getUserRes);
+        String redirectUrl = "http://localhost:9000/";
+        response.sendRedirect(redirectUrl);
+        /*return new BaseResponse<>(getUserRes);*/
     }
 
     /**
@@ -198,7 +198,7 @@ public class UserController {
     public void socialKakaoLogoutCallback(HttpServletResponse response) throws IOException, BaseException {
         // 결과 반환
         /*return new BaseResponse<>("로그아웃 되었습니다.");*/
-        response.sendRedirect("http://localhost:3000");
+        response.sendRedirect("http://localhost:9000/");
     }
 
 
@@ -217,7 +217,7 @@ public class UserController {
         oAuthService.oAuthLogout(socialLoginType, code);
         // 결과 반환
         /*return new BaseResponse<>("로그아웃 되었습니다.");*/
-        response.sendRedirect("http://localhost:3000");
+        response.sendRedirect("http://localhost:9000/");
     }
 
 

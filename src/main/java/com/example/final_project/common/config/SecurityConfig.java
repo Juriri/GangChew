@@ -51,8 +51,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 //.antMatchers("/", "/home", "/signup","/user/signup", "/login", "/user/login").permitAll()
-                .antMatchers("/home", "/authenticate/**", "/login/**", "/signup", "/logout/**", "/authenticate", "/").permitAll()
-                .antMatchers("/error/**", "/error", "/swagger-ui/**","/api-docs/**", "/favicon.ico").permitAll()
+                .antMatchers( "/authenticate/**", "/login/**", "/signup", "/logout/**", "/authenticate", "/", "/introduce").permitAll()
+                .antMatchers("/error/**", "/swagger-ui/**","/api-docs/**", "/favicon.ico").permitAll()
+                .antMatchers("/funding/**", "/studentrequest/**").permitAll()
                 /*.anyRequest().authenticated();*/
                 .anyRequest().permitAll();
 
@@ -60,7 +61,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .oauth2Login()
                 .loginPage("/login"); // 로그인 페이지 지정
-                /*.loginPage("http://localhost:3000/login"); // 로그인 페이지 지정*/
     }
 
 }

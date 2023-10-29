@@ -168,4 +168,12 @@ public class ViewController {
     public String toMyfundingPage() {
         return "user/myfunding";
     }
+
+    /**
+     * 검색 화면
+     */
+    @RequestMapping(value = "/search", method = RequestMethod.GET)
+    public String toMysearchPage() {
+        return "funding/fundingSearch";
+    }
 }

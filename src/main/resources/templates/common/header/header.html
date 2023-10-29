@@ -346,6 +346,14 @@
                 }
             }
         }
+
+        document.getElementById("searchButton").addEventListener("click", function() {
+            // 검색 키워드를 가져오고 URL에 붙입니다.
+            var keyword = document.getElementById("searchInput").value;
+
+            // 검색 키워드를 URL로 이동
+            window.location.href = "/search?keyword=" + encodeURIComponent(keyword);
+        });
     </script>
 </header>
 </html>
