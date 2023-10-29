@@ -1,4 +1,6 @@
 
+### 강츄(GangChew)- 펀딩 강의 개설 웹 프로젝트
+![img.png](img.png)
 ### REST API
 REST API를 처리하는 SpringBoot 프로젝트   
 
@@ -13,7 +15,34 @@ REST API를 처리하는 SpringBoot 프로젝트
 api-server-spring-boot
   > * build
   > gradle
-  > src.main.java.com.example.demo
+  > src.main.java.com.example.final_project
+    > common
+        > config
+          | RestTemplateConfig.java
+          | SecurityConfig.java
+          | SwaggerConfig.java
+          | WebConfig.java
+        > entity
+          | BaseEntity.java
+        > exceptions
+          | BaseException.java
+          | ExceptionAdvice.java
+        > jwt
+          | JwtAuthenticationFilter.java
+          | JwtAuthenticationToken.java
+          | JwtUtil.java
+        > oauth
+          | KakaoOauth.java
+          | NaverOauth.java
+          | OAuthService.java
+          | SocialOauth.java (interfece)
+        > response
+          | BaseResponse.java
+          | BaseResponseStatus.java
+        | Constant.java
+    > security
+        | CustomAuthenticationProvider.java
+        | CustomUserDetailService.java
     > src
       > user
         > entity
@@ -28,6 +57,16 @@ api-server-spring-boot
         | FundingController.java
         | FundingService.java
         | FundingRepository.java
+        
+      > funding_cart
+        > entity
+        | FundingCartController.java
+        
+      > funding_message
+      
+      > post_like
+      > student_request
+      
     > utils
       | JwtService.java // JWT 관련 클래스
       | SHA256.java // 암호화 알고리즘 클래스
@@ -37,8 +76,8 @@ api-server-spring-boot
     | application.yml // Database 연동을 위한 설정 값 세팅 및 Port 정의 파일
 
 ```
-## Description
+## ERD
+![img_1.png](img_1.png)
 
 
-## Usage
 
