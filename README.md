@@ -15,6 +15,13 @@ REST API를 처리하는 SpringBoot 프로젝트
 
 
 ## Structure
+- **백엔드 기술**:
+    - **Spring Boot**: 백엔드 서버를 구축하고 API를 개발하는 데 사용.
+    - **Spring Security**: 사용자 인증 및 보안을 관리.
+    - **JWT (JSON Web Tokens)**: 사용자 인증을 위한 토큰 기반 시스템을 구현하는 데 사용.
+    - **JPA (Java Persistence API)**: 데이터베이스 연동을 단순화하고 ORM(Object-Relational Mapping)을 구현.
+    - **Gradle**: 프로젝트 빌드 및 의존성 관리에 사용.
+    - **Oracle DB**: 데이터 저장 및 관리를 위한 데이터베이스 시스템으로 사용.
 
 ```text
 api-server-spring-boot
