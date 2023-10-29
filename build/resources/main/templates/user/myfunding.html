@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>마이페이지</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        .sidebar-container {
+            margin-right: 0;
+            height: 100%;
+            width: 250px; /* Adjust the width as needed */
+            float: left;
+        }
+
+        .footer-container {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .card {
+            padding: 20px 20px;
+            margin-bottom: 0;
+
+        }
+    </style>
+</head>
+<body>
+<header th:replace="~{common/header/header.html :: commonheader}"></header>
+<div class="custom-container">
+    <div class="sidebar-container">
+        <header th:replace="~{common/sidebar/sidebar.html :: commonsidebar}"></header>
+    </div>
+
+    <div class="info-container">
+        <h2 class="featurette-heading fw-normal lh-1" style="font-size: 27px;">
+            참여하고 있는 펀딩
+        </h2>
+        <hr class="featurette-divider" style="border-color: black; border-width: 2px;">
+        <div class="in-progress">
+        </div>
+
+        <h2 class="featurette-heading fw-normal lh-1" style="font-size: 27px;">
+            성공한 펀딩
+        </h2>
+        <hr class="featurette-divider" style="border-color: black; border-width: 2px;">
+        <div class="complete">
+        </div>
+
+        <h2 class="featurette-heading fw-normal lh-1" style="font-size: 27px;">
+            환불 신청 필요
+        </h2>
+        <hr class="featurette-divider" style="border-color: black; border-width: 2px;">
+        <div class="refund-needed">
+
+        </div>
+
+
+        <h2 class="featurette-heading fw-normal lh-1" style="font-size: 27px;">
+            환불 완료된 펀딩
+        </h2>
+        <hr class="featurette-divider" style="border-color: black; border-width: 2px;">
+        <div class="refund-complete">
+
+        </div>
+    </div>
+
+</div>
+
+<div class="footer-container">
+    <header th:replace="~{common/footer/footer.html :: commonfooter}"></header>
+</div>
+
+<script type="module">
+    // common-ajax.js 모듈을 import
+    import { loadCall } from '/js/common-ajax.js';
+    import { insertCall } from '/js/common-ajax.js';
+    import { deleteCall } from '/js/common-ajax.js';
+
+    /**************서버 통신 함수 **************/
+    // 정보를 비동기적으로 불러오는 함수
+    function loadData(url) {
+        const detail_res = new loadCall(url, null);
+        return detail_res.detail
+            .then(data => {
+                return data;
+            })
+            .catch(error => {
+                console.error(error);
+                throw error; // 오류 다시 던지기
+            });
+    }
+
+
+    // 정보 삽입 요청 함수
+    function insertData(url, requestData) {
+        const insert_res = new insertCall(url, requestData);
+        return insert_res.detail
+            .then(data => {
+                return data;
+            })
+            .catch(error => {
+                console.error(error);
+                throw error; // 오류 다시 던지기
+            });
+    }
+
+
+    // 정보 삭제 요청 함수
+    function deleteData(url) {
+        const comment_res = new deleteCall(url, null);
+        return comment_res.detail
+            .then(data => {
+                return data;
+            })
+            .catch(error => {
+                console.error(error);
+                throw error; // 오류 다시 던지기
+            });
+    }
+
+    /**************서버 통신 함수 끝**************/
+    /**************뷰 버튼 핸들러 시작**************/
+    // Call the functions when the page loads
+    document.addEventListener('DOMContentLoaded', function () {
+        loadAndDisplayParticipants('/participants/currentuser?state=ACTIVE', '.in-progress');
+        loadAndDisplayParticipants('/participants/currentuser?state=COMPLETE', '.complete');
+        loadAndDisplayParticipants('/participants/currentuser?state=REFUND_NEEDED', '.refund-needed');
+        loadAndDisplayParticipants('/participants/currentuser?state=REFUND_COMPLETE', '.refund-complete');
+    });
+
+    function loadAndDisplayParticipants(url, sectionSelector) {
+        loadData(url)
+            .then(data => {
+                if (data.isSuccess) {
+                    displayParticipantsInfo(data.result, sectionSelector);
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    }
+
+    // Function to populate the specified section with data
+    function displayParticipantsInfo(data, sectionSelector) {
+        var section = document.querySelector(sectionSelector);
+        var userInfoHtml = '';
+
+        // Process and format the data as needed
+        for (var [index, item] of Object.entries(data)) {
+            var buttonText = ''; // 버튼 텍스트 초기화
+            console.log(item);
+            if (item.funding.state === 'ACTIVE') {
+                // 펀딩이 진행 중인 경우
+                buttonText = '참여 취소';
+            } if (item.funding.state === 'REFUND_NEEDED') {
+                // 환불 필요한 경우
+                buttonText = '환불 취소';
+            }
+
+            if (buttonText) {
+                // buttonText 값이 존재하는 경우에만 버튼 생성
+                userInfoHtml += `
+                <div>
+                    <p>${item.funding.title}
+                        <button class="btn btn-outline-secondary" type="button"
+                                id="cancelButton" data-funding-id="${item.funding.id}">
+                            ${buttonText}
+                        </button>
+                    </p>
+                </div>
+            `;
+            }
+        }
+
+        // Update the section with the generated HTML
+        section.innerHTML = userInfoHtml;
+    }
+    /**************뷰 버튼 핸들러 끝**************/
+    // 펀딩 참여 취소 버튼 클릭 핸들러
+    $(document).on('click', '#cancelButton', function () {
+        var fundingId = $(this).data('funding-id');
+        var url = '/participants/delete?funding='+fundingId;
+
+        loadData(url)
+            .then(data => {
+                if (data.isSuccess) {
+                    alert('펀딩 취소가 완료 되었습니다.');
+                    loadAndDisplayParticipants('/participants/currentuser?state=ACTIVE', '.in-progress');
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    });
+    /**************화면 출력 메서드 시작**************/
+
+    /**************화면 출력 메서드 끝**************/
+</script>
+
+
+<script>
+</script>
+</body>
+</html>

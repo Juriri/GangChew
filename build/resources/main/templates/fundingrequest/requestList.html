@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>이런 펀딩 열어주세요</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+
+        .custom-container {
+
+        }
+
+        .like-button {
+            position: absolute; /* 기본 위치 설정 (부모 컨테이너 내) */
+            z-index: 1;
+            top: 0; /* 부모 요소의 위쪽으로부터 거리를 조정 (상단 정렬) */
+            right: 0; /* 부모 요소의 오른쪽으로부터 거리를 조정 (우측 정렬) */
+            background: transparent; /* 버튼 배경 투명으로 설정 */
+            border: none; /* 버튼 테두리 제거 */
+            color: #ff0026;
+            font-size: 40px; /* 원하는 크기로 설정 */
+        }
+
+        .card-title-link {
+            font-size: 16px;
+            font-weight: bold;
+            text-decoration: none; /* 밑줄 제거 */
+            color: #333; /* 제목 텍스트 스타일 */
+        }
+
+        .card-title-link:hover {
+            text-decoration: none; /* 호버 시 밑줄 제거 */
+            color: #333; /* 호버 시 텍스트 색상 유지 */
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+<header th:replace="~{common/header/header.html :: commonheader}"></header>
+
+<div class="custom-container">
+    <div class="header-container" style="position: relative;">
+        <!-- 헤더 이미지 -->
+        <img src="/icon/class.jpg" alt="헤더 이미지" style="width: 100%; max-height: 500px; object-fit: cover;">
+
+        <!-- 오버레이 텍스트 및 버튼 -->
+        <div class="header-overlay" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+            <h1 style="font-size: 36px; color: rgb(246,242,242); text-shadow: 2px 2px 4px rgb(63,61,61); margin-bottom: 30px;">우리들이 만드는 클래스</h1>
+            <a class="btn btn-lg btn-primary" href="/funding" style="text-decoration: none; color: #fff; background-color: #555; border-color: #555; padding: 10px 20px; border-radius: 5px;">더 많은 펀딩 강의 구경하기</a>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <a class="btn btn-lg btn-primary" href="/studentrequest/create" style="text-decoration: none; color: #fff; background-color: #555; border-color: #555; border-radius: 5px; padding: 5px 5px; margin: 10px 0;">
+        <span style="font-size: 16px;">글쓰기</span>
+    </a>
+        <!-- 카테고리 분류를 탭 형식으로 표시 -->
+        <ul class="nav nav-tabs" id="categoryTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <a class="nav-link header-link" id="category0" data-toggle="tab" href="/studentrequest" role="tab" data-category-id="0" aria-controls="all" aria-selected="true" style="font-weight: bold">전체</a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <!--<a class="nav-link" id="category1-tab" data-toggle="tab"  data-category-id="1" role="tab" aria-controls="category1" aria-selected="false" style="font-weight: bold">운동&Life</a>-->
+                <a class="nav-link header-link" id="category1" data-toggle="tab" href="/studentrequest?category=1" data-category-id="1" role="tab" aria-controls="all" aria-selected="true" style="font-weight: bold">운동&Life</a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link header-link" id="category2" data-toggle="tab" href="/studentrequest?category=2" data-category-id="2" role="tab" aria-controls="category2" aria-selected="false" style="font-weight: bold">경제&금융</a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link header-link" id="category3" data-toggle="tab" href="/studentrequest?category=3" data-category-id="3" role="tab" aria-controls="category3" aria-selected="false" style="font-weight: bold">n잡&부업</a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link header-link" id="category4" data-toggle="tab" href="/studentrequest?category=4" data-category-id="4" role="tab" aria-controls="category4" aria-selected="false" style="font-weight: bold">커리어</a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link header-link" id="category5" data-toggle="tab" href="/studentrequest?category=5" data-category-id="5" role="tab" aria-controls="category5" aria-selected="false" style="font-weight: bold">언어</a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link header-link" id="category6" data-toggle="tab" href="/studentrequest?category=6" data-category-id="6" role="tab" aria-controls="category6" aria-selected="false" style="font-weight: bold">프로그래밍</a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link header-link" id="category7" data-toggle="tab" href="/studentrequest?category=7" data-category-id="7" role="tab" aria-controls="category7" aria-selected="false" style="font-weight: bold">비지니스&마케팅</a>
+            </li>
+        </ul>
+
+    <div class="album py-5 bg-white">
+        <ul id="student-list" class="row">
+        </ul>
+    </div>
+    <!--페이지 숫자 표시 동적 추가-->
+    <div class="album py-5 bg-white">
+        <div id="page-list" class="row">
+            <nav>
+                <ul id="page-nav" class="pagination justify-content-center">
+                    <!-- 페이지 숫자는 여기에 추가됩니다 -->
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<header th:replace="~{common/footer/footer.html :: commonfooter}"></header>
+
+<script>
+    let itemsPerPage = 8;
+    let category = 0;
+    // url 읽기
+    function getURLParams() {
+        var searchParams = new URLSearchParams(window.location.search);
+        var params = {};
+
+        for (var [param, value] of searchParams.entries()) {
+            params[param] = value;
+        }
+
+        return params;
+    }
+
+    // 펀딩 정보를 동적으로 생성하고 HTML에 추가하는 함수
+    function displayFundingInfo(id, title, writer, categoryName, liked, totalItems, viewCount, likeCount, pageNumber, comments) {
+        var fundingInfoDiv = $('#student-list');
+
+        // 좋아요 버튼
+        var likeButton = '<button class="like-button" data-studentrequest-id="' + id + '" data-studentrequest-isLiked="' + liked + '" data-page="' + pageNumber + '">' +
+            '<span class="like-icon">' + (liked ? '<span class="bi bi-heart-fill" style="padding: 5px; color: red">♥</span>' : '<span class="bi bi-heart" style="padding: 5px;">♡</span>') + '</span></button>';
+
+        var fundingInfoHtml = `
+            <li class="list-group-item" style="width: 100%; margin: 0 0;">
+            ${likeButton}
+            <a href="/studentrequestDetail?id=${id}" class="card-title-link">
+                <div class="row featurette" style="padding: 10px">
+                    <div class="col-md-9">
+                        <div class="title" style="height=100%; vertical-align: middle; padding-top: 10px;">
+                            <span style="font-size: 20px; text-align: center;">${title}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3" style="height: 100%">
+                        <p style="font-size: 12px; margin: 0;">
+                                Views <span style="font-size: 12px; color: cornflowerblue">${viewCount}</span>
+                                &nbsp;&nbsp;&nbsp;
+                                Likes <span style="font-size: 12px; color: cornflowerblue">${likeCount}</span>
+                        </p>
+                        <p style="font-size: 12px; margin: 0;">
+                                Comments <span style="font-size: 12px; color: cornflowerblue">${comments}</span>
+                        </p>
+                        <p style="font-size: 12px; margin: 0;">
+                                <span style="font-size: 12px;">${writer}</span>
+                        </p>
+                    </div>
+                </div>
+                </a>
+                <hr class="featurette-divider" style="border-color: black; border-width: 2px; margin: 0 0;">
+            </li>
+        `;
+
+        // fundingInfoDiv 내에 내용을 추가합니다.
+        fundingInfoDiv.append(fundingInfoHtml);
+    }
+
+    // 펀딩 리스트 가져오기
+    function loadFundingList(pageNumber) {
+        $.ajax({
+            type: 'GET',
+            cache: false,
+            url: "/login/cookie",
+            dataType: "json",
+
+            success: function (data) {
+                var msg = data.message;
+                var isSuccess = data.isSuccess;
+                let jwtToken = "";
+
+                if (isSuccess === true) {
+                    jwtToken = data.result;
+                }
+
+                var requestUrl = "/studentrequest/all?category=" + category;
+
+                $.ajax({
+                    async: true,
+                    type: 'GET',
+                    contentType: 'application/json',
+                    cache: false,
+                    url: requestUrl+"&currentpage=" + pageNumber + "&postsPerPage=" + itemsPerPage,
+                    dataType: "json",
+                    beforeSend: function(xhr) {
+                        // JWT 토큰을 헤더에 추가
+                        xhr.setRequestHeader("Authorization", "Bearer " + jwtToken);
+                    },
+                    success: function (data) {
+                        var msg = data.message;
+                        var isSuccess = data.isSuccess;
+
+                        if (isSuccess === true) {
+                            console.log(data.result);
+                            //1. 페이지 네이션
+
+                            // 펀딩글이 하나 이상일 떄,
+                            if (data.result.length > 0){
+                                // 전체 리스트 수
+                                totalItems = data.result[0].totalItems;
+
+                                var urlParams = new URLSearchParams(window.location.search);
+                                var page = parseInt(urlParams.get('currentpage')) || 1; // Default to page 1 if the parameter is missing
+
+                                // 기존 카드 제거
+                                $("#page-nav").empty();
+
+                                // 페이지네이션 숫자를 추가
+                                var numPages = Math.ceil(totalItems / itemsPerPage);
+                                var prevLink = '<a class="page-link page-link-prev" href="' + requestUrl + '&currentpage=' + (page - 1) + '&itemsPerPage=' + itemsPerPage + '" data-page="' + (page) + '">&laquo; Prev</a>';
+                                var prevItem = $('<li class="page-item"></li>').append(prevLink);
+
+                                if (pageNumber > 1) {
+                                    $("#page-nav").append(prevItem);
+                                }
+
+                                for (var i = 1; i <= numPages; i++) {
+                                    var pageLink = '<a class="page-link" href="' + requestUrl + '&currentpage=' + i + '&postsPerPage=' + itemsPerPage + '" data-page="' + i + '">' + i + '</a>';
+
+                                    var pageItem = $('<li class="page-item"></li>').append(pageLink);
+
+                                    // Highlight
+                                    if (pageNumber === i) {
+                                        pageItem.addClass('active');
+                                    }
+
+                                    $("#page-nav").append(pageItem);
+                                }
+
+                                var nextLink = '<a class="page-link page-link-next" href="' + requestUrl + '&currentpage=' + (page + 1) + '&postsPerPage=' + itemsPerPage + '" data-page="' + (page + 1) + '">Next &raquo;</a>';
+                                var nextItem = $('<li class="page-item"></li>').append(nextLink);
+
+                                if (page < numPages) {
+                                    $("#page-nav").append(nextItem);
+                                }
+
+                                var fundingMap = data.result;
+                                // 기존 카드 제거
+                                $("#student-list").empty();
+
+                                // 2. 패이지 리스트를 추가
+                                for (var [index, studentrequest] of Object.entries(fundingMap)) {
+                                    /*console.log(funding);*/
+                                    var id = studentrequest.id;
+                                    var title = studentrequest.title;
+                                    var writer = studentrequest.writer;
+                                    var categoryName = studentrequest.fundingCategory.categoryName;
+                                    var liked = studentrequest.like;
+                                    var totalItems = studentrequest.totalItems;
+                                    var viewCount = studentrequest.viewCount;
+                                    var likeCount = studentrequest.likeCount;
+                                    var comments = studentrequest.comments;
+                                    displayFundingInfo(id, title, writer, categoryName, liked, totalItems, viewCount, likeCount, pageNumber, comments);
+
+                                }
+                            }
+
+                            // 결과가 하나도 없을때,
+                            else {
+                                // 기존 카드 제거
+                                $("#page-nav").empty();
+                                // 기존 카드 제거
+                                $("#student-list").empty();
+
+                                var message = '<div class="col-md-12 d-flex justify-content-center align-items-center"><p style="font-size: 17px;">해당 결과가 없습니다.</p></div>';
+                                // funding-list 요소에 카드를 추가합니다.
+                                $("#student-list").append(message);
+                            }
+                        }
+                        else {
+                            console.log(msg);
+                        }
+                    },
+                    error: function (error) {
+                        console.log(error);
+                        alert("오류가 발생했습니다. 오류 메시지: " + error)   ;
+                    }
+                });
+            },
+            error: function (error) {
+                console.log(error);
+                alert("오류가 발생했습니다. 오류 메시지: " + error);
+            }
+        });
+    }
+
+
+    $(document).ready(function () {
+        // url에서 funding id 추출
+        var urlParams = getURLParams();
+        var checkcategory = urlParams.category;
+
+        // 모든 탭 버튼에서 'active' 클래스를 제거합니다.
+        $(".nav-link").removeClass("active");
+
+        if (checkcategory === undefined || checkcategory === "") {
+            category = 0;
+            // 전체 탭 active
+            $("#category0").addClass("active");
+            // 페이지를 로드할 때 초기 페이지
+            loadFundingList(1);
+        }
+        else {
+            category = checkcategory;
+            // 해당 탭 active
+            $("#category" + category).addClass("active");
+            // 페이지를 로드할 때 페이지
+            loadFundingList(1);
+        }
+
+    });
+
+
+
+    // Handle page number clicks
+    $(document).on('click', '.page-link', function (e) {
+        e.preventDefault(); // 링크 클릭 시 페이지 이동 방지
+        var page = $(this).data('page');
+        loadFundingList(page);
+    });
+
+
+    // Handle like button clicks
+    $(document).on('click', '.like-button', function (e) {
+        e.stopPropagation(); // 이벤트 전파 중지
+        // Find the like-icon element within the clicked button
+        var likeIcon = $(this).find('.like-icon');
+        if (likeIcon.hasClass('bi-heart-fill')) {
+            likeIcon.removeClass('bi-heart-fill').addClass('bi-heart');
+        } else {
+            likeIcon.removeClass('bi-heart').addClass('bi-heart-fill');
+        }
+
+        var studentRequestId = $(this).data('studentrequest-id');
+        var page = $(this).data('page');
+
+        $.ajax({
+            type: 'GET',
+            cache: false,
+            url: "/login/cookie",
+            dataType: "json",
+
+            success: function (data) {
+                var msg = data.message;
+                var isSuccess = data.isSuccess;
+
+                if (isSuccess === true) {
+                    var jwtToken = data.result;
+                    $.ajax({
+                        /*async: true,*/
+                        type: 'GET',
+                        contentType: 'application/json',
+                        cache: false,
+                        url: "/studentrequest/toggle-like?id=" + studentRequestId,
+                        dataType: "json",
+                        beforeSend: function(xhr) {
+                            // JWT 토큰을 헤더에 추가
+                            xhr.setRequestHeader("Authorization", "Bearer " + jwtToken);
+                        },
+                        success: function (data) {
+                            console.log(data);
+                            var msg = data.message;
+                            var isSuccess = data.isSuccess;
+
+                            if (isSuccess === true) {
+                                // 페이지 재로딩
+                                loadFundingList(page);
+
+                            }
+                            else {
+                                console.log(msg);
+                                alert(msg);
+                            }
+                        },
+                        error: function (error) {
+                            alert("로그인이 필요합니다.");
+                            window.location.href = "/login";
+                        }
+                    });
+                }
+                else {
+                    alert(msg);
+                }
+            },
+            error: function (error) {
+                alert("로그인이 필요합니다.");
+                window.location.href = "/login";
+            }
+        });
+
+
+       /* // 카테고리 탭 선택 핸들러
+        $(document).on('click', '.nav-link.header-link', function (e) {
+            e.preventDefault(); // Prevent default link behavior
+            var categoryID = $(this).data('category-id');
+            alert(categoryID);
+            var page = 1; // You may reset the page to 1 when switching categories
+
+            // Load the funding list based on the new category
+            loadFundingList(page, categoryID);
+        });*/
+
+
+    });
+</script>
+</body>
+</html>

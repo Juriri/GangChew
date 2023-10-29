@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>장바구니</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+<style>
+    .custom-container {
+        width: 100%;
+    }
+    .cart-container {
+        width: 100%;
+    }
+    .no-deco {
+        text-decoration: none;
+        color: #333; /* Replace with your desired text color */
+    }
+
+    .Cart-list {
+        list-style: none;
+        /*padding: 10px;*/
+        /*margin: 0;*/
+    }
+
+    .Cart-item {
+        margin: 5px 0;
+    }
+
+    .Cart-list img{
+        width: 100%;
+        /*height: 247px;*/
+        height: 100%;
+        object-fit: cover;
+    }
+    .cart-header {
+        background-color: #f8f9fa;
+        padding: 15px;
+        margin-top: 20px;
+    }
+
+    .cart-total {
+        font-size: 24px;
+    }
+
+/*    .cart-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }*/
+
+
+    /* 전체 삭제 버튼 스타일 */
+    #all-deleteButton {
+        border: none;
+        padding-top: 0;
+        padding-bottom: 0;
+        background-color: #dc3545; /* 전체 삭제 버튼 배경색 */
+        color: #fff; /* 버튼 텍스트 색상 */
+    }
+
+    #all-deleteButton:hover {
+        background-color: #c82333; /* 마우스 호버 상태에서 배경색 변경 */
+    }
+    /* "결제하기" 버튼 스타일 */
+    #payButton {
+        border: none;
+        background-color: #28a745; /* 버튼 배경색 (녹색) */
+        color: #fff; /* 버튼 텍스트 색상 (흰색) */
+        padding: 0px 20px; /* 버튼 내부 여백 조정 (위아래 10px, 좌우 20px) */
+        margin-left: 10px;
+    }
+
+    #payButton:hover {
+        background-color: #218838; /* 마우스 호버 상태에서 배경색 변경 */
+    }
+
+</style>
+<body>
+<header th:replace="~{common/header/header.html :: commonheader}"></header>
+<div class="custom-container bg-light" style="min-height: 500px;">
+    <!-- 전체 선택 버튼, 선택 삭제 버튼 -->
+    <div class="cart-actions" style="padding-left: 10px">
+        <div class="form-check">
+            <label class="form-check-label" for="selectAllCheckbox">
+                <p style="font-size: 17px; text-align: center;">
+                    <input class="form-check-input" type="checkbox" id="selectAllCheckbox" checked>
+                    전체 선택
+                </p>
+            </label>
+            &nbsp;&nbsp;&nbsp;
+            <button id="all-deleteButton" class="btn btn-primary">모든 아이템 삭제</button>
+        </div>
+
+    </div>
+    <div id="body-container" class="album py-5 bg-light" style="padding: 0 !important;">
+        <div id="cart-container" class="cart-container">
+            <!-- 장바구니 아이템이 여기에 동적으로 추가됩니다. -->
+        </div>
+    </div>
+    <div class="album py-5 bg-light" style="padding: 0 !important;">
+        <div id="total-container" class="total-container">
+            <!-- 장바구니 아이템 합계 금액이 여기에 동적으로 추가됩니다. -->
+        </div>
+    </div>
+</div>
+
+<header th:replace="~{common/footer/footer.html :: commonfooter}"></header>
+
+<script type="module">
+    var IMP = window.IMP;
+    IMP.init("imp78413620");
+    var today = new Date();
+    var hours = today.getHours(); // 시
+    var minutes = today.getMinutes();  // 분
+    var seconds = today.getSeconds();  // 초
+    var milliseconds = today.getMilliseconds();
+    var makeMerchantUid = hours +  minutes + seconds + milliseconds;
+
+
+    import { loadCall } from '/js/common-ajax.js';
+    import { insertCall } from '/js/common-ajax.js';
+
+    import { deleteCall } from '/js/common-ajax.js';
+    /**************서버 통신 함수 **************/
+    // 정보를 비동기적으로 불러오는 함수
+    function loadData(url) {
+        const detail_res = new loadCall(url, null);
+        return detail_res.detail
+            .then(data => {
+                return data;
+            })
+            .catch(error => {
+                console.error(error);
+                throw error; // 오류 다시 던지기
+            });
+    }
+
+
+    // 정보 삽입 요청 함수
+    function insertData(url, requestData) {
+        const insert_res = new insertCall(url, requestData);
+        return insert_res.detail
+            .then(data => {
+                return data;
+            })
+            .catch(error => {
+                console.error(error);
+                throw error; // 오류 다시 던지기
+            });
+    }
+
+    // 정보 삭제 요청 함수
+    function deleteData(url) {
+        const comment_res = new deleteCall(url, null);
+        return comment_res.detail
+            .then(data => {
+                return data;
+            })
+            .catch(error => {
+                console.error(error);
+                throw error; // 오류 다시 던지기
+            });
+    }
+    /**************서버 통신 함수 끝**************/
+    /**************서버 요청 시작**************/
+    // 장바구니 아이템 로드
+    $(document).ready(function () {
+        loadCartItems();
+    });
+
+    function loadCartItems() {
+        var url = "/fundingcart/all";
+        loadData(url, null)
+            .then(data => {
+                // fundingData --> 펀딩 게시글 디테일 반환 모델 데이터 값 BaseResponse<FundingDetailRes>()
+                if (data.isSuccess) {
+                    var itemMap = data.result;
+                    // 아이템 리스트 및 총합 출력
+                    displayCartItems(itemMap);
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    }
+
+
+    /**************버튼 핸들러 시작**************/
+    // Handle  수량 delete 버튼 클릭
+    $(document).on('click', '#deleteButton', function () {
+        var fundingId = $(this).data('funding-id');
+        var url = "/fundingcart/delete?funding="+fundingId;
+
+        loadData(url, null)
+            .then(data => {
+                // fundingData --> 펀딩 게시글 디테일 반환 모델 데이터 값 BaseResponse<FundingDetailRes>()
+                if (data.isSuccess) {
+                    loadCartItems();
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    });
+
+
+    // Handle  수량 alldelete 버튼 클릭
+    $(document).on('click', '#all-deleteButton', function () {
+        // 서버에 아이템 삭제 요청
+        var url = "/fundingcart/delete/all";
+
+        loadData(url, null)
+            .then(data => {
+                // fundingData --> 펀딩 게시글 디테일 반환 모델 데이터 값 BaseResponse<FundingDetailRes>()
+                if (data.isSuccess) {
+                    loadCartItems();
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    });
+
+    // 전체 선택 체크 박스 핸들러
+    $(document).on('click', '#selectAllCheckbox', function () {
+        var isAllChecked = $(this).prop('checked');
+
+        // 각 장바구니 아이템을 불러온 후, checkbox 상태를 저장
+        $('.individual-checkbox').each(function () {
+            var fundingId = $(this).data('funding-id');
+            $(this).prop('checked', isAllChecked); // 모든 개별 체크 박스를 전체 체크 박스와 동일하게 설정
+            // 체크박스의 현재 상태 가져오기
+            var isChecked = $(this).prop('checked');
+            toggleCheckbox(fundingId, isChecked);
+        });
+    });
+
+
+    // 결제 버튼 핸들러
+    $(document).on('click', '#payButton', function () {
+        var total_price = $('#payButton').data('price');
+
+        var fundingIdsToPay = [];
+        // Collect funding IDs from checked checkboxes
+        $('.individual-checkbox').each(function () {
+            if ($(this).prop('checked')) {
+                fundingIdsToPay.push($(this).data('funding-id'));
+            }
+        });
+
+        if (fundingIdsToPay.length === 0) {
+            alert('Please select at least one item to pay.');
+            return;
+        }
+
+        IMP.request_pay({
+            pg: 'kakaopay.TC0ONETIME',
+            merchant_uid: 'merchant_' + new Date().getTime(),
+            name: '강츄 펀딩 결제',
+            amount: total_price,
+            buyer_email: 'Iamport@chai.finance',
+            buyer_name: '아임포트 기술지원팀',
+            buyer_tel: '010-1234-5678',
+            buyer_addr: '서울특별시 강남구 삼성동',
+            buyer_postcode: '123-456'
+        }, function (rsp) { // callback
+            if (rsp.success) {
+                console.log(rsp);
+                registerParticipants(fundingIdsToPay);
+            } else {
+                console.log(rsp);
+            }
+        });
+    })
+
+    function registerParticipants(fundingIds) {
+        fundingIds.forEach(function (id) {
+            loadData('/participants/join?funding=' + id)
+                .then(data => {
+                    if (data.isSuccess) {
+                        console.log(data.result);
+                        alert('결제가 완료되어 펀딩 참여 완료 되었습니다.');
+                        deleteCartItems(fundingIds);
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert("오류가 발생했습니다. 오류 메시지: " + error);
+                });
+        });
+    }
+
+
+    function deleteCartItems(fundingIds) {
+        fundingIds.forEach(function (id) {
+            loadData('/fundingcart/delete?funding=' + id)
+                .then(data => {
+                    if (data.isSuccess) {
+                        console.log(data.result);
+                        loadCartItems();
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert("오류가 발생했습니다. 오류 메시지: " + error);
+                });
+        });
+    }
+
+</script>
+
+<script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js" ></script>
+<!-- iamport.payment.js -->
+<script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
+<script type="text/javascript">
+    // 카트 장바구니 아이템 배열 {fundingCart}
+    let priceItems = [];
+    // 체크박스 상태 저장
+    let checkboxStates = {};
+    // 총합 저장
+    let result_price = 0;
+
+    // 장바구니 리스트를 동적으로 생성하고 HTML에 추가하는 함수
+    function displayCartItems(fundingItems) {
+        // 장바구니 배열 리셋
+        priceItems = [];
+        $('#cart-container').empty();
+        $('#total-container').empty();
+        var cartContainer = $('#cart-container');
+
+        if (fundingItems === undefined || fundingItems.length < 1) {
+            var message = '<img src="/icon/empty-cart.jpg" alt="empty cart">';
+            $(".custom-container").css("background-color", "white");
+            // funding-list 요소에 카드를 추가합니다.
+            $(".custom-container").append(message);
+
+        } else {
+            // 반복문을 통해 장바구니 아이템을 표시
+            for (var [index, fundingCart] of Object.entries(fundingItems)) {
+                // 장바구니 아이템 배열에 fundingCart 아이템과 price 추가
+                priceItems.push(fundingCart);
+                checkboxStates[fundingCart.funding.id] = true;
+
+                var funding = fundingCart.funding;
+                var fundingId = funding.id;
+                var thumbnail = funding.thumbnail;
+                var title = funding.title;
+                var username = fundingCart.funding.writer.username;
+                var quantity = fundingCart.quantity;
+                var amount = funding.amount;
+                var price = quantity * amount;
+
+                var cartItemHtml = `
+                <div class="Cart-list">
+                    <div class="row bg-white" style="margin-left: 20px; margin-right: 10px; margin-bottom: 20px; padding-bottom: 20px; padding-top: 20px;">
+                        <label>
+                            <p style="font-size: 20px; bold;">
+                                <input type="checkbox" name="funding-checkbox" id="selectCheckbox" class="individual-checkbox" data-funding-id="${fundingId}" checked>
+                                    ${username}
+                                <hr class="featurette-divider" style="border-color: black; border-width: 2px;">
+                            </p>
+                        </label>
+                        <div class="col-md-4">
+                            <img src="${thumbnail}" class="bd-placeholder-img card-img-top" alt="펀딩 이미지">
+                        </div>
+                        <div class="col-md-8" style="height: 100%; object-fit: cover; position: relative;">
+                            <!--title, amount, button 1/3 행 나누기-->
+                            <div class="row" style="width: 100%; height: 100%">
+                            <p style="font-size: 20px; width: 100%">${title}</p>
+                            <p style="font-size: 15px; width: 100%">수강료: ${new Intl.NumberFormat("ko-KR").format(amount)} 원</p>
+                                 <div class="button-container" style="width: 100%; margin: 10px 0;">
+                                 </div>
+                                 <div id="total-price-container" style="width: 100%; margin: 10px 0;">
+                                     <p style="font-size: 18px; flex: 1;">총 ${new Intl.NumberFormat("ko-KR").format(price)} 원</p>
+                                 </div>
+                                 <button id="deleteButton" class="btn btn-primary" data-funding-id="${fundingId}" style="width: 20%; align-content: baseline">삭제</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+                cartContainer.append(cartItemHtml);
+            }
+            displayTotalPrice(priceItems);
+        }
+    }
+
+    // 체크된 아이템의 총 가격을 계산하는 함수
+    function calculateTotalPrice(priceItems) {
+        // Initialize the total price
+        var totalprice = 0;
+        payFundings = [];
+
+        // Iterate through the priceItems and add the price of checked items
+        for (var i = 0; i < priceItems.length; i++) {
+            var fundingId = priceItems[i].funding.id;
+            var amount = priceItems[i].funding.amount;
+            var quantity = priceItems[i].quantity;
+            var price = amount * quantity;
+
+            // 체크 박스 배열에 ture 값을 찾으면 해당 가격을 총합에 더하기
+            if (checkboxStates[fundingId]) {
+                totalprice += price;
+                payFundings.push(fundingId);
+            }
+        }
+
+        result_price = totalprice;
+        return totalprice;
+    }
+
+    // 전체 가격 동적으로 생성하고 HTML에 추가하는 함수
+    function displayTotalPrice(priceItems) {
+        // 토탈 칸 제거
+        $("#total-container").empty();
+        var totalprice = calculateTotalPrice(priceItems);
+
+        var totalContainer = $('#total-container');
+        var totalItemHtml = `
+            <div class="row bg-white" style="margin: 20px 10px; padding: 20px 0;">
+                <div id="total-price" style="width: 100%; height: 100%; text-align: center;">
+                    <p style="font-size: 25px;">합계 ${new Intl.NumberFormat("ko-KR").format(totalprice)} 원
+                        <!-- 카카오 간편 결제하기 버튼 생성 -->
+                        <button type="button" id="payButton" class="btn btn-primary" data-price="${totalprice}">결제하기</button>
+                    </p>
+                </div>
+            </div>
+        `;
+        totalContainer.append(totalItemHtml);
+    }
+
+
+
+
+
+    // 각각 선택 체크 박스 핸들러
+    $(document).on('click', '.individual-checkbox', function () {
+        // 체크박스의 ID 가져오기
+        var fundingId = $(this).data('funding-id');
+
+        // 체크박스의 현재 상태 가져오기
+        var isChecked = $(this).prop('checked');
+
+        // check 변경 함수 호출
+        toggleCheckbox(fundingId, isChecked);
+
+        // 모든 개별 체크 박스 상태 확인
+        var allChecked = true;
+        $('.individual-checkbox').each(function () {
+            if (!$(this).prop('checked')) {
+                allChecked = false;
+                return false; // 하나라도 선택이 해제된 경우 반복문 종료
+            }
+        });
+
+        // 전체 선택 체크 박스 동기화
+        $('#selectAllCheckbox').prop('checked', allChecked);
+    });
+
+
+    function toggleCheckbox(fundingId, isChecked) {
+        // fundingId를 키로 사용하여 체크박스 상태를 저장
+        checkboxStates[fundingId] = isChecked;
+        displayTotalPrice(priceItems);
+    }
+
+</script>
+</body>
+</html>

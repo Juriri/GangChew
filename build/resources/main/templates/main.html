@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GangChew</title>
+
+    <style>
+        .custom-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+        }
+
+        .custom-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(60%); /* Apply a slight darkening effect */
+        }
+
+        .introduction {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+            color: #fff;
+            font-family: Arial, sans-serif;
+            opacity: 0;
+            transition: opacity 2s; /* 페이드인 효과를 2초로 지정 */
+        }
+
+        .introduction.active {
+            opacity: 1;
+        }
+
+        .introduction h1 {
+            font-size: 36px;
+            margin: 10px 0;
+        }
+
+        .introduction .subtitle {
+            font-size: 24px;
+            margin: 10px 0;
+        }
+
+        .introduction .highlight {
+            color: #FFD700; /* Change the text color to gold */
+        }
+
+        .introduction .icon {
+            font-size: 24px;
+            vertical-align: middle;
+            margin: 0 10px;
+        }
+
+        /* 끝 */
+    </style>
+</head>
+<body>
+<header th:replace="~{common/header/header.html :: commonheader}"></header>
+
+<div class="custom-container">
+    <img src="/icon/class.jpg" alt="" style="width: 100%; height: 100%;">
+    <div class="introduction" id="introduction">
+        <h1>우리들이 만들어가는 클래스</h1>
+        <p class="subtitle">새로운 지식과 경험의 세계 <span class="icon">🌍</span></p>
+        <p class="description">우리는 학습의 주체로서, 미래를 만들어가는 중입니다!</p>
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="/introduce" style="text-decoration: none; color: #fff;">
+                <span style="font-size: 30px; cursor: pointer;">&rarr;</span> 컨셉 소개
+            </a>
+        </div>
+    </div>
+</div>
+<!--<hr class="featurette-divider">-->
+<header th:replace="~{common/footer/footer.html :: commonfooter}"></header>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#introduction').addClass('active'); // 페이지 로드 시 자동 페이드인
+    });
+</script>
+</body>
+</html>

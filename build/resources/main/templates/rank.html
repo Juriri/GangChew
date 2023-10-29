@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
+    <title>GangChew</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            /* Your header styles here */
+        }
+
+        .custom-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        #loading-spinner {
+            position: fixed; /* 고정 위치 설정 */
+            top: 50%; /* 화면 위쪽에서 50% 위치로 이동 */
+            left: 50%; /* 화면 왼쪽에서 50% 위치로 이동 */
+            transform: translate(-50%, -50%); /* 세로 가로 중앙 정렬 */
+            z-index: 9999; /* 다른 요소 위에 나타나도록 설정 (가장 상위 레벨) */
+        }
+        
+        .header-container {
+            position: relative;
+        }
+
+        .header-image {
+            width: 100%;
+            max-height: 500px;
+            object-fit: cover;
+        }
+
+        .header-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+        h1 {
+            font-size: 36px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            text-decoration: none;
+            color: #fff;
+            background-color: #555;
+            border: 2px solid #555;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #333;
+        }
+
+        .funding-rankings {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .ranking-category {
+            display: inline-block;
+            width: 100%;
+            vertical-align: top;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            background-color: #fff;
+        }
+
+        h2 {
+            font-size: 20px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin: 10px 0;
+            min-height: 50px;
+        }
+
+        .card-title-link {
+            font-size: 16px;
+            font-weight: bold;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .card-title-link:hover {
+            text-decoration: none;
+            color: #555;
+        }
+
+        .thumbnail {
+            object-fit: cover;
+            width: 100%;
+            height: 200px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+
+<div class="custom-container">
+    <div class="header-container">
+        <!-- Header Image -->
+        <img src="/icon/class.jpg" alt="Header Image" class="header-image">
+        <!-- Overlay Text and Button -->
+        <div class="header-overlay">
+            <h1>우리들이 만드는 클래스</h1>
+            <a class="btn btn-lg btn-primary" href="/funding">더 많은 펀딩 강의 구경하기</a>
+        </div>
+    </div>
+
+    <!-- Funding Rankings Section -->
+    <div class="funding-rankings">
+            <div id="loading-spinner" style="display: none;">
+                <img src="/icon/loading.gif" alt="로딩 중">
+            </div>
+        <!--<div id="result-list" class="ranking-list row row-cols-1 row-cols-md-3 mb-3 text-center">
+            &lt;!&ndash; Include this code just above the ranking section &ndash;&gt;
+            <div class="custom-header-container">
+                <nav class="nav nav-underline justify-content-between">
+                    <div class="nav-item dropdown" id="fundingDropdown">
+                        <a class="nav-link" id="fundingMenu" href="#" aria-haspopup="true" aria-expanded="false">
+                            <strong style="font-size: 20px;">펀딩 강의 살펴보기</strong>
+                        </a>
+                        <div class="dropdown-menu" id="fundingSubMenu">
+                            <a class="dropdown-item" href="/funding">모두의 펀딩</a>
+                            <a class="dropdown-item" href="/fundingCreate">펀딩 강의 오픈 해보기</a>
+                        </div>
+                    </div>
+
+                    <a class="nav-link" href="/studentrequest" id="studentBtn">
+                        <strong style="font-size: 20px;">펀딩 열어주세요!</strong>
+                    </a>
+                </nav>
+            </div>-->
+
+            <div class="ranking-category feature col">
+                <h2 class="pb-2 border-bottom">참여율 높은 펀딩 Top4 (24시간 기준)</h2>
+                <ul id="participants-list"></ul>
+            </div>
+            <div class="ranking-category feature col">
+                <h2 class="pb-2 border-bottom">좋아요 높은 펀딩 Top4 (24시간 기준)</h2>
+                <ul id="like-list"></ul>
+            </div>
+            <div class="ranking-category feature col">
+                <h2 class="pb-2 border-bottom">조회수 높은 펀딩 Top4</h2>
+                <ul id="view-list"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+<script>
+    /*24시간 이내 펀딩 참여 유저 수 (내림차순) request url: /funding/rank?orderby="mostParticipants"&hours=24&top=5&state="IN_PROGRESS" */
+    let mostPariticipantsList = [];
+    /*24시간 이내 좋아요 수  (내림차순) request url: /funding/rank?orderby="mostLike"&hours=24&top=5&state="IN_PROGRESS" */
+    let mostLikeList = [];
+    /*펀딩 조회수 (내림차순) request url: /funding/rank?orderby="mostView"&top=5&state="IN_PROGRESS" */
+    let mostViewList = [];
+    /*최근 오픈한 펀딩 일자 순(내림차순)*/
+    let mostNewestList = [];
+    /*마감이 임박한 시간 순서에 따른 내림차순*/
+    let leastDeadlineList = [];
+
+    let top_num = 4;
+
+    // 함수를 통해 각 순위 카테고리에 데이터를 추가하는 예제
+    function displayRanking(category, data, containerId) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = ''; // 기존 내용 초기화
+
+        // 데이터를 카테고리에 따라 정렬
+        data.sort((a, b) => {
+            if (category === 'participants') {
+                return b.userCount - a.userCount;
+            } else if (category === 'likes') {
+                return b.likeCount - a.likeCount;
+            } else if (category === 'views') {
+                return b.viewCount - a.viewCount;
+            }
+        });
+
+        data.forEach((item, index) => {
+            const li = document.createElement('li');
+            const title = item.title.length > 10 ? item.title.slice(0, 20) + '...' : item.title;
+
+            li.innerHTML = `<a href="/fundingDetail?id=${item.id}" class="card-title-link">
+                                <span style="font-size: 20px; color: #636365; font-weight: bold;">${index + 1}.</span>
+                                <img src="${item.thumbnail}" class="rounded-circle" alt="${title} thumbnail" width="60" height="50">
+                                <span style="font-weight: bold; font-size: 15px;">${title} -</span>
+                                <span style="color: ${category === 'participants' ? 'blue' : category === 'likes' ? 'green' : 'red'};">
+                                ${category === 'participants' ? '참여자 수' : category === 'likes' ? '좋아요 수' : '조회수'}:
+                                </span>
+                                <span style="font-weight: bold;">
+                                ${category === 'participants' ? item.userCount : category === 'likes' ? item.likeCount : item.viewCount}
+                                </span>
+                            </a>
+                            `;
+            container.appendChild(li);
+        });
+    }
+
+
+
+    function loadFunding() {
+        mostPariticipantsList = [];
+        mostLikeList = [];
+        mostViewList = [];
+        mostNewestList = [];
+        leastDeadlineList = [];
+
+        // 요청 시작 시 로딩 스피너 표시
+        $('#loading-spinner').show();
+        $('#participants-list').hide();
+        $('#like-list').hide();
+        $('#view-list').hide();
+
+        let results = [];
+        // 첫 번째 요청
+        var participantsRequest = $.ajax({
+            type: 'GET',
+            url: "funding/rank?orderby=mostParticipants&state=ACTIVE&hours=24&top="+top_num,
+            dataType: "json"
+        });
+        results.push(participantsRequest);
+
+        // 두 번째 요청
+        var likeRequest = $.ajax({
+            type: 'GET',
+            url: "/funding/rank?orderby=mostLike&hours=24&top="+top_num,
+            dataType: "json"
+        });
+        results.push(likeRequest);
+
+        // 세 번째 요청
+        var viewRequest = $.ajax({
+            type: 'GET',
+            url: "/funding/rank?orderby=mostView&state=IN_PROGRESS&top="+top_num,
+            dataType: "json"
+        });
+        results.push(viewRequest);
+
+        // Promise.all을 사용하여 모든 요청이 완료될 때까지 대기
+        Promise.all(results).then(function(results) {
+            console.log(results);
+            // results 배열에 각 요청의 응답이 들어 있음
+            /*console.log(results);*/
+            var response1 = results[0];
+            var response2 = results[1];
+            var response3 = results[2];
+
+            // 모든 처리가 완료되면 로딩 스피너 숨김
+            $('#loading-spinner').hide();
+            $('#participants-list').show();
+            $('#like-list').show();
+            $('#view-list').show();
+            /*24시간 이내 펀딩 참여 유저 수 (내림차순)*/
+            var dataMap1 = response1.result;
+            for (var [index, map] of Object.entries(dataMap1)) {
+                // 펀딩 객체 추출
+                var funding = map.funding;
+                // 달성률 추출
+                var achievementrate = map.achievementrate;
+                // 결과 리스트에 삽입
+                mostPariticipantsList.push(funding);
+            }
+            // 기존 리스트 반환
+            /*mostPariticipantsList = response1.result;*/
+            displayRanking("paritipants", mostPariticipantsList, "participants-list");
+
+
+            /*24시간 이내 좋아요 수*/
+            var dataMap2 = response2.result;
+            for (var [index, map] of Object.entries(dataMap2)) {
+                // 펀딩 객체 추출
+                var funding = map.funding;
+                // 달성률 추출
+                var achievementrate = map.achievementrate;
+                // 결과 리스트에 삽입
+                mostLikeList.push(funding);
+            }
+            /*mostLikeList = response2.result;*/
+            displayRanking("likes", mostLikeList, "like-list");
+
+            /*조회수 순*/
+            var dataMap3 = response3.result;
+            for (var [index, map] of Object.entries(dataMap3)) {
+                // 펀딩 객체 추출
+                var funding = map.funding;
+                // 달성률 추출
+                var achievementrate = map.achievementrate;
+                // 결과 리스트에 삽입
+                mostViewList.push(funding);
+            }
+            /*mostViewList  =response3.result;*/
+            /*console.log(mostViewList);*/
+            displayRanking("views", mostViewList, "view-list");
+
+        }).catch(function(error) {
+            // 오류 처리
+            console.error(error);
+        });
+    }
+
+    $(document).ready(function(){
+        // 페이지 로딩 시 펀딩 데이터 가져오기
+        loadFunding();
+
+        // 5분마다 펀딩 데이터 업데이트 (20,000 밀리초)
+        setInterval(function () {
+            loadFunding();
+        }, 200000);
+
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GangChew</title>
+
+    <style>
+        .custom-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+        }
+
+        .custom-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(60%); /* Apply a slight darkening effect */
+        }
+
+        .introduction {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+            color: #fff;
+            font-family: Arial, sans-serif;
+            opacity: 0;
+            transition: opacity 2s; /* 페이드인 효과를 2초로 지정 */
+        }
+
+        .introduction.active {
+            opacity: 1;
+        }
+
+        .introduction h1 {
+            font-size: 36px;
+            margin: 10px 0;
+        }
+
+        .introduction .subtitle {
+            font-size: 24px;
+            margin: 10px 0;
+        }
+
+        .introduction .description {
+            font-size: 18px;
+            margin: 20px 0;
+        }
+
+        .introduction .icon {
+            font-size: 24px;
+            vertical-align: middle;
+            margin: 0 10px;
+        }
+
+        .feature-cards {
+            display: flex;
+            height: 100%;
+            justify-content: space-around;
+            padding: 20px;
+        }
+
+        .feature-card {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        .feature-card h2 {
+            font-size: 24px;
+        }
+
+        .feature-card p {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+<header th:replace="~{common/header/header.html :: commonheader}"></header>
+
+<div class="custom-container">
+    <img src="/icon/class.jpg" alt="" style="width: 100%; height: 100%;">
+    <div class="introduction" id="introduction">
+        <h1>우리들이 만들어가는 클래스</h1>
+        <p class="subtitle">새로운 펀딩 강의 세계 <span class="icon">🌍</span></p>
+        <p class="description">우리는 우리가 듣고 싶은 수업을 만들어가는 중입니다!</p>
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="/" style="text-decoration: none; color: #fff;">
+                <span style="font-size: 30px; cursor: pointer;">&larr;</span> 돌아가기
+            </a>
+        </div>
+    </div>
+
+</div>
+
+<div class="feature-cards">
+    <div class="feature-card">
+        <h2>다양한 주제</h2>
+        <p>내가 듣고 싶은 강의를 펀딩 오픈하여 수강생을 모아보아요!</p>
+    </div>
+    <div class="feature-card">
+        <h2>이런 강의 어때요?</h2>
+        <p>커뮤니티 게시판에서 다른 사람들과 관심있는 수업에 대해 얘기를 나누어보아요.</p>
+    </div>
+    <div class="feature-card">
+        <h2>이 강의 너무 좋았어요!</h2>
+        <p>학습자들이 후기를 남기면 확장된 강의가 오픈될 수 있어요.</p>
+    </div>
+</div>
+
+<!--<hr class="featurette-divider">-->
+<header th:replace="~{common/footer/footer.html :: commonfooter}"></header>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#introduction').addClass('active'); // 페이지 로드 시 자동 페이드인
+    });
+</script>
+</body>
+</html>

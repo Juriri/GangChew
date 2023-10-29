@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>게시글 수정 페이지</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.css">
+    <style>
+        .form-container {
+            max-width: 1300px;
+            margin: 0 auto;
+            /*padding: 20px;*/
+        }
+
+        .file_input_container {
+            display: flex;
+            position: relative;
+            width: 200px;
+            height: 200px;
+            overflow: hidden;
+        }
+
+
+        .file_input_img_btn {
+            position: absolute;
+            right: 0;
+            top: 0;
+            padding: 0 5px;
+        }
+
+        .file_input_hidden {
+            font-size: 109px;
+            position: absolute;
+            right: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .image {
+            max-width: 100%; /* 이미지가 너무 큰 경우 자동으로 크기 조정 */
+            margin-right: 10px; /* 이미지 사이 간격 조정 */
+        }
+
+        .CategoryBoxstyle {
+            max-height: 150px;
+            overflow-y: auto;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+        }
+
+        .CategoryBox-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .CategoryBox-item {
+            margin: 5px 0;
+        }
+
+        .CategoryBox-item button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .CategoryBox-item button:hover {
+            background-color: #0056b3;
+        }
+
+        .CategoryBox-item button.active {
+            background: none;
+            border: 6px solid #ff0026; /* 활성 탭의 색상 */
+        }
+    </style>
+</head>
+<body>
+<header th:replace="~{common/header/header.html :: commonheader}"></header>
+<div class="container" style="margin-top: 20px;">
+    <div class="row featurette">
+        <div class="col-md-7">
+            <h2 class="featurette-heading fw-normal lh-1" style="font-size: 27px;">게시글 수정 &nbsp;&nbsp;&nbsp;<span style="font-size: 16px; color: red">*필수항목</span></h2>
+        </div>
+    </div>
+    <hr class="featurette-divider" style="border-color: black; border-width: 2px;">
+    <div class="album py-7 bg-white">
+        <div class="form-container">
+            <form id="updateForm" action="/funding/update" method="POST">
+                <div class="mb-5 d-flex text-body-secondary pt-5" style="border-top: 1px solid #efefef;">
+                    <div>
+                        <p style="font-size: 17px;">제목<span style="font-size: 16px; color: red">*</span></p>
+                    </div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <div class="ml-3 flex-grow-1">
+                        <input type="text" id="title" name="title" class="form-control" style="width: 100%;" value="" required>
+                    </div>
+                </div>
+
+                <div class="mb-5 text-body-secondary pt-5" style="border-top: 1px solid #efefef;">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <label for="category" class="form-label">
+                                카테고리<span style="font-size: 16px; color: red">*</span>
+                            </label>
+                            <input type="hidden" id="category" name="category">
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <div class="CategoryBoxstyle" style="max-height: 500px; background-color: #ffffff; overflow-y: auto;">
+                                <ul class="CategoryBox-list">
+                                    <li class="CategoryBox-item">
+                                        <button type="button" class="category-button" data-category-id="1" style="background-color: #efda70">운동&Life</button>
+                                    </li>
+                                    <li class="CategoryBox-item">
+                                        <button type="button" class="category-button" data-category-id="2" style="background-color: #238cf3">경제&금융</button>
+                                    </li>
+                                    <li class="CategoryBox-item">
+                                        <button type="button" class="category-button" data-category-id="3" style="background-color: #61e761">n잡&부업</button>
+                                    </li>
+                                    <li class="CategoryBox-item">
+                                        <button type="button" class="category-button" data-category-id="4" style="background-color: #ef6347">커리어</button>
+                                    </li>
+                                    <li class="CategoryBox-item">
+                                        <button type="button" class="category-button" data-category-id="5" style="background-color: #8b56f6">언어</button>
+                                    </li>
+                                    <li class="CategoryBox-item">
+                                        <button type="button" class="category-button" data-category-id="6" style="background-color: #f566f5">프로그래밍</button>
+                                    </li>
+                                    <li class="CategoryBox-item">
+                                        <button type="button" class="category-button" data-category-id="7" style="background-color: #95989b">비지니스마케팅</button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="mb-5 text-body-secondary pt-5" style="border-top: 1px solid #efefef;">
+                    <label for="content" class="form-label">
+                        펀딩 콘텐츠<span style="font-size: 16px; color: red">*</span>
+                    </label>
+                    <!-- Add a textarea for the Toast UI Editor -->
+                    <div id="content"></div>
+                </div>
+                <button type="submit" id="updateButton" class="btn btn-primary">저장</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<hr class="featurette-divider">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- TUI 에디터 JS CDN -->
+<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+<script type="text/javascript">
+    let cfundingId;
+    let cusername;
+    let ccategoryId;
+
+    // 토스트 ui 초기화
+    const Editor = toastui.Editor;
+    // Initialize the Toast UI Editor
+    const editor = new Editor({
+        el: document.querySelector('#content'),
+        height: '500px',
+        previewStyle:"vertical",
+        initialEditType:"wysiwyg",
+        initialValue: "내용을 입력해 주세요."
+    });
+
+    // 펀딩 카테고리 테두리 초기화
+    function getCategory(categoryId) {
+        ccategoryId = categoryId;
+        // data-category-id가 categoryId와 일치하는 요소
+        const elementsWithCategoryId = $(`.category-button[data-category-id="${categoryId}"]`);
+        /*console.log(elementsWithCategoryId);*/
+        // 선택한 요소에 'active' 클래스를 추가
+        elementsWithCategoryId.addClass('active');
+    }
+
+    // Handle  카테고리 버튼 클릭
+    $(document).on('click', '.category-button', function () {
+        // 모든 버튼에서 활성 클래스 제거
+        $(".category-button").removeClass("active");
+        // 클릭한 버튼에 활성 클래스 추가
+        $(this).addClass("active");
+
+        const categoryId = $(this).data('category-id');
+        ccategoryId = categoryId;
+        $('#category').val(categoryId);
+    });
+
+    // 상세 페이지 funding 정보 로드
+    function loadFundingDetail(id) {
+        $.ajax({
+            type: 'GET',
+            cache: false,
+            url: "/login/cookie",
+            dataType: "json",
+
+            success: function (data) {
+                var msg = data.message;
+                var isSuccess = data.isSuccess;
+                let jwtToken = "";
+
+                if (isSuccess === true) {
+                    jwtToken = data.result;
+                }
+                $.ajax({
+                    type: 'GET',
+                    cache: false,
+                    url: "/studentrequest/read?id="+id,
+                    dataType: "json",
+                    beforeSend: function(xhr) {
+                        // JWT 토큰을 헤더에 추가
+                        xhr.setRequestHeader("Authorization", "Bearer " + jwtToken);
+                    },
+
+                    success: function (data) {
+                        var msg = data.message;
+                        var isSuccess = data.isSuccess;
+
+                        if (isSuccess === true) {
+                            var response = data.result;
+                            console.log(response);
+                            var studentrequestId = response.id;
+                            var title = response.title;
+                            var fundingCategory = response.fundingCategory;
+                            var writer = response.writer;
+                            var content = response.content;
+
+                            // funding, fundingCategory, writer, achievementrate, deadline, liked, loginUser
+                            displayFundingDetailInfo(studentrequestId, title, fundingCategory, writer, content);
+                        }
+                        else {
+                            alert(msg);
+                        }
+                    },
+                    error: function(error) {
+                        alert('오류가 발생했습니다.'+error);
+                    }
+                });
+            },
+            error: function () {
+                alert('오류가 발생했습니다.'+error);
+            }
+        });
+    }
+
+
+    // 펀딩 디테일 정보를 동적으로 생성하고 HTML에 추가하는 함수
+    function displayFundingDetailInfo(studentrequestId, title, fundingCategory, writer, content) {
+        $('#title').val(title);
+
+        var category_id = fundingCategory.id;
+        /*카테고리 초기화 표시*/
+        getCategory(category_id);
+
+        cfundingId = studentrequestId;
+        cusername = writer;
+        var encodedContent = content;
+        /*console.log(decodecontent);*/
+        /*var decodedContent = atob(encodedContent); // Base64 디코딩*/
+        // content를 에디터에 설정
+        editor.setMarkdown(encodedContent);
+    }
+
+
+    function getURLParams() {
+        var searchParams = new URLSearchParams(window.location.search);
+        var params = {};
+
+        for (var [param, value] of searchParams.entries()) {
+            params[param] = value;
+        }
+
+        return params;
+    }
+
+    $(document).ready(function () {
+        // url에서 funding id 추출
+        var urlParams = getURLParams();
+        var id = urlParams.id;
+
+        // funding 디테일 로드
+        loadFundingDetail(id);
+
+        // 서버로 업데이트할 펀딩 정보 전송
+        $('#updateForm').submit(function (e){
+            e.preventDefault(); // 폼 기본 동작 중지
+
+            $.ajax({
+                type: 'GET',
+                cache: false,
+                url: "/login/cookie",
+                dataType: "json",
+
+                success: function (data) {
+                    var msg = data.message;
+                    var isSuccess = data.isSuccess;
+
+                    let jwtToken = "";
+                    if (isSuccess === true) {
+                        jwtToken = data.result;
+
+                        var requestData = {
+                            "studentId": cfundingId,
+                            "title": $('#title').val(),
+                            "category_id": ccategoryId,
+                            "content": editor.getMarkdown(),
+                            "username": cusername
+                        };
+
+                        $.ajax({
+                            async: true,
+                            url: '/studentrequest/update?id='+cfundingId, // 유저 정보 업데이트
+                            type: 'POST',
+                            data: JSON.stringify(requestData),
+                            dataType: 'json',
+                            contentType: 'application/json',
+                            cache: false,
+                            beforeSend: function (xhr) {
+                                // JWT 토큰을 헤더에 추가
+                                xhr.setRequestHeader("Authorization", "Bearer " + jwtToken);
+                            },
+                            success: function(data) {
+                                var msg = data.message;
+                                var isSuccess = data.isSuccess;
+
+                                if (isSuccess === true) {
+                                    alert(data.result);
+                                    window.location.href = "/studentrequestDetail?id="+cfundingId;
+                                }
+                                else {
+                                    alert(msg);
+                                }
+                            },
+                            error: function() {
+                                alert('펀딩 정보 업데이트에 실패하였습니다.');
+                            }
+                        });
+                    } else {
+                        alert(msg);
+                    }
+                },
+                error: function () {
+                    alert('오류가 발생했습니다.');
+                }
+            });
+        });
+    });
+
+</script>
+</body>
+</html>

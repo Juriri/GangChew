@@ -1,0 +1,82 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.7.5'
+    id 'io.spring.dependency-management' version '1.1.3'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+compileJava.options.encoding = 'UTF-8'
+
+java {
+    sourceCompatibility = '17'
+}
+
+
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.jetbrains:annotations:23.0.0'
+
+    // Spring Boot Starter
+    testImplementation ('org.springframework.boot:spring-boot-starter-test')
+
+    // Swagger
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.15'
+    implementation 'io.springfox:springfox-swagger2:2.9.2'
+    implementation 'io.springfox:springfox-swagger-ui:2.9.2'
+    implementation "io.springfox:springfox-bean-validators:2.9.2"
+
+    // Thymeleaf
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+    // Lombok
+    implementation ('org.projectlombok:lombok')
+    compileOnly ('org.projectlombok:lombok:1.18.24')
+    annotationProcessor ('org.projectlombok:lombok:1.18.24')
+
+    // JPA
+    implementation ('org.springframework.boot:spring-boot-starter-data-jpa')
+
+    // JDBC
+    implementation ('org.springframework.boot:spring-boot-starter-jdbc')
+
+    // MySQL DB (v8)
+    runtimeOnly ('mysql:mysql-connector-java')
+
+    // Oracle DB (ojdbc 8)
+    implementation 'com.oracle.database.jdbc:ojdbc8:21.9.0.0'
+
+    // Web
+    implementation ('org.springframework.boot:spring-boot-starter-web')
+    implementation('org.springframework.boot:spring-boot-starter')
+
+    // Validation
+    implementation('org.springframework.boot:spring-boot-starter-validation')
+
+    // jwt
+    implementation('io.jsonwebtoken:jjwt:0.9.1')
+
+    // OAuth 2.0
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+
+    // Security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // Base64
+    implementation group: 'commons-codec', name: 'commons-codec', version: '1.15'
+
+    // Reactor-core
+    implementation 'io.projectreactor:reactor-core:3.4.11'
+
+
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

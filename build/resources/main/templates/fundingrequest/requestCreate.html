@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>강의 펀딩 요청 작성</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <!-- TUI 에디터 JS CDN -->
+    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.css">
+    <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+    <style>
+        .form-container {
+            max-width: 1300px;
+            margin: 0 auto;
+            /*padding: 20px;*/
+        }
+
+        .file_input_container {
+            display: flex;
+            position: relative;
+            width: 200px;
+            height: 200px;
+            overflow: hidden;
+        }
+
+
+        .file_input_img_btn {
+            position: absolute;
+            right: 0;
+            top: 0;
+            padding: 0 5px;
+        }
+
+        .file_input_hidden {
+            font-size: 109px;
+            position: absolute;
+            right: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .image {
+            max-width: 100%; /* 이미지가 너무 큰 경우 자동으로 크기 조정 */
+            margin-right: 10px; /* 이미지 사이 간격 조정 */
+        }
+
+        .CategoryBoxstyle {
+            max-height: 150px;
+            overflow-y: auto;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+        }
+
+        .CategoryBox-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .CategoryBox-item {
+            margin: 5px 0;
+        }
+
+        .CategoryBox-item button {
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .CategoryBox-item button.active {
+            background: none;
+            border: 6px solid #ff0026; /* 활성 탭의 색상 */
+        }
+    </style>
+</head>
+<body>
+<header th:replace="~{common/header/header.html :: commonheader}"></header>
+<div class="container">
+    <div class="row featurette">
+        <div class="col-md-7">
+            <h2 class="featurette-heading fw-normal lh-1" style="font-size: 27px;">기본정보 &nbsp;&nbsp;&nbsp;<span style="font-size: 16px; color: red">*필수항목</span></h2>
+        </div>
+    </div>
+    <hr class="featurette-divider" style="border-color: black; border-width: 2px;">
+    <div class="album py-7 bg-white">
+        <div class="form-container">
+            <form id="createForm" action="/studentrequest/save" method="POST">
+                <div class="mb-5 d-flex text-body-secondary pt-5" style="border-top: 1px solid #efefef;">
+                    <div>
+                        <p style="font-size: 17px;">제목<span style="font-size: 16px; color: red">*</span></p>
+                    </div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <div class="ml-3 flex-grow-1">
+                        <input type="text" id="title" name="title" class="form-control" style="width: 100%;" placeholder="펀딩 이름을 입력해주세요." required>
+                    </div>
+                </div>
+
+                <div class="mb-5 text-body-secondary pt-5" style="border-top: 1px solid #efefef;">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <label for="category" class="form-label">
+                                카테고리<span style="font-size: 16px; color: red">*</span>
+                            </label>
+                            <input type="hidden" id="category" name="category">
+                            &nbsp;&nbsp;&nbsp;
+                            <div class="CategoryBoxstyle" style="max-height: 400px; background-color: #ffffff; overflow-y: auto;">
+                                <ul class="CategoryBox-list">
+                                    <li class="CategoryBox-item">
+                                        <button type="button" class="category-button" data-category-id="1" style="background-color: #efda70">운동&Life</button>
+                                    </li>
+                                    <li class="CategoryBox-item">
+                                        <button type="button" class="category-button" data-category-id="2" style="background-color: #238cf3">경제&금융</button>
+                                    </li>
+                                    <li class="CategoryBox-item">
+                                        <button type="button" class="category-button" data-category-id="3" style="background-color: #61e761">n잡&부업</button>
+                                    </li>
+                                    <li class="CategoryBox-item">
+                                        <button type="button" class="category-button" data-category-id="4" style="background-color: #ef6347">커리어</button>
+                                    </li>
+                                    <li class="CategoryBox-item">
+                                        <button type="button" class="category-button" data-category-id="5" style="background-color: #8b56f6">언어</button>
+                                    </li>
+                                    <li class="CategoryBox-item">
+                                        <button type="button" class="category-button" data-category-id="6" style="background-color: #f566f5">프로그래밍</button>
+                                    </li>
+                                    <li class="CategoryBox-item">
+                                        <button type="button" class="category-button" data-category-id="7" style="background-color: #95989b">비지니스마케팅</button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    </div>
+                </div>
+
+                <div class="mb-5 text-body-secondary pt-5" style="border-top: 1px solid #efefef;">
+                    <label for="content" class="form-label">
+                        펀딩 콘텐츠<span style="font-size: 16px; color: red">*</span>
+                    </label>
+                    <!-- Add a textarea for the Toast UI Editor -->
+                    <div id="content"></div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">작성 완료</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<hr class="featurette-divider">
+<!-- 다음 주소 API 스크립트 로드 -->
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script type="text/javascript">
+    // Handle  카테고리 버튼 클릭
+    $(document).on('click', '.category-button', function () {
+        // 모든 버튼에서 활성 클래스 제거
+        $(".category-button").removeClass("active");
+        // 클릭한 버튼에 활성 클래스 추가
+        $(this).addClass("active");
+
+        const categoryId = $(this).data('category-id');
+        $('#category').val(categoryId);
+    });
+
+
+    // 콘텐츠 내용 입력
+    const Editor = toastui.Editor;
+    // Initialize the Toast UI Editor
+    const editor = new Editor({
+        el: document.querySelector('#content'),
+        height: '500px',
+        previewStyle:"vertical",
+        initialEditType:"wysiwyg",
+        initialValue: "펀딩 내용을 입력해 주세요."
+    });
+
+    $(document).ready(function () {
+        function validateCreateForm() {
+            var title = $('#title').val();
+            var category_id = $('#category').val();
+            if (title === '' || category_id === '') {
+                alert('필수 항목 필드를 입력하세요.');
+                return false;
+            }
+            return true;
+        }
+
+
+        // 컨텐트 내용을 base64로 인코딩
+        function encodeContentAndSubmit() {
+            return new Promise(function (resolve, reject) {
+                var content = editor.getMarkdown(); // Editor에서 콘텐츠 가져오기
+                var contentBlob = new Blob([content], { type: 'text/plain;charset=utf-8' }); // utf-8로 인코딩
+
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    resolve(e.target.result); // 인코딩이 완료되면 Promise를 성공 상태로 해결
+                };
+
+                reader.readAsDataURL(contentBlob); // 콘텐츠를 base64로 변환
+            });
+        }
+
+        // Markdown 또는 HTML 내용을 base64로 인코딩
+        function encodeContentToBase64(content) {
+            return new Promise(function (resolve, reject) {
+                var contentBlob = new Blob([content], { type: 'text/plain' });
+
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    resolve(e.target.result); // 인코딩이 완료되면 Promise를 성공 상태로 해결
+                };
+
+                reader.readAsDataURL(contentBlob); // 콘텐츠를 base64로 변환
+            });
+        }
+
+
+        <!--펀딩글 정보 서버 전송-->
+        $('#createForm').submit(function (e){
+            e.preventDefault(); // 폼 기본 동작 중지
+            var requestData = {
+                "title": $('#title').val(),
+                "category_id": $('#category').val(),
+            };
+
+
+            console.log(requestData);
+
+            if (validateCreateForm()) {
+                // 콘텐츠 인코딩 및 전송
+                encodeContentAndSubmit()
+                    .then(function (base64Content) {
+                        requestData["content"] = base64Content;
+
+                        $.ajax({
+                            type: 'GET',
+                            cache: false,
+                            url: "/login/cookie",
+                            dataType: "json",
+
+                            success: function (data) {
+                                var msg = data.message;
+                                var isSuccess = data.isSuccess;
+
+                                if (isSuccess === true) {
+                                    var jwtToken = data.result;
+
+                                    $.ajax({
+                                        async: true,
+                                        type: 'POST',
+                                        data: JSON.stringify(requestData),
+                                        contentType: 'application/json',
+                                        cache: false,
+                                        url: "/studentrequest/save",
+                                        dataType: "json",
+                                        beforeSend: function (xhr) {
+                                            // JWT 토큰을 헤더에 추가
+                                            xhr.setRequestHeader("Authorization", "Bearer " + jwtToken);
+                                        },
+                                        success: function (data) {
+                                            var msg = data.message;
+                                            var isSuccess = data.isSuccess;
+
+                                            if (isSuccess === true) {
+                                                console.log(data.result);
+                                                var student_request = data.result.id;
+                                                window.location.href = "/studentrequestDetail?id="+student_request;
+
+                                            } else {
+                                                alert(msg);
+                                            }
+                                        },
+                                        error: function (error) {
+                                            console.log(error);
+                                            alert("오류가 발생했습니다. 오류 메시지: " + error);
+                                        }
+                                    });
+                                }
+
+                                else {
+                                    alert(msg);
+                                }
+
+                            },
+                            error: function (error) {
+                                console.log(error);
+                                alert("오류가 발생했습니다. 오류 메시지: " + error);
+                            }
+                        });
+                    })
+                    .catch(function (error) {
+                        alert(error);
+                    });
+            }
+        });
+
+    });
+</script>
+<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+</body>
+</html>

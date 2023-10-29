@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>펀딩 게시글 상세 페이지</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <style>
+        .image-container {
+            width: 100%;
+            height: 400px; /* 원하는 높이 설정 */
+            overflow: hidden; /* 넘치는 이미지를 숨깁니다. */
+            text-align: left;
+        }
+
+        .image-container img {
+            width: auto;
+            height: 100%; /* 이미지 높이를 100%로 설정하여 가로 비율에 맞게 조정됩니다. */
+        }
+
+        #header-viewer {
+            width: auto;
+            height: 100%; /* 이미지 높이를 100%로 설정하여 가로 비율에 맞게 조정됩니다. */
+        }
+        .funding-info {
+            margin-top: 20px;
+        }
+
+        #content-viewer {
+            width: 100%;
+        }
+
+        #content-viewer img{
+            width: 70%;
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .comment {
+            position: relative;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            margin: 10px;
+            background-color: #f2f2f2;
+            border-radius: 5px;
+        }
+
+        .comment::before {
+            font-size: 16px;
+            position: absolute;
+            left: -25px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        #comment-insert {
+            margin-left: 10px;
+        }
+        .comment-block {
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #ffffff;
+            padding: 10px;
+            margin: 10px;
+            position: relative;
+        }
+
+        .comment-block::before {
+            content: '\1F4AC'; /* Unicode 아이콘*/
+            font-size: 16px;
+            position: absolute;
+            left: -25px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        #updateCommentButton::before {
+            font-size: 16px; /* 원하는 아이콘 크기로 조정하세요 */
+            margin-right: 5px; /* 아이콘과 텍스트 사이의 간격을 조절할 수 있습니다 */
+        }
+        #updateCommentButton{
+            margin-bottom: 10px;
+            padding: 0 0;
+        }
+
+        #deleteCommentButton{
+            margin-bottom: 10px;
+            padding: 0 0;
+        }
+        .comment-insert-button {
+            margin-left: 10px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            background-color: #4CAF50; /* 배경 색상 설정 */
+            color: white; /* 텍스트 색상 설정 */
+            padding: 0 10px; /* 내부 여백 설정 */
+            border: none; /* 테두리 제거 */
+            border-radius: 5px; /* 둥근 모서리 설정 */
+            cursor: pointer; /* 커서 스타일 설정 */
+            transition: background-color 0.3s; /* 배경 색상 변경 시 부드럽게 애니메이션 적용 */
+
+            /* 선택 상태 스타일 */
+            &:hover {
+                background-color: #45a049; /* 마우스 호버 시 배경 색상 변경 */
+            }
+
+            /* 활성화 상태 스타일 (클릭 시) */
+            &:active {
+                background-color: #367727; /* 클릭 시 배경 색상 변경 */
+            }
+        }
+
+        textarea {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            resize: none;
+            box-sizing: border-box;
+            min-height: 30px;
+            min-width: 100%;
+        }
+
+    </style>
+</head>
+<body>
+<header th:replace="~{common/header/header.html :: commonheader}"></header>
+<div class="container">
+    <div class="image-container">
+        <img src="" class="" alt="프로젝트 이미지">
+    </div>
+</div>
+<div class="container">
+    <div class="album py-5 bg-white">
+        <div id="detailinfo">
+            <!-- 여기에 /dagnList?funding={funding.id} 서버에서 받은 게시물 목록이 동적으로 추가. -->
+            <div id="header-viewer"></div>
+            <!-- 여기에 toast editor viewer 내용이 동적 추가 -->
+            &nbsp;&nbsp;&nbsp;
+            <div id="content-viewer"></div>
+        </div>
+    </div>
+</div>
+
+<div class="custom-comment-container">
+    <div id="commentinfo" class="comment" style="margin-bottom: 0;">
+        <button id="addCommentButton" class="comment-insert-button">등록</button>
+        <div id="comment-insert">
+            <label for="comment-text" style="width: 40%; margin-right: 10px; padding-right: 10px;">
+                <textarea id="comment-text" placeholder="댓글을 입력하세요..."></textarea>
+            </label>
+        </div>
+        <!--댓글 동적 추가-->
+
+        <div id="comment-viewer"></div>
+    </div>
+</div>
+<header th:replace="~{common/footer/footer.html :: commonfooter}"></header>
+<!-- TUI 에디터 JS CDN -->
+<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+<script src="https://uicdn.toast.com/editor/latest/toastui-editor-viewer.min.js"></script>
+<!-- iamport.payment.js -->
+<script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
+<script type="module">
+    // common-ajax.js 모듈을 import
+    import { loadCall } from '/js/common-ajax.js';
+    import { insertCall } from '/js/common-ajax.js';
+    import { deleteCall } from '/js/common-ajax.js';
+
+    var searchParams = new URLSearchParams(window.location.search);
+    var checkId = searchParams.get("id");
+
+    if (checkId !== undefined && checkId !== "") {
+        funding_request_id = checkId;
+    }
+
+    // 데이터를 캐시할 변수 선언
+    let fundingDataCache = null;
+    let commentDataCache = null;
+
+
+    /**************서버 통신 함수 **************/
+    // 정보를 비동기적으로 불러오는 함수
+    function loadData(url) {
+        const detail_res = new loadCall(url, null);
+        return detail_res.detail
+            .then(data => {
+                if (data.isSuccess === true) {
+                    fundingDataCache = data.result;
+                }
+                return data;
+            })
+            .catch(error => {
+                console.error(error);
+                throw error; // 오류 다시 던지기
+            });
+    }
+
+
+    // 정보 삽입 요청 함수
+    function insertData(url, requestData) {
+        const insert_res = new insertCall(url, requestData);
+        return insert_res.detail
+            .then(data => {
+                return data;
+            })
+            .catch(error => {
+                console.error(error);
+                throw error; // 오류 다시 던지기
+            });
+    }
+
+
+    // 정보 삭제 요청 함수
+    function deleteData(url) {
+        const comment_res = new deleteCall(url, null);
+        return comment_res.detail
+            .then(data => {
+                return data;
+            })
+            .catch(error => {
+                console.error(error);
+                throw error; // 오류 다시 던지기
+            });
+    }
+
+    /**************서버 통신 함수 끝**************/
+
+    /**************뷰 버튼 핸들러 시작**************/
+    $(document).ready(function () {
+        loadAndDisplayFundingDetail();
+        loadAndDisplayCommentData();
+
+        // 서버로 장바구니 추가할 펀딩 정보 전송
+        $(document).on('click', '#addIntoCartButton', function () {
+            var url = '/fundingcart/add?funding='+funding_request_id;
+            loadData(url)
+                    .then(data => {
+                        // fundingData --> 펀딩 게시글 디테일 반환 모델 데이터 값 BaseResponse<FundingDetailRes>()
+                        if (data.isSuccess === true) {
+                            alert('장바구니 추가 완료되었습니다.');
+                            displayFundingDetailInfo(data.result);
+                        } else {
+                            alert(data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+        });
+
+        // 펀딩 수정창 뷰 이동
+        $(document).on('click', '#updateButton', function () {
+            window.location.href = "/fundingEdit?id=" + funding_request_id;
+        });
+
+        // 펀딩 참여 서버 요청
+        $(document).on('click', '#joinFundingButton', function () {
+            var confirmed = confirm("확인을 누르시면 결제창으로 이동합니다. (결제 후 펀딩 참여 확정)");
+            if (confirmed) { // 카카오 간편 결제 호출
+                IMP.request_pay({
+                    pg : 'kakaopay.TC0ONETIME',
+                    merchant_uid : 'merchant_' + new Date().getTime(),
+                    name : '강츄 펀딩 결제',
+                    amount : price,
+                    buyer_email : 'Iamport@chai.finance',
+                    buyer_name : '아임포트 기술지원팀',
+                    buyer_tel : '010-1234-5678',
+                    buyer_addr : '서울특별시 강남구 삼성동',
+                    buyer_postcode : '123-456'
+
+                }, function (rsp) { // callback
+                    if (rsp.success) { // 결제 성공 시 참여자 리스트 등록 요청
+                        console.log(rsp);
+                        var url = '/participants/join?funding='+funding_request_id;
+
+                        loadData(url)
+                            .then(data => {
+                                // fundingData --> 펀딩 게시글 디테일 반환 모델 데이터 값 BaseResponse<FundingDetailRes>()
+                                if (data.isSuccess === true) {
+                                    console.log(data.result);
+                                    setTimeout(function() {
+                                        alert('참여 등록이 완료 되었습니다.');
+                                    }, 2000); //3초
+                                } else {
+                                    console.log(data.message);
+                                    setTimeout(function() {
+                                        alert(data.message);
+                                    }, 2000); //3초
+                                }
+                            })
+                            .catch(error => {
+                                console.error(error);
+                            });
+
+                    } else {
+                        console.log(rsp);
+                    }
+                });
+            }
+        });
+
+        // 댓글 수정 및 삭제 이벤트 핸들러
+        $(document).on('click', '#updateCommentButton', function () {
+            $(this).closest('.comment-block').find('#commentEditForm').show();
+
+        });
+
+        $(document).on('click', '#deleteCommentButton', function () {
+            var commentId = $(this).closest('.comment-block').data('comment-id');
+            var url = '/fundingcomment/delete?id='+commentId;
+            deleteData(url)
+                .then(data=> {
+                    // fundingData --> 펀딩 게시글 디테일 반환 모델 데이터 값 BaseResponse<FundingDetailRes>()
+                    if (data.isSuccess === true) {
+                        alert('삭제가 완료되었습니다.');
+                        $('#comment-viewer').empty();
+                        loadAndDisplayCommentData();
+
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        });
+
+        // 수정한 댓글 내용 서버로 전송
+        $(document).on('click', '#commentEditSubmit', function () {
+            var commentId = $(this).data('comment-id');
+            var url = '/fundingcomment/update';
+            var requestData = {
+                "comment_id" : commentId,
+                "content" : $('#comment-text').val()
+            };
+            insertData(url, requestData)
+                .then(data=> {
+                    // fundingData --> 펀딩 게시글 디테일 반환 모델 데이터 값 BaseResponse<FundingDetailRes>()
+                    if (data.isSuccess === true) {
+                        alert('수정이 완료되었습니다.');
+                        $('#comment-viewer').empty();
+                        loadAndDisplayCommentData();
+
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        });
+
+        // 댓글 추가 버튼 클릭 핸들러
+        $(document).on('click', '#addCommentButton', function () {
+            var url = '/fundingcomment/create';
+            var requestData = {
+                "funding_id" : funding_request_id,
+                "content" : $('#comment-text').val()
+            };
+
+            insertData(url, requestData)
+                .then(data => {
+                    if (data.isSuccess === true) {
+                        $('#comment-viewer').empty();
+                        loadAndDisplayCommentData();
+
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        });
+    });
+
+
+
+
+    /**************화면 출력 메서드**************/
+
+    // 펀딩 디테일 정보를 불러오고 화면에 표시
+    function loadAndDisplayFundingDetail() {
+        var url = '/funding/detail?funding=' + funding_request_id;
+        loadData(url, null)
+            .then(data => {
+                // fundingData --> 펀딩 게시글 디테일 반환 모델 데이터 값 BaseResponse<FundingDetailRes>()
+                if (data.isSuccess === true) {
+                    displayFundingDetailInfo(data.result);
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    }
+
+    // 댓글 정보를 불러오고 화면에 표시
+    function loadAndDisplayCommentData() {
+        var url = '/fundingcomment?funding=' + funding_request_id;
+        loadData(url, null)
+            .then(data => {
+                // commentData --> 펀딩 댓글 리스트 반환 모델 데이터 값 BaseResponse<List<FundingComment>()
+                if (data.isSuccess === true) {
+                    displayCommentInfo(data.result);
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    }
+
+
+</script>
+<!-- TUI 에디터 JS CDN -->
+<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+<script src="https://uicdn.toast.com/editor/latest/toastui-editor-viewer.min.js"></script>
+<!-- iamport.payment.js -->
+<script src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
+<script>
+    // 결제 api에 전송할 펀딩 강의 가격
+    let price = 0;
+    // 현재 게시글 고유 id
+    let funding_request_id = 0;
+    // 각 댓글별 고유 id
+    let funding_comment_count = 0;
+
+    // 펀딩 디테일 정보를 동적으로 생성하고 HTML에 추가하는 함수
+    function displayFundingDetailInfo(fundingData) {
+        // 펀딩 게시글 디테일 클래스의 반환 값 재정의
+        var funding = fundingData.funding;
+        var fundingCategory = fundingData.fundingCategory;
+        var writer = fundingData.writer;
+        var achievementrate = fundingData.achievementrate;
+        var deadline = fundingData.deadline;
+        var liked = fundingData.liked;
+        var loginUser = fundingData.loginUser;
+        price = fundingData.funding.amount;
+
+        // 이미지 컨테이너의 이미지를 설정
+        var imageContainer = $('.image-container');
+        imageContainer.find('img').attr('src', funding.thumbnail);
+
+        // 펀딩 요약 정보 출력
+        var headerViewer = document.getElementById("header-viewer");
+        var headerInfoHtml = `
+            <p style="font-size: 18px; flex: 1;">${funding.title}</h2>
+            <p style="font-size: 18px; flex: 1;">${funding.subtitle}</p>
+            <p style="font-size: 18px; flex: 1;">펀딩 오픈 유저: ${writer}</p>
+            <p style="font-size: 18px; flex: 1;">목표 금액:  ${new Intl.NumberFormat("ko-KR").format(funding.amount)} 원</p>
+            <p style="font-size: 18px; flex: 1;">달성률: ${achievementrate}%</p>
+            <p style="font-size: 18px; flex: 1;">마감일: ${deadline}</p>
+        `;
+
+        // 작성자와 로그인한 유저 일치 판별
+        // 펀딩 작성자와 로그인 유저가 동일한 경우,
+        if (loginUser) {
+            headerInfoHtml += `
+                <div class="button-container">
+                    <button id="updateButton" class="btn btn-primary" data-funding-id="${funding.id}">펀딩 수정</button>
+                </div>
+            `;
+        } else { // 펀딩 작성자와 로그인 유저가 동일하지 않은 경우,
+            headerInfoHtml += `
+                <div class="button-container">
+                    <button id="addIntoCartButton" class="btn btn-success" data-funding-id="${funding.id}">장바구니 담기</button>
+                    <button id="joinFundingButton" class="btn btn-success" data-funding-id="${funding.id}">펀딩 참여하기</button>
+                </div>
+            `;
+        }
+        /*headerViewer.html(headerInfoHtml);*/
+        headerViewer.innerHTML = headerInfoHtml;
+
+        // toast viewer 설정
+        var fundingContent = funding.content;
+        var contentViewer = document.getElementById("content-viewer");
+        // 콘텐츠 내용 입력
+        const Editor = toastui.Editor;
+        // Initialize the Toast UI Editor
+        const viewer = new Editor({
+            el: contentViewer,
+            viewer: true,
+            initialValue: fundingContent
+        });
+
+    }
+
+    // 댓글 정보를 동적으로 생성하고 HTML에 추가하는 함수 (리스트 값이 매개 변수)
+    function  displayCommentInfo(commentData) {
+        // 댓글 리스트 반복문
+        for (var [index, Comment] of Object.entries(commentData)) {
+
+            var writer = Comment.username;
+            var loginUser = Comment.loginUser;
+            var content = Comment.content;
+            var createdAt = Comment.formatdate;
+            var comment_id = Comment.comment_id;
+            // 펀딩 요약 정보 출력
+            var commentViewer = $('#comment-viewer');
+
+            var commentInfoHtml = '';
+            // 작성자와 로그인한 유저 일치 판별
+            // 펀딩 작성자와 로그인 유저가 동일한 경우,
+            if (loginUser) {
+                commentInfoHtml = `
+                    <div class="comment-block" data-comment-id="${comment_id}">
+                        <button id="updateCommentButton" class="btn btn-primary" data-comment-id="${comment_id}">
+                            <i class="fas fa-pencil-alt"></i> Edit
+                        </button>
+                        <button id="deleteCommentButton" class="btn btn-danger" data-comment-id="${comment_id}">
+                            <i class="fas fa-trash-alt"></i> Delete
+                        </button>
+                        <p class="featurette-heading fw-bold lh-1" style="font-size: 12px;">
+                            작성자:
+                            <span style="font-size: 15px;">${writer}</span>&nbsp;&nbsp;&nbsp;
+                            작성일:
+                            <span style="font-size: 15px;">${createdAt}</span>
+                        </p>
+                        <p class="featurette-heading fw-bold lh-1" style="font-size: 12px;">
+                            <span style="font-size: 15px;">${content}</span>
+                        </p>
+
+                        <div id="commentEditForm" style="display: none;">
+                            <textarea id="commentEditText">${content}</textarea>
+                            <button id="commentEditSubmit" class="btn btn-primary" data-comment-id="${comment_id}">수정 완료</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            else {
+                commentInfoHtml = `
+                    <div class="comment-block">
+                        <p class="featurette-heading fw-bold lh-1" style="font-size: 12px;">
+                            작성자:
+                            <span style="font-size: 15px;">${writer}</span>&nbsp;&nbsp;&nbsp;
+                            작성일:
+                            <span style="font-size: 15px;">${createdAt}</span>
+                        </p>
+                        <p class="featurette-heading fw-bold lh-1" style="font-size: 12px;">
+                            <span style="font-size: 15px;">${content}</span>
+                        </p>
+                    </div>
+                `;
+            }
+            commentViewer.append(commentInfoHtml);
+        }
+
+    }
+
+
+    $(document).ready(function () {
+        var IMP = window.IMP;
+        IMP.init("imp78413620");
+
+        var today = new Date();
+        var hours = today.getHours(); // 시
+        var minutes = today.getMinutes();  // 분
+        var seconds = today.getSeconds();  // 초
+        var milliseconds = today.getMilliseconds();
+        var makeMerchantUid = hours +  minutes + seconds + milliseconds;
+    });
+</script>
+</body>
+</html>

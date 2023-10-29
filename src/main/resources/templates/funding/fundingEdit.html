@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>펀딩 게시글 수정 페이지</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.css">
+    <style>
+        .form-container {
+            max-width: 1300px;
+            margin: 0 auto;
+            /*padding: 20px;*/
+        }
+
+        .file_input_container {
+            display: flex;
+            position: relative;
+            width: 200px;
+            height: 200px;
+            overflow: hidden;
+        }
+
+
+        .file_input_img_btn {
+            position: absolute;
+            right: 0;
+            top: 0;
+            padding: 0 5px;
+        }
+
+        .file_input_hidden {
+            font-size: 109px;
+            position: absolute;
+            right: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .image {
+            max-width: 100%; /* 이미지가 너무 큰 경우 자동으로 크기 조정 */
+            margin-right: 10px; /* 이미지 사이 간격 조정 */
+        }
+
+        .CategoryBoxstyle {
+            max-height: 150px;
+            overflow-y: auto;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+        }
+
+        .CategoryBox-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .CategoryBox-item {
+            margin: 5px 0;
+        }
+
+        .CategoryBox-item button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .CategoryBox-item button:hover {
+            background-color: #0056b3;
+        }
+
+        .CategoryBox-item button.active {
+            background: none;
+            border: 6px solid #ff0026; /* 활성 탭의 색상 */
+        }
+    </style>
+</head>
+<body>
+<header th:replace="~{common/header/header.html :: commonheader}"></header>
+<div class="container" style="margin-top: 20px;">
+    <div class="row featurette">
+        <div class="col-md-7">
+            <h2 class="featurette-heading fw-normal lh-1" style="font-size: 27px;">펀딩 수정 &nbsp;&nbsp;&nbsp;<span style="font-size: 16px; color: red">*필수항목</span></h2>
+        </div>
+    </div>
+    <hr class="featurette-divider" style="border-color: black; border-width: 2px;">
+    <div class="album py-7 bg-white">
+        <div class="form-container">
+            <form id="updateForm" action="/funding/update" method="POST">
+                <div class="mb-4 d-flex text-body-secondary pt-3">
+                    <div>
+                        <p style="font-size: 17px;">썸네일 변경<span style="font-size: 16px; color: red">*</span></p>
+                    </div>
+                    &nbsp;&nbsp;&nbsp;
+                    <div class="ml-3 flex-grow-1">
+                        <div class="d-flex align-items-start">
+                            <div class="file_input_container">
+                                <img src="/icon/imageupload.png" class="file_input_img_btn" alt="image" style="width: 200px; height: 200px;"/>
+                                <input type="file" id="thumbnail" name="thumbnail" class="file_input_hidden"  onchange="javascript: document.getElementById('fileName').value = this.value"/>
+                                <input type="hidden" id="fileName" name="fileName">
+                            </div>
+                            &nbsp;&nbsp;&nbsp;
+                            <div class="ml-3 file_input_preview">
+                                <img id="previewImage" src="" alt="thumbnail Preview" style="width: 200px; height: 200px; display: none;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-5 d-flex text-body-secondary pt-5" style="border-top: 1px solid #efefef;">
+                    <div>
+                        <p style="font-size: 17px;">제목<span style="font-size: 16px; color: red">*</span></p>
+                    </div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <div class="ml-3 flex-grow-1">
+                        <input type="text" id="title" name="title" class="form-control" style="width: 100%;" value="" required>
+                    </div>
+                </div>
+
+                <div class="mb-5 d-flex text-body-secondary pt-5" style="border-top: 1px solid #efefef;">
+                    <div>
+                        <p style="font-size: 17px;">부제목<span style="font-size: 16px; color: red">*</span></p>
+                    </div>
+                    &nbsp;&nbsp;&nbsp;
+                    <div class="ml-3 flex-grow-1">
+                        <input type="text" id="subtitle" name="subtitle" class="form-control" value="" required>
+                    </div>
+                </div>
+
+                <div class="mb-5 text-body-secondary pt-5" style="border-top: 1px solid #efefef;">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <label for="category" class="form-label">
+                                카테고리<span style="font-size: 16px; color: red">*</span>
+                            </label>
+                            <input type="hidden" id="category" name="category">
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <div class="CategoryBoxstyle" style="max-height: 500px; background-color: #ffffff; overflow-y: auto;">
+                                <ul class="CategoryBox-list">
+                                    <li class="CategoryBox-item">
+                                        <button type="button" class="category-button" data-category-id="1" style="background-color: #efda70">운동&Life</button>
+                                    </li>
+                                    <li class="CategoryBox-item">
+                                        <button type="button" class="category-button" data-category-id="2" style="background-color: #238cf3">경제&금융</button>
+                                    </li>
+                                    <li class="CategoryBox-item">
+                                        <button type="button" class="category-button" data-category-id="3" style="background-color: #61e761">n잡&부업</button>
+                                    </li>
+                                    <li class="CategoryBox-item">
+                                        <button type="button" class="category-button" data-category-id="4" style="background-color: #ef6347">커리어</button>
+                                    </li>
+                                    <li class="CategoryBox-item">
+                                        <button type="button" class="category-button" data-category-id="5" style="background-color: #8b56f6">언어</button>
+                                    </li>
+                                    <li class="CategoryBox-item">
+                                        <button type="button" class="category-button" data-category-id="6" style="background-color: #f566f5">프로그래밍</button>
+                                    </li>
+                                    <li class="CategoryBox-item">
+                                        <button type="button" class="category-button" data-category-id="7" style="background-color: #95989b">비지니스마케팅</button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <div class="col-md-5">
+                            <label for="location" class="form-label">
+                                <span style="font-size: 16px;">강의실<p id="locationText"></p>
+                                </span>
+                            </label>
+                            <input type="hidden" id="location" name="location" class="form-control" value="">
+                            &nbsp;<button id="addressButton" class="btn btn-sm btn-outline-secondary" onclick="openDaumPostcode()" type="button">
+                            강의실 변경
+                            </button>
+                            <!-- 지도를 표시할 div 요소 -->
+                            <div id="map" style="width: 100%; height: 300px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-5 text-body-secondary pt-5" style="border-top: 1px solid #efefef;">
+                    <label for="amount" class="form-label">
+                        금액<span style="font-size: 16px; color: red">*</span>
+                    </label>
+                    <input type="number" id="amount" name="amount" class="form-control" placeholder="원" value="" required>
+                </div>
+
+                <div class="mb-5 text-body-secondary pt-5" style="border-top: 1px solid #efefef; max-height: 200px; overflow-y: auto;">
+                    <label for="deadline" class="form-label">
+                        마감날짜<span style="font-size: 16px; color: red">*</span>
+                    </label>
+                    <input type="date" id="deadline" name="deadline" class="form-control" value="" required>
+                </div>
+
+                <div class="mb-5 text-body-secondary pt-5" style="border-top: 1px solid #efefef;">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="goal" class="form-label">
+                                목표인원<span style="font-size: 16px; color: red">*</span>
+                            </label>
+                            <input type="number" id="goal" name="goal" class="form-control" value="" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="min_participants" class="form-label">
+                                최소인원<span style="font-size: 16px; color: red">*</span>
+                            </label>
+                            <input type="number" id="min_participants" name="min_participants" class="form-control" value="" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="max_participants" class="form-label">
+                                최대인원<span style="font-size: 16px; color: red">*</span>
+                            </label>
+                            <input type="number" id="max_participants" name="max_participants" class="form-control" value="" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-5 text-body-secondary pt-5" style="border-top: 1px solid #efefef;">
+                    <label for="content" class="form-label">
+                        펀딩 콘텐츠<span style="font-size: 16px; color: red">*</span>
+                    </label>
+                    <!-- Add a textarea for the Toast UI Editor -->
+                    <div id="content"></div>
+                </div>
+                <button type="submit" id="updateButton" class="btn btn-primary">저장</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<hr class="featurette-divider">
+<!-- 다음 주소 API 스크립트 로드 -->
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- TUI 에디터 JS CDN -->
+<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+<script type="text/javascript">
+    let cfundingId;
+    let cusername;
+    let ccategoryId;
+
+    // 토스트 ui 초기화
+    const Editor = toastui.Editor;
+    // Initialize the Toast UI Editor
+    const editor = new Editor({
+        el: document.querySelector('#content'),
+        height: '500px',
+        previewStyle:"vertical",
+        initialEditType:"wysiwyg",
+        initialValue: "펀딩 내용을 입력해 주세요."
+    });
+
+    // 펀딩 카테고리 테두리 초기화
+    function getCategory(categoryId) {
+        ccategoryId = categoryId;
+        // data-category-id가 categoryId와 일치하는 요소
+        const elementsWithCategoryId = $(`.category-button[data-category-id="${categoryId}"]`);
+        /*console.log(elementsWithCategoryId);*/
+        // 선택한 요소에 'active' 클래스를 추가
+        elementsWithCategoryId.addClass('active');
+    }
+
+    // Handle  카테고리 버튼 클릭
+    $(document).on('click', '.category-button', function () {
+        // 모든 버튼에서 활성 클래스 제거
+        $(".category-button").removeClass("active");
+        // 클릭한 버튼에 활성 클래스 추가
+        $(this).addClass("active");
+
+        const categoryId = $(this).data('category-id');
+        ccategoryId = categoryId;
+        $('#category').val(categoryId);
+    });
+
+
+
+    // 주소 버튼 클릭 시 daum 주소 입력창 팝업 및 반환된 주소를 변수에 저장
+    function openDaumPostcode() {
+        new daum.Postcode({
+            oncomplete: function (data) {
+                // 주소를 임시로 저장
+                tempAddress = data.address;
+                // input address 설정
+                $('#location').val(tempAddress);
+                // input 요소의 값이 변경될 때 이벤트 처리
+                const locationText = document.getElementById('locationText');
+                // 초기 설정: input 요소의 값을 p 요소에 설정
+                locationText.textContent = tempAddress;
+
+                // 주소로 맵 표시
+                displayMap(tempAddress);
+            }
+        }).open();
+    }
+
+    // map 로딩
+    function displayMap(address) {
+        // 주소를 구글 지도의 쿼리 문자열에 적용하여 iframe을 생성
+        var mapInfoDiv = document.getElementById('map');
+        var iframe = document.createElement('iframe');
+        iframe.src = "https://www.google.com/maps/embed/v1/place?key=AIzaSyAUz7GpuLx5nbYqoVzrxl9RU6BgfAaex6I&q=" + address + "&region=KR&language=ko";
+        iframe.style.width = "100%";
+        iframe.style.height = "300px";
+        mapInfoDiv.innerHTML = ''; // 기존의 내용을 제거
+        mapInfoDiv.appendChild(iframe);
+    }
+
+
+    // 상세 페이지 funding 정보 로드
+    function loadFundingDetail(id) {
+        $.ajax({
+            type: 'GET',
+            cache: false,
+            url: "/login/cookie",
+            dataType: "json",
+
+            success: function (data) {
+                var msg = data.message;
+                var isSuccess = data.isSuccess;
+                let jwtToken = "";
+
+                if (isSuccess === true) {
+                    jwtToken = data.result;
+                }
+                $.ajax({
+                    type: 'GET',
+                    cache: false,
+                    url: "/funding/detail?funding="+id,
+                    dataType: "json",
+                    beforeSend: function(xhr) {
+                        // JWT 토큰을 헤더에 추가
+                        xhr.setRequestHeader("Authorization", "Bearer " + jwtToken);
+                    },
+
+                    success: function (data) {
+                        var msg = data.message;
+                        var isSuccess = data.isSuccess;
+
+                        if (isSuccess === true) {
+                            var response = data.result;
+                            console.log(response);
+                            var funding = response.funding;
+                            var fundingCategory = response.fundingCategory;
+                            var writer = response.writer;
+                            /*var deadline = response.deadline;*/
+                            var liked = response.liked;
+                            var achievementrate = response.achievementrate;
+                            var loginUser = response.loginUser;
+
+                            // funding, fundingCategory, writer, achievementrate, deadline, liked, loginUser
+                            displayFundingDetailInfo(funding, fundingCategory, writer, achievementrate, liked, loginUser);
+                        }
+                        else {
+                            alert(msg);
+                        }
+                    },
+                    error: function(error) {
+                        alert('오류가 발생했습니다.'+error);
+                    }
+                });
+            },
+            error: function () {
+                alert('오류가 발생했습니다.'+error);
+            }
+        });
+    }
+
+
+    // 펀딩 디테일 정보를 동적으로 생성하고 HTML에 추가하는 함수
+    function displayFundingDetailInfo(funding, fundingCategory, writer, achievementrate, liked, loginUser) {
+        var title = funding.title;
+        $('#title').val(title);
+        var subtitle = funding.subtitle;
+        $('#subtitle').val(subtitle);
+        var category_id = fundingCategory.id;
+        /*카테고리 초기화 표시*/
+        getCategory(category_id);
+
+        var thumbnail = funding.thumbnail;
+        var previewImage = $('#previewImage');
+        // 이미지 태그에 썸네일 로드
+        previewImage.attr('src', thumbnail).show();
+
+        var location = funding.location;
+        // input address 설정
+        $('#location').val(location);
+        // input 요소의 값이 변경될 때 이벤트 처리
+        const locationText = document.getElementById('locationText');
+        // 초기 설정: input 요소의 값을 p 요소에 설정
+        locationText.textContent = location;
+
+        var amount = funding.amount;
+        $('#amount').val(amount);
+        /*deadline 포맷 변경 0000-00-00*/
+        var deadline = funding.deadline; // Replace this with your actual array
+        var year = deadline[0];
+        var month = String(deadline[1]).padStart(2, '0');
+        var day = String(deadline[2]).padStart(2, '0');
+        var formattedDate = year + '-' + month + '-' + day;
+        $('#deadline').val(formattedDate);
+
+        var goal = funding.goal;
+        $('#goal').val(goal);
+        var min_participants = funding.min_participants;
+        $('#min_participants').val(min_participants);
+        var max_participants = funding.max_participants;
+        $('#max_participants').val(max_participants);
+
+        cfundingId = funding.id;
+        cusername = writer;
+        var encodedContent = funding.content;
+        /*console.log(decodecontent);*/
+        /*var decodedContent = atob(encodedContent); // Base64 디코딩*/
+        // content를 에디터에 설정
+        editor.setMarkdown(encodedContent);
+    }
+
+
+    function getURLParams() {
+        var searchParams = new URLSearchParams(window.location.search);
+        var params = {};
+
+        for (var [param, value] of searchParams.entries()) {
+            params[param] = value;
+        }
+
+        return params;
+    }
+
+    // 썸네일 프리뷰 핸들러
+    $('#thumbnail').change(function () {
+        var file = this.files[0];
+        if (file) {
+            var reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#previewImage').attr('src', e.target.result).show();
+                };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // 이미지를 base64로 인코딩
+    function encodeImageAndSubmit(file) {
+        return new Promise(function (resolve, reject) {
+            /*var fileInput = document.getElementById(id);
+            var file = fileInput.files[0];*/
+            if (file) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    resolve(e.target.result); // 이미지 인코딩이 완료되면 Promise를 성공 상태로 해결
+                };
+
+                reader.readAsDataURL(file); // 파일을 base64로 변환
+            } else {
+                reject("이미지 파일을 선택하세요."); // 이미지가 선택되지 않았을 때 Promise를 거부
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        // url에서 funding id 추출
+        var urlParams = getURLParams();
+        var id = urlParams.id;
+
+        // funding 디테일 로드
+        loadFundingDetail(id);
+
+        // 서버로 업데이트할 펀딩 정보 전송
+        $('#updateForm').submit(function (e){
+            e.preventDefault(); // 폼 기본 동작 중지
+
+            $.ajax({
+                type: 'GET',
+                cache: false,
+                url: "/login/cookie",
+                dataType: "json",
+
+                success: function (data) {
+                    var msg = data.message;
+                    var isSuccess = data.isSuccess;
+
+                    let jwtToken = "";
+                    if (isSuccess === true) {
+                        jwtToken = data.result;
+
+                        var requestData = {
+                            "title": $('#title').val(),
+                            "subtitle": $('#subtitle').val(),
+                            "category_id": ccategoryId,
+                            "location": $('#location').val(),
+                            "deadline": $('#deadline').val(),
+                            "goal": $('#goal').val(),
+                            "min_participants": $('#min_participants').val(),
+                            "max_participants": $('#max_participants').val(),
+                            "amount": $('#amount').val(),
+                            "content": editor.getMarkdown(),
+                            "username": cusername
+                        };
+                        // 썸네일 선택
+                        var thumbnail = $('#thumbnail')[0].files[0];
+                        // 썸네일 인코딩 및 전송
+                        encodeImageAndSubmit(thumbnail)
+                            .then(function (base64Image) {
+                                requestData["thumbnail"] = base64Image;
+
+                                $.ajax({
+                                    async: true,
+                                    url: '/funding/update?id='+cfundingId, // 유저 정보 업데이트
+                                    type: 'POST',
+                                    data: JSON.stringify(requestData),
+                                    dataType: 'json',
+                                    contentType: 'application/json',
+                                    cache: false,
+                                    beforeSend: function (xhr) {
+                                        // JWT 토큰을 헤더에 추가
+                                        xhr.setRequestHeader("Authorization", "Bearer " + jwtToken);
+                                    },
+                                    success: function(data) {
+                                        var msg = data.message;
+                                        var isSuccess = data.isSuccess;
+
+                                        alert(msg);
+                                        if (isSuccess === true) {
+                                            // 현재 페이지를 새로고침
+                                            location.reload();
+                                        }
+                                    },
+                                    error: function() {
+                                        alert('펀딩 정보 업데이트에 실패하였습니다.');
+                                    }
+                                });
+                            });
+                    } else {
+                        alert(msg);
+                    }
+                },
+                error: function () {
+                    alert('오류가 발생했습니다.');
+                }
+            });
+        });
+    });
+
+</script>
+</body>
+</html>

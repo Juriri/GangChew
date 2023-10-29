@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>결제 정보 입력</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <!-- TUI 에디터 JS CDN -->
+    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.css">
+    <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+    <style>
+        .form-container {
+            max-width: 1300px;
+            margin: 0 auto;
+            /*padding: 20px;*/
+        }
+    </style>
+</head>
+<body>
+<header th:replace="~{common/header/header.html :: commonheader}"></header>
+<div class="container">
+    <div class="row featurette">
+        <div class="col-md-7">
+            <h2 class="featurette-heading fw-normal lh-1" style="font-size: 27px;">기본정보 &nbsp;&nbsp;&nbsp;<span style="font-size: 16px; color: red">*필수항목</span></h2>
+        </div>
+    </div>
+    <hr class="featurette-divider" style="border-color: black; border-width: 2px;">
+    <div class="album py-7 bg-white">
+        <div class="form-container">
+            <form id="createForm">
+                <div class="mb-5 d-flex text-body-secondary pt-5">
+                    <div>
+                        <p style="font-size: 17px;">은행<span style="font-size: 16px; color: red">*</span></p>
+                    </div>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <div class="ml-3 flex-grow-1">
+                        <label for="bankSelect">
+                            <select id="bankSelect" class="form-control" style="width: 100%;">
+                                <option value="신한은행">신한은행</option>
+                                <option value="국민은행">국민은행</option>
+                                <option value="농협은행">농협은행</option>
+                                <option value="농협은행">축협은행</option>
+                                <option value="농협은행">새마을금고</option>
+                            </select>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-5 d-flex text-body-secondary pt-5" style="border-top: 1px solid #efefef;">
+                    <div>
+                        <p style="font-size: 17px;">계좌번호<span style="font-size: 16px; color: red">*</span></p>
+                    </div>
+                    &nbsp;&nbsp;&nbsp;
+                    <div class="ml-3 flex-grow-1">
+                        <label for="account">
+                            <input type="text" id="account" name="account" class="form-control" placeholder="계좌 번호를 입력해주세요." required>
+                        </label>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">작성 완료</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<hr class="featurette-divider">
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+    });
+
+    function validateCreateForm() {
+        var bank_name = $('#bankSelect').val();
+        var bank_account = $('#account').val();
+
+        if (bank_name === '' || bank_account === '' || bank_account.length < 5) {
+            alert('필수 항목 필드를 입력하세요.');
+            return false;
+        }
+
+        return true;
+    }
+
+    <!--펀딩글 정보 서버 전송-->
+    $('#createForm').submit(function (e) {
+        e.preventDefault(); // 폼 기본 동작 중지
+
+        if (validateCreateForm()) {
+            // 1. 로그인 정보 가져오기
+            fetch('/login/cookie', {
+                method: 'GET'
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('로그인 정보 가져오기 실패');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    var jwtToken = data.isSuccess ? data.result : '';
+
+                    console.log(jwtToken);
+                    // 2. 펀딩 데이터 만들기
+                    var bank_name = $('#bankSelect').val();
+                    var bank_account = $('#account').val();
+                    var requestData = {
+                        "bank_name": bank_name,
+                        "bank_account": bank_account
+                    };
+
+                    console.log(requestData);
+                    // 3. 펀딩 데이터 서버로 보내기
+                    return fetch('/payment/create', {
+                        method: 'POST',
+                        body: JSON.stringify(requestData),
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + jwtToken,
+                        },
+                    });
+                })
+                .then(response => response.json())
+                .then(data => {
+                    var msg = data.message;
+                    var isSuccess = data.isSuccess;
+                    console.log(data);
+
+                    if (!isSuccess) {
+                        alert(msg);
+                    } else {
+                        alert("결제 정보 입력이 완료되었습니다.");
+                        window.location.href = '/mypage';
+                    }
+                })
+                .then(data => {
+                    console.log(data);
+                    alert(data);
+                })
+                .catch(error => {
+                    alert('오류가 발생했습니다.' + error);
+                });
+        }
+    });
+
+</script>
+</body>
+</html>

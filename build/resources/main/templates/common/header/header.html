@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<header th:fragment="commonheader" class="py-1 border-bottom">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <style>
+
+        .custom-header-container {
+            width: 80%;
+            /*height: 30%;*/
+            margin: 0 auto; /* 가운데 정렬을 위한 마진 설정 */
+        }
+
+        #userDropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        #userDropdownContent {
+            display: none;
+            position: absolute;
+            background-color: #fff;
+            min-width: 300px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 2;
+        }
+        #userDropdown:hover #userDropdownContent {
+            display: block;
+        }
+
+
+        .user-info {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        #fundingMenu {
+            cursor: pointer;
+            color: #282727;
+            transition: background-color 0.3s;
+        }
+
+        #fundingMenu:hover {
+            color: #95989b;
+        }
+
+
+
+        #fundingSubMenu {
+            display: none;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 0;
+        }
+
+
+        #fundingSubMenu .dropdown-item {
+            padding: 10px 20px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        #fundingSubMenu .dropdown-item:active,
+        #fundingSubMenu .dropdown-item:checked,
+        #fundingSubMenu .dropdown-item:focus {
+            background-color: #fbfbfc;;
+        }
+
+        #fundingDropdown:hover #fundingSubMenu {
+            display: block;
+        }
+
+        #message_title {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 30px;  /* 원하는 너비로 설정 (예: 150px) */
+        }
+        .nav-link {
+            color: #282727;
+        }
+        .nav-link:hover {
+            color: #95989b;
+        }
+
+        .custom-header-container img:hover {
+            transform: scale(1.2);
+        }
+    </style>
+
+    <div class="custom-header-container">
+        <a class="navbar-brand" href="/">
+            <img src="/icon/GangChew_thumb.png" alt="Home Icon" style="width: 150px; height: 45px;">
+        </a>
+
+        <nav class="nav nav-underline justify-content-between">
+            <div class="nav-item dropdown" id="fundingDropdown">
+                <a class="nav-link" id="fundingMenu" href="#" aria-haspopup="true" aria-expanded="false"><strong style="font-size: 20px;">
+                    펀딩 강의 살펴보기
+                </strong></a>
+                <div class="dropdown-menu" id="fundingSubMenu" >
+                    <a class="dropdown-item" href="/funding">모두의 펀딩</strong></a>
+                    <a class="dropdown-item" href="/fundingCreate">펀딩 강의 오픈 해보기</a>
+                    <a class="dropdown-item" href="/rank">실시간 펀딩 랭킹</a>
+                </div>
+            </div>
+
+            <a class="nav-link" href="/studentrequest" id="studentBtn"><strong style="font-size: 20px;">펀딩 열어주세요!</strong></a>
+            <form class="col-12 col-lg-4 mb-3 mb-lg-0 me-lg-3" role="search">
+                <div class="input-group">
+                    <input type="search" class="form-control" id="searchInput" placeholder="키워드를 입력해보세요." aria-label="Search">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" id="searchButton">검색</button>
+                    </div>
+                </div>
+            </form>
+            <a class="nav-link" href="/login" id="loginBtn"><strong style="font-size: 15px;">로그인</strong></a>
+            <a class="nav-link" href="/signup" id="signupBtn"><strong style="font-size: 15px;">회원가입</strong></a>
+
+
+            <a class="nav-link" href="/mycart" id="mycartBtn">
+                <img src="/icon/cart.png" alt="Cart Icon" style="width: 40px; height: 30px;">
+            </a>
+
+            <!-- 마이페이지 버튼 부분 -->
+            <div id="userDropdown">
+                <a class="nav-link" id="mypageBtn"><strong style="font-size: 15px;">마이페이지</strong>
+                    <i class="fa fa-envelope"></i>
+                    <span class="message-count" id="messageCount">0</span>
+                </a>
+
+                <div class="dropdown-menu" id="userDropdownContent">
+                    <!-- 유저 정보가 여기에 동적으로 추가 -->
+                </div>
+            </div>
+
+            <a class="nav-link" id="logoutBtn" onclick="confirmLogout()"><strong style="font-size: 15px;">로그아웃</strong></a>
+        </nav>
+    </div>
+
+    <script type="module">
+        import { loadCall } from '/js/common-ajax.js';
+        import { insertCall } from '/js/common-ajax.js';
+        import { deleteCall } from '/js/common-ajax.js';
+        /**************서버 통신 함수 **************/
+        function loadData(url) {
+            const detail_res = new loadCall(url, null);
+            return detail_res.detail
+                .then(data => {
+                    return data;
+                })
+                .catch(error => {
+                    console.error(error);
+                    throw error; // 오류 다시 던지기
+                });
+        }
+        function insertData(url, requestData) {
+            const insert_res = new insertCall(url, requestData);
+            return insert_res.detail
+                .then(data => {
+                    return data;
+                })
+                .catch(error => {
+                    console.error(error);
+                    throw error; // 오류 다시 던지기
+                });
+        }
+
+        /**************서버 통신 함수 끝**************/
+
+        /**************뷰 버튼 핸들러 시작**************/
+        // 마이페이지 버튼 클릭 핸들러
+        $(document).on('click', '#mypageBtn', function () {
+            var url = '/user/myinfo';
+            insertData(url, null)
+                .then(data=> {
+                    if (data.isSuccess === true) {
+                        // 유저 정보를 동적으로 생성하고 HTML에 추가
+                        displayUserInfo(data.result);
+
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        });
+
+
+        // 로그아웃 버튼 클릭 핸들러
+        $(document).on('click', '#logoutBtn', function () {
+            if (window.confirm("로그아웃 하시겠습니까?")) {
+                var url = '/authenticate/logout';
+                loadData(url)
+                    .then(data => {
+                        if (data.isSuccess === true) {
+                            alert('로그아웃이 완료되었습니다.');
+                            window.location.href = "/";
+                        } else {
+                            alert(data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+            }
+        });
+        /**************뷰 버튼 핸들러 끝**************/
+
+        /**************화면 출력 메서드 시작 **************/
+        $(document).ready(function () {
+            var url = '/login/cookie';
+            loadData(url)
+                .then(data => {
+                    // 로그인하면 관련 버튼 나타내기
+                    if (data.isSuccess === true) {
+                        $("#loginBtn").hide();
+                        $("#signupBtn").hide();
+                        $("#logoutBtn").show();
+                        $("#mypageBtn").show();
+                        $("#mycartBtn").show();
+
+                        // 사용자 읽지 않은 메시지 확인
+                        var url = '/fundingmessage/all';
+                        loadData(url)
+                            .then(data => {
+                                if (data.isSuccess === true) {
+                                    var uncheckedMsg = data.result;
+                                    updateMessage(uncheckedMsg);
+                                }
+                                else {
+                                    alert(data.message);
+                                }
+                            })
+                            .catch(error => {
+                                console.error(error);
+                            });
+                    } else {
+                        // 로그아웃이면 관련 버튼 나타내기
+                        $("#loginBtn").show();
+                        $("#signupBtn").show();
+                        $("#logoutBtn").hide();
+                        $("#mypageBtn").hide();
+                        $("#mycartBtn").hide();
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        });
+        /**************화면 출력 메서드 끝 **************/
+    </script>
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        let uncheckmsgList = [];
+        document.getElementById('fundingMenu').addEventListener('click', function (e) {
+            e.preventDefault();
+        });
+
+        // 사용자 정보를 동적으로 생성하고 HTML에 추가하는 함수
+        function displayUserInfo(data) {
+            console.log(data);
+            const username = data.username;
+            const fullname = data.fullname;
+            const email = data.email;
+            const oauthProvider = data.oauthProvider;
+
+            var userInfoDiv = $('#userDropdownContent');
+            var userInfoHtml = `
+                    <div class="container">
+                        <div>
+                            <strong>Name:</strong>
+                            <span id="name">${fullname}</span>
+                        </div>
+                        <br>
+                        <div>
+                            <strong>Email:</strong>
+                            <span id="email" >${email}</span>
+                        </div>
+                        <br>
+            `;
+
+            if (oauthProvider === "KAKAO" || oauthProvider === "NAVER" || oauthProvider === "FACEBOOK") {
+                userInfoHtml += `
+                        <div>
+                            <strong>Social User:</strong>
+                            <span id="social">@${oauthProvider}</span>
+                        </div>
+                        <br>
+                `;
+            } else {
+                userInfoHtml += `
+                        <div>
+                            <strong>Username:</strong>
+                            <span id="username">${username}</span>
+                        </div>
+                        <br>
+                `;
+            }
+
+            // 읽지않은 쪽지 메세지 출력
+            if (uncheckmsgList.length > 0) {
+                var message = uncheckmsgList[0];
+                userInfoHtml += `
+                        <div>
+                            <p><strong>읽지 않은 메세지 확인</strong></p>
+                            <p><span id="message_title">취소된 펀딩 확인: ${message.funding.title}</span></p>
+                            ...
+                            <p><span id="message_etc">더보기를 클릭하여 확인하세요</span></p>
+                        </div>
+                `;
+            }
+
+            userInfoHtml += `
+                        <div>
+                            <a id="moremypageButton" class="btn btn-sm btn-outline-secondary" href="/mypage">더보기</a>
+                        </div>
+                    </div>
+                `;
+
+            userInfoDiv.html(userInfoHtml);
+        }
+
+        function updateMessage(response) {
+            // 배열 초기화
+            uncheckmsgList=[];
+            // 응답 데이터 확인
+            // 읽지않은 쪽지 수 출력
+            var msgcount = response.length;
+            var messageCountElement = document.getElementById("messageCount");
+            messageCountElement.textContent = msgcount.toString();
+
+            if (msgcount > 0) {
+                // 반복문을 통해 장바구니 아이템을 표시
+                for (var [index, fundingMessage] of Object.entries(response)) {
+                    // 장바구니 아이템 배열에 fundingCart 아이템과 price 추가
+                    uncheckmsgList.push(fundingMessage);
+                }
+            }
+        }
+    </script>
+</header>
+</html>

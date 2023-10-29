@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>마이페이지</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+
+        .sidebar-container {
+            margin-right: 0;
+            height: 100%;
+            width: 250px; /* Adjust the width as needed */
+            float: left;
+        }
+
+        .card {
+            padding: 20px 20px;
+        }
+
+        .nav-link.sidebar-link.active a {
+            font-weight: bold; /* Highlight text for active link */
+            border-bottom: 2px solid #007BFF; /* Customize the border for active link */
+        }
+    </style>
+</head>
+<body>
+<header th:replace="~{common/header/header.html :: commonheader}"></header>
+<div class="custom-container">
+    <div class="sidebar-container">
+        <header th:replace="~{common/sidebar/sidebar.html :: commonsidebar}"></header>
+    </div>
+
+    <div class="info-container">
+    </div>
+</div>
+
+
+<header th:replace="~{common/footer/footer.html :: commonfooter}"></header>
+<script type="module">
+    // common-ajax.js 모듈을 import
+    import { loadCall } from '/js/common-ajax.js';
+    import { insertCall } from '/js/common-ajax.js';
+    import { deleteCall } from '/js/common-ajax.js';
+
+    /**************서버 통신 함수 **************/
+    // 정보를 비동기적으로 불러오는 함수
+    function loadData(url) {
+        const detail_res = new loadCall(url, null);
+        return detail_res.detail
+            .then(data => {
+                if (data.isSuccess === true) {
+                    fundingDataCache = data.result;
+                }
+                return data;
+            })
+            .catch(error => {
+                console.error(error);
+                throw error; // 오류 다시 던지기
+            });
+    }
+
+
+    // 정보 삽입 요청 함수
+    function insertData(url, requestData) {
+        const insert_res = new insertCall(url, requestData);
+        return insert_res.detail
+            .then(data => {
+                return data;
+            })
+            .catch(error => {
+                console.error(error);
+                throw error; // 오류 다시 던지기
+            });
+    }
+
+
+    // 정보 삭제 요청 함수
+    function deleteData(url) {
+        const comment_res = new deleteCall(url, null);
+        return comment_res.detail
+            .then(data => {
+                return data;
+            })
+            .catch(error => {
+                console.error(error);
+                throw error; // 오류 다시 던지기
+            });
+    }
+
+    /**************서버 통신 함수 끝**************/
+    /**************뷰 버튼 핸들러 시작**************/
+    $(document).ready(function () {
+        // 마이 페이지 정보 호출
+        loadAndDisplayDetail('/user/myinfo');
+
+
+        // 업데이트 버튼 클릭 핸들러
+        $(document).on('click', '#updateButton2', function () {
+            var url = '/user/update';
+            var requestData = {
+                /*"fullname": $('#fullname').val,
+                "nickname": document.getElementById('nickname').textContent,
+                "email": document.getElementById('email').textContent,
+                "address": document.getElementById('address').textContent*/
+                "username": $('#username').val(),
+                "fullname": $('#fullname').val(),
+                "nickname": $('#nickname').val(),
+                "email": $('#email').val(),
+                "address": $('#address').val(),
+            };
+
+            insertData(url, requestData)
+                .then(data => {
+                    if (data.isSuccess === true) {
+                        $('.info-container').empty();
+                        alert('업데이트 완료가 되었습니다.');
+                        loadAndDisplayDetail('/user/myinfo');
+
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        });
+    });
+    /**************뷰 버튼 핸들러 끝**************/
+
+    /**************화면 출력 메서드 시작**************/
+    // 내 정보 불러오기
+    function loadAndDisplayDetail(url) {
+        insertData(url, null)
+            .then(data=> {
+                // fundingData --> 펀딩 게시글 디테일 반환 모델 데이터 값 BaseResponse<FundingDetailRes>()
+                if (data.isSuccess === true) {
+                    /*console.log(data.result);*/
+                    displayUserInfo(data.result);
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    }
+
+    /**************화면 출력 메서드 끝**************/
+</script>
+
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script>
+    // 주소 버튼 클릭 시 daum 주소 입력창 팝업 및 반환된 주소를 변수에 저장
+    var tempAddress = ""; // 주소를 임시로 저장할 변수
+    function openDaumPostcode() {
+        new daum.Postcode({
+            oncomplete: function (data) {
+                // 주소를 임시로 저장
+                tempAddress = data.address;
+                // 주소를 화면에 표시
+                var addressElement = $('#address');
+                addressElement.html(`<p class="card-text" id="address">${tempAddress}</p>`);
+
+                // 주소 입력 버튼의 텍스트를 변경
+                var addressButton = $('#addressButton');
+                addressButton.html('주소 변경');
+            }
+        }).open();
+    }
+
+
+    // 사용자 정보를 동적으로 생성하고 HTML에 추가하는 함수
+    function displayUserInfo(userData) {
+        const username = userData.username;
+        const fullname = userData.fullname;
+        const nickname = userData.nickname;
+        const email = userData.email;
+        const oauthProvider = userData.oauthProvider;
+        const address = userData.address;
+
+        var userInfoDiv = $('.info-container');
+        var userInfoHtml = `
+                <div class="card" style="border: none;">
+                    <form id="infoForm" name="infoForm" style="margin-left: 20px;">
+                            <h2 class="featurette-heading fw-normal lh-1" style="font-size: 27px;">
+                                내 정보
+                                <button id="updateButton" class="btn btn-sm btn-outline-secondary" type="button" style="border: none;">
+                                    업데이트
+                                </button>
+                            </h2>
+                            <hr class="featurette-divider" style="border-color: black; border-width: 2px;">
+
+                            <div class="mb-5 d-flex text-body-secondary pt-5">
+                                <div>
+                                    <p style="font-size: 17px;">이름: <span style="font-size: 16px; color: red">*</span></p>
+                                </div>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <div class="ml-3 flex-grow-1">
+                                    <input type="text" id="fullname" name="fullname" class="form-control" style="width: 20%;"  value="${fullname}" placeholder="이름을 입력해주세요." required>
+                                </div>
+                            </div>
+
+                            <div class="mb-5 d-flex text-body-secondary pt-5" style="border-top: 1px solid #efefef;">
+                                <div>
+                                    <p style="font-size: 17px;">이메일: <span style="font-size: 16px; color: red">*</span></p>
+                                </div>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <div class="ml-3 flex-grow-1">
+                                    <input type="text" id="email" name="email" class="form-control" style="width: 50%;"  value="${email}" placeholder="이메일을 입력해주세요." required>
+                                </div>
+                            </div>
+
+                            <div class="mb-5 d-flex text-body-secondary pt-5" style="border-top: 1px solid #efefef;">
+                                <div>
+                                    <p style="font-size: 17px;">아이디: <span style="font-size: 16px; color: red">*</span></p>
+                                </div>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <div class="ml-3 flex-grow-1">
+                                    <input type="text" id="username" name="username" class="form-control" style="width: 50%;"  value="${username}" readonly onkeyup="return false">
+                                </div>
+                            </div>
+
+
+                           <div class="mb-5 d-flex text-body-secondary pt-5" style="border-top: 1px solid #efefef;">
+                                <div>
+                                    <p style="font-size: 17px;">닉네임: <span style="font-size: 16px; color: red">*</span></p>
+                                </div>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <div class="ml-3 flex-grow-1">
+                                    <input type="text" id="nickname" name="nickname" class="form-control" style="width: 50%;"  value="${nickname}" placeholder="닉네임을 입력해주세요." required>
+                                </div>
+                           </div>
+                `;
+
+
+            userInfoHtml += `
+                           <div class="mb-5 d-flex text-body-secondary pt-5" style="border-top: 1px solid #efefef;">
+                                <div>
+                                    <p style="font-size: 17px;">주소: <span style="font-size: 16px; color: red">*</span></p>
+                                </div>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <div class="ml-3 flex-grow-1">
+                                    <input type="button" id="address" name="address" class="form-control" onclick="openDaumPostcode()" style="width: 50%; text-align: left;" value="${address ? address : '주소 입력'}">
+                                </div>
+                           </div>
+                            <div class="mb-5 d-flex text-body-secondary pt-5" style="justify-content: left;">
+                             <button id="updateButton2" class="btn btn-lg btn-outline-secondary" type="button">
+                                업데이트
+                            </button>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <button id="deleteButton" class="btn btn-lg btn-outline-secondary" onclick="deleteUserInfo()" type="button">
+                                회원탈퇴
+                            </button>
+                        </div>
+                        </form>
+
+                    </div>
+
+                 `;
+        userInfoDiv.html(userInfoHtml);
+    }
+
+</script>
+</body>
+</html>

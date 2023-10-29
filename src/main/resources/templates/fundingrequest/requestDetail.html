@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>강의 요청 상세 페이지</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.0/css/all.min.css">
+
+    <style>
+        .custom-container {
+            width: 100%;
+        }
+
+        .image-container {
+            width: 100%;
+            height: 400px; /* 원하는 높이 설정 */
+            overflow: hidden; /* 넘치는 이미지를 숨깁니다. */
+            text-align: left;
+        }
+
+        .image-container img {
+            width: auto;
+            height: 100%; /* 이미지 높이를 100%로 설정하여 가로 비율에 맞게 조정됩니다. */
+        }
+
+        #header-viewer {
+            width: auto;
+            height: 100%; /* 이미지 높이를 100%로 설정하여 가로 비율에 맞게 조정됩니다. */
+        }
+
+        #content-viewer {
+            width: 100%;
+        }
+
+        #content-viewer img{
+            width: 70%;
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .comment {
+            position: relative;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            margin: 10px;
+            background-color: #f2f2f2;
+            border-radius: 5px;
+        }
+
+        .comment::before {
+            font-size: 16px;
+            position: absolute;
+            left: -25px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        #comment-insert {
+            margin-left: 10px;
+        }
+        .comment-block {
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #ffffff;
+            padding: 10px;
+            margin: 10px;
+            position: relative;
+        }
+
+        .comment-block::before {
+            content: '\1F4AC'; /* Unicode 아이콘*/
+            font-size: 16px;
+            position: absolute;
+            left: -25px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        #updateCommentButton::before {
+            font-size: 16px; /* 원하는 아이콘 크기로 조정하세요 */
+            margin-right: 5px; /* 아이콘과 텍스트 사이의 간격을 조절할 수 있습니다 */
+        }
+        #updateCommentButton{
+            margin-bottom: 10px;
+            padding: 0 0;
+        }
+
+        #deleteCommentButton{
+            margin-bottom: 10px;
+            padding: 0 0;
+        }
+        .comment-insert-button {
+            margin-left: 10px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            background-color: #4CAF50; /* 배경 색상 설정 */
+            color: white; /* 텍스트 색상 설정 */
+            padding: 0 10px; /* 내부 여백 설정 */
+            border: none; /* 테두리 제거 */
+            border-radius: 5px; /* 둥근 모서리 설정 */
+            cursor: pointer; /* 커서 스타일 설정 */
+            transition: background-color 0.3s; /* 배경 색상 변경 시 부드럽게 애니메이션 적용 */
+
+            /* 선택 상태 스타일 */
+            &:hover {
+                background-color: #45a049; /* 마우스 호버 시 배경 색상 변경 */
+            }
+
+            /* 활성화 상태 스타일 (클릭 시) */
+            &:active {
+                background-color: #367727; /* 클릭 시 배경 색상 변경 */
+            }
+        }
+
+        textarea {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            resize: none; /* To prevent resizing */
+            width: 100%;
+            box-sizing: border-box; /* Include padding and border in width/height */
+            min-height: 100px; /* Set a minimum height */
+        }
+    </style>
+</head>
+<body>
+<header th:replace="~{common/header/header.html :: commonheader}"></header>
+<div class="custom-container">
+    <div class="header-container" style="position: relative;">
+        <!-- 헤더 이미지 -->
+        <img src="/icon/class.jpg" alt="헤더 이미지" style="width: 100%; max-height: 500px; object-fit: cover;">
+
+        <!-- 오버레이 텍스트 및 버튼 -->
+        <div class="header-overlay" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+            <h1 style="font-size: 36px; color: rgb(246,242,242); text-shadow: 2px 2px 4px rgb(63,61,61); margin-bottom: 30px;">우리들이 만드는 클래스</h1>
+            <a class="btn btn-lg btn-primary" href="/funding" style="text-decoration: none; color: #fff; background-color: #555; border-color: #555; padding: 10px 20px; border-radius: 5px;">더 많은 펀딩 강의 구경하기</a>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="album py-5 bg-white">
+        <div id="detailinfo">
+            <!-- 여기에 /dagnList?funding={funding.id} 서버에서 받은 게시물 목록이 동적으로 추가. -->
+            <div id="header-viewer"></div>
+            &nbsp;&nbsp;&nbsp;
+            <div id="content-viewer"></div>
+        </div>
+
+    </div>
+</div>
+<div class="custom-container">
+    <div id="commentinfo" class="comment" style="margin-bottom: 0;">
+        <button id="addCommentButton" class="comment-insert-button">등록</button>
+        <div id="comment-insert">
+            <label for="comment-text" style="width: 40%; margin-right: 10px; padding-right: 10px;">
+                <textarea id="comment-text" placeholder="댓글을 입력하세요..."></textarea>
+            </label>
+        </div>
+        <!--댓글 동적 추가-->
+
+        <div id="comment-viewer"></div>
+    </div>
+</div>
+<header th:replace="~{common/footer/footer.html :: commonfooter}"></header>
+
+<!-- TUI 에디터 JS CDN -->
+<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+<script src="https://uicdn.toast.com/editor/latest/toastui-editor-viewer.min.js"></script>
+<!-- iamport.payment.js -->
+<script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
+<script type="text/javascript">
+let student_request_id = "";
+
+    // 상세 페이지 funding 정보 로드
+    function loadFundingDetail(id) {
+        $.ajax({
+            type: 'GET',
+            cache: false,
+            url: "/login/cookie",
+            dataType: "json",
+
+            success: function (data) {
+                var msg = data.message;
+                var isSuccess = data.isSuccess;
+                let jwtToken = "";
+
+                if (isSuccess === true) {
+                    jwtToken = data.result;
+                }
+                $.ajax({
+                    type: 'GET',
+                    cache: false,
+                    url: "/studentrequest/read?id="+id,
+                    dataType: "json",
+                    beforeSend: function(xhr) {
+                        // JWT 토큰을 헤더에 추가
+                        xhr.setRequestHeader("Authorization", "Bearer " + jwtToken);
+                    },
+
+                    success: function (data) {
+                        var msg = data.message;
+                        var isSuccess = data.isSuccess;
+
+                        if (isSuccess === true) {
+                            var response = data.result;
+                            /*console.log(response);*/
+                            student_request_id = response.id;
+                            var title = response.title;
+                            var fundingCategory = response.fundingCategory;
+                            var writer = response.writer;
+                            var liked = response.like;
+                            var likeCount = response.likeCount;
+                            var viewCount = response.viewCount;
+                            var loginUser = response.loginUser;
+                            var content = response.content;
+
+                            displayFundingDetailInfo(title, fundingCategory, writer, liked, likeCount, viewCount, loginUser, content);
+                        }
+                        else {
+                            alert(msg);
+                        }
+                    },
+                    error: function() {
+                        alert('로그인 상태가 아닙니다.');
+                    }
+                });
+            },
+            error: function () {
+                alert('오류가 발생했습니다.');
+            }
+        });
+    }
+
+
+// 댓글 정보 로드
+function loadComment(id) {
+    $.ajax({
+        type: 'GET',
+        cache: false,
+        url: "/login/cookie",
+        dataType: "json",
+
+        success: function (data) {
+            var msg = data.message;
+            var isSuccess = data.isSuccess;
+            let jwtToken = "";
+
+            if (isSuccess === true) {
+                jwtToken = data.result;
+            }
+            $.ajax({
+                type: 'GET',
+                cache: false,
+                url: "/studentcomment?id="+id,
+                dataType: "json",
+                beforeSend: function(xhr) {
+                    // JWT 토큰을 헤더에 추가
+                    xhr.setRequestHeader("Authorization", "Bearer " + jwtToken);
+                },
+
+                success: function (data) {
+                    var msg = data.message;
+                    var isSuccess = data.isSuccess;
+
+                    if (isSuccess === true) {
+                        var headerViewer = document.getElementById("comment-viewer");
+                        headerViewer.innerHTML = ''; // 모든 내용 삭제
+                        var response = data.result;
+                        for (var [index, Comment] of Object.entries(response)) {
+                            console.log(Comment);
+                            student_request_id = Comment.student_request_id;
+                            var writer = Comment.username;
+                            var loginUser = Comment.loginUser;
+                            var content = Comment.content;
+                            var createdAt = Comment.formatdate;
+                            var comment_id = Comment.comment_id;
+                            displayCommentlInfo(writer, loginUser, content, createdAt, comment_id);
+                        }
+
+                    }
+                    else {
+                        alert(msg);
+                    }
+                },
+                error: function() {
+                    alert('로그인 상태가 아닙니다.');
+                }
+            });
+        },
+        error: function () {
+            alert('오류가 발생했습니다.');
+        }
+    });
+}
+
+
+    // 펀딩 디테일 정보를 동적으로 생성하고 HTML에 추가하는 함수
+    function  displayFundingDetailInfo(title, fundingCategory, writer, liked, likeCount, viewCount, loginUser, content) {
+        // 펀딩 요약 정보 출력
+        var headerViewer = document.getElementById("header-viewer");
+        var headerInfoHtml = `
+            <h2>${title}</h2>
+            <p><strong>작성자:</strong> ${writer}</p>
+        `;
+
+        // 작성자와 로그인한 유저 일치 판별
+        // 펀딩 작성자와 로그인 유저가 동일한 경우,
+        if (loginUser) {
+            headerInfoHtml += `
+                <div class="button-container">
+                    <button id="updateButton" class="btn btn-primary" data-studentrequset-id="${student_request_id}">게시글 수정</button>
+                    <button id="deleteButton" class="btn btn-primary" data-studentrequset-id="${student_request_id}">게시글 삭제</button>
+                </div>
+            `;
+        }
+        /*headerViewer.html(headerInfoHtml);*/
+        headerViewer.innerHTML = headerInfoHtml;
+
+        // toast viewer 설정
+        var fundingContent = content;
+        var contentViewer = document.getElementById("content-viewer");
+        // 콘텐츠 내용 입력
+        const Editor = toastui.Editor;
+        // Initialize the Toast UI Editor
+        const viewer = new Editor({
+            el: contentViewer,
+            viewer: true,
+            initialValue: fundingContent
+        });
+
+    }
+
+
+    // 댓글 정보를 동적으로 생성하고 HTML에 추가하는 함수
+    function  displayCommentlInfo(writer, loginUser, content, createdAt, comment_id) {
+        // 펀딩 요약 정보 출력
+        var commentViewer = $('#comment-viewer');
+
+        var commentInfoHtml = '';
+        // 작성자와 로그인한 유저 일치 판별
+        // 펀딩 작성자와 로그인 유저가 동일한 경우,
+        if (loginUser) {
+            commentInfoHtml = `
+            <div class="comment-block" data-comment-id="${comment_id}">
+                <button id="updateCommentButton" class="btn btn-primary" data-comment-id="${comment_id}">
+                    <i class="fas fa-pencil-alt"></i> Edit
+                </button>
+                <button id="deleteCommentButton" class="btn btn-danger" data-comment-id="${comment_id}">
+                    <i class="fas fa-trash-alt"></i> Delete
+                </button>
+                <p class="featurette-heading fw-bold lh-1" style="font-size: 12px; ">
+                    작성자:
+                    <span style="font-size: 15px;">${writer}</span>&nbsp;&nbsp;&nbsp;
+                    작성일:
+                    <span style="font-size: 15px;">${createdAt}</span>
+                </p>
+                <p class="featurette-heading fw-bold lh-1" style="font-size: 12px;">
+                    <span style="font-size: 15px;">${content}</span>
+                </p>
+
+                <div id="commentEditForm" style="display: none;">
+                    <textarea id="commentEditText">${content}</textarea>
+                    <button id="commentEditSubmit" class="btn btn-primary" data-comment-id="${comment_id}">수정 완료</button>
+                </div>
+            </div>
+            `;
+        }
+        else {
+            commentInfoHtml = `
+            <div class="comment-block">
+                <p class="featurette-heading fw-bold lh-1" style="font-size: 12px;">
+                    작성자:
+                    <span style="font-size: 15px;">${writer}</span>&nbsp;&nbsp;&nbsp;
+                    작성일:
+                    <span style="font-size: 15px;">${createdAt}</span>
+                </p>
+                <p class="featurette-heading fw-bold lh-1" style="font-size: 12px;">
+                    <span style="font-size: 15px;">${content}</span>
+                </p>
+            </div>
+            `;
+        }
+        commentViewer.append(commentInfoHtml);
+    }
+
+    function getURLParams() {
+        var searchParams = new URLSearchParams(window.location.search);
+        var params = {};
+
+        for (var [param, value] of searchParams.entries()) {
+            params[param] = value;
+        }
+
+        return params;
+    }
+
+
+    $(document).ready(function () {
+        // url에서 funding id 추출
+        var urlParams = getURLParams();
+        var checkid = urlParams.id;
+
+        if (checkid !== undefined && checkid !== "") {
+            student_request_id = checkid;
+            // funding 디테일 로드
+            loadFundingDetail(student_request_id);
+            loadComment(student_request_id);
+        }
+
+
+
+        // 서버로 장바구니 추가할 펀딩 정보 전송
+        $(document).on('click', '#addIntoCartButton', function () {
+            var confirmed = confirm("장바구니에 추가하시겠습니까?"); // 확인 대화상자 표시
+            if(confirmed) {
+                var id = $(this).data('funding-id');
+
+                $.ajax({
+                    type: 'GET',
+                    cache: false,
+                    url: "/login/cookie",
+                    dataType: "json",
+
+                    success: function (data) {
+                        var msg = data.message;
+                        var isSuccess = data.isSuccess;
+
+                        if (isSuccess === true) {
+                            var jwtToken = data.result;
+
+                            $.ajax({
+                                type: 'GET',
+                                cache: false,
+                                url: "/fundingcart/add?funding="+id,
+                                dataType: "json",
+                                beforeSend: function (xhr) {
+                                    // JWT 토큰을 헤더에 추가
+                                    xhr.setRequestHeader("Authorization", "Bearer " + jwtToken);
+                                },
+                                success: function (data) {
+                                    var msg = data.message;
+                                    var isSuccess = data.isSuccess;
+
+
+                                    if (isSuccess === true) {
+                                        var msg = data.message;
+                                        var isSuccess = data.isSuccess;
+
+                                        alert(data.result);
+                                    }
+
+                                    else {
+                                        alert(msg);
+                                    }
+
+                                },
+                                error: function() {
+                                    alert('로그인 상태가 아닙니다.');
+                                }
+                            });
+                        } else {
+                            alert(msg);
+                        }
+                    },
+                    error: function () {
+                        alert('오류가 발생했습니다.');
+                    }
+                });
+            }
+
+        })
+
+        // 수정창 뷰 이동
+        $(document).on('click', '#updateButton', function () {
+            console.log("게시글 수정 클릭");
+            window.location.href = "/studentRequestEdit?id="+student_request_id;
+        })
+
+        // 게시글 삭제 버튼 핸들러
+        $(document).on('click', '#deleteButton', function () {
+            console.log("게시글 삭제 클릭");
+            var confirmed = confirm("게시글을 삭제하시겠습니까?");
+            var commentId = $(this).closest('.comment-block').data('comment-id');
+
+            if(confirmed) {
+                $.ajax({
+                    type: 'GET',
+                    cache: false,
+                    url: "/login/cookie",
+                    dataType: "json",
+
+                    success: function (data) {
+                        var msg = data.message;
+                        var isSuccess = data.isSuccess;
+                        var jwtToken = "";
+                        if (isSuccess === true) {
+                            jwtToken = data.result;
+                        }
+
+                        $.ajax({
+                            type: 'DELETE',
+                            contentType: 'application/json',
+                            cache: false,
+                            url: "/studentrequest/delete?id=" + student_request_id,
+                            dataType: "json",
+                            beforeSend: function (xhr) {
+                                // JWT 토큰을 헤더에 추가
+                                xhr.setRequestHeader("Authorization", "Bearer " + jwtToken);
+                            },
+                            success: function (data) {
+                                var msg = data.message;
+                                var isSuccess = data.isSuccess;
+
+                                if (isSuccess === true) {
+                                    console.log(data.result);
+                                    alert(data.result);
+                                    window.location.href="/studentrequest";
+                                } else {
+                                    alert(msg);
+                                }
+                            },
+                            error: function (error) {
+                                console.log(error);
+                                alert("오류가 발생했습니다. 오류 메시지: " + error);
+                            }
+                        });
+
+                    }, error: function (error) {
+                        alert('오류가 발생했습니다.' + error);
+                    }
+                });
+            }
+
+        })
+
+
+        // 댓글 수정 핸들러
+        $(document).on('click', '#updateCommentButton', function () {
+            // 클릭한 수정 버튼의 부모 요소에서 수정 폼을 찾아서 나타나게 합니다.
+            $(this).closest('.comment-block').find('#commentEditForm').show();
+        });
+
+        // 댓글 삭제 핸들러
+        $(document).on('click', '#deleteCommentButton', function () {
+            var confirmed = confirm("댓글을 삭제하시겠습니까?");
+            var commentId = $(this).closest('.comment-block').data('comment-id');
+
+            if(confirmed) {
+                $.ajax({
+                    type: 'GET',
+                    cache: false,
+                    url: "/login/cookie",
+                    dataType: "json",
+
+                    success: function (data) {
+                        var msg = data.message;
+                        var isSuccess = data.isSuccess;
+                        var jwtToken = "";
+                        if (isSuccess === true) {
+                            jwtToken = data.result;
+                        }
+
+                        $.ajax({
+                            type: 'DELETE',
+                            contentType: 'application/json',
+                            cache: false,
+                            url: "/studentcomment/delete?id="+commentId,
+                            dataType: "json",
+                            beforeSend: function (xhr) {
+                                // JWT 토큰을 헤더에 추가
+                                xhr.setRequestHeader("Authorization", "Bearer " + jwtToken);
+                            },
+                            success: function (data) {
+                                var msg = data.message;
+                                var isSuccess = data.isSuccess;
+
+                                if (isSuccess === true) {
+                                    console.log(data.result);
+                                    alert(data.result);
+                                    loadComment(student_request_id);
+                                } else {
+                                    alert(msg);
+                                }
+                            },
+                            error: function (error) {
+                                console.log(error);
+                                alert("오류가 발생했습니다. 오류 메시지: " + error);
+                            }
+                        });
+
+                    }, error: function (error) {
+                        alert('오류가 발생했습니다.'+error);
+                    }
+                });
+            }
+        });
+
+        // 댓글 수정 서버 요청 기능 핸들러
+        $(document).on('click', '#commentEditSubmit', function () {
+            var newContent = $('#commentEditText').val();
+            var commentId = $(this).closest('.comment-block').data('comment-id');
+
+            if (newContent !== "") {
+                // 서버로 수정된 댓글 내용을 담은 업데이트 모델 전송
+                var requestData = {
+                    "comment_id": commentId,
+                    "content": newContent,
+                };
+
+                $.ajax({
+                    type: 'GET',
+                    cache: false,
+                    url: "/login/cookie",
+                    dataType: "json",
+
+                    success: function (data) {
+                        var msg = data.message;
+                        var isSuccess = data.isSuccess;
+                        var jwtToken = "";
+                        if (isSuccess === true) {
+                            jwtToken = data.result;
+                        }
+
+                        $.ajax({
+                            type: 'POST',
+                            data: JSON.stringify(requestData),
+                            contentType: 'application/json',
+                            cache: false,
+                            url: "/studentcomment/update?id"+commentId,
+                            dataType: "json",
+                            beforeSend: function (xhr) {
+                                // JWT 토큰을 헤더에 추가
+                                xhr.setRequestHeader("Authorization", "Bearer " + jwtToken);
+                            },
+                            success: function (data) {
+                                var msg = data.message;
+                                var isSuccess = data.isSuccess;
+
+                                alert(msg);
+                                if (isSuccess === true) {
+                                    console.log(data.result);
+                                    loadComment(student_request_id);
+                                }
+                            },
+                            error: function (error) {
+                                console.log(error);
+                                alert("오류가 발생했습니다. 오류 메시지: " + error);
+                            }
+                        });
+
+                    }, error: function (error) {
+                        alert('오류가 발생했습니다.'+error);
+                    }
+                });
+            }
+
+            else{
+                alert('내용을 입력해주세요.');
+            }
+        });
+
+        // 댓글 작성
+        $(document).on('click', '#addCommentButton', function () {
+            var id = student_request_id;
+            var text = $('#comment-text').val();
+
+            $.ajax({
+                type: 'GET',
+                cache: false,
+                url: "/login/cookie",
+                dataType: "json",
+
+                success: function (data) {
+                    var msg = data.message;
+                    var isSuccess = data.isSuccess;
+                    let jwtToken = "";
+
+                    if (isSuccess === true) {
+                        jwtToken = data.result;
+                    }
+
+                    var requestData = {
+                        "student_request_id": id,
+                        "content": text,
+                    };
+
+                    $.ajax({
+                        async: true,
+                        type: 'POST',
+                        data: JSON.stringify(requestData),
+                        contentType: 'application/json',
+                        cache: false,
+                        url: "/studentcomment/save",
+                        dataType: "json",
+
+                        beforeSend: function(xhr) {
+                            // JWT 토큰을 헤더에 추가
+                            xhr.setRequestHeader("Authorization", "Bearer " + jwtToken);
+                        },
+
+                        success: function (data) {
+                            var msg = data.message;
+                            var isSuccess = data.isSuccess;
+
+                            if (isSuccess === true) {
+                                var response = data.result;
+                                console.log(response);
+                                /*var studentrequestId = response.id;
+                                var title = response.title;
+                                var fundingCategory = response.fundingCategory;
+                                var writer = response.writer;
+                                var liked = response.like;
+                                var likeCount = response.likeCount;
+                                var viewCount = response.viewCount;
+                                var loginUser = response.loginUser;
+                                var content = response.content;*/
+                                loadComment(student_request_id);
+                                /*displayFundingDetailInfo(studentrequestId, title, fundingCategory, writer, liked, likeCount, viewCount, loginUser, content);*/
+                            }
+                            else {
+                                alert(msg);
+                            }
+                        },
+                        error: function() {
+                            alert('로그인 상태가 아닙니다.');
+                        }
+                    });
+                },
+                error: function () {
+                    alert('오류가 발생했습니다.');
+                }
+            });
+
+        })
+
+    });
+</script>
+</body>
+</html>
