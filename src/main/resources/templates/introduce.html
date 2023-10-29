@@ -21,9 +21,9 @@
 
         .introduction {
             position: absolute;
-            top: 50%;
+            top: 10%; /* 변경된 위치 */
             left: 50%;
-            transform: translate(-50%, -50%);
+            transform: translateX(-50%); /* 가운데 정렬 유지 */
             text-align: center;
             background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
             padding: 20px;
@@ -31,12 +31,6 @@
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
             color: #fff;
             font-family: Arial, sans-serif;
-            opacity: 0;
-            transition: opacity 2s; /* 페이드인 효과를 2초로 지정 */
-        }
-
-        .introduction.active {
-            opacity: 1;
         }
 
         .introduction h1 {
@@ -68,20 +62,12 @@
         }
 
         .feature-card {
+            width: 100%;
             background-color: #fff;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
             text-align: center;
-        }
-
-        .feature-card h2 {
-            font-size: 24px;
-        }
-
-        .feature-card p {
-            font-size: 16px;
-            margin: 10px 0;
         }
     </style>
 </head>
@@ -90,7 +76,7 @@
 
 <div class="custom-container">
     <img src="/icon/class.jpg" alt="" style="width: 100%; height: 100%;">
-    <div class="introduction" id="introduction">
+    <div class="introduction">
         <h1>우리들이 만들어가는 클래스</h1>
         <p class="subtitle">새로운 펀딩 강의 세계 <span class="icon">🌍</span></p>
         <p class="description">우리는 우리가 듣고 싶은 수업을 만들어가는 중입니다!</p>
@@ -99,33 +85,26 @@
                 <span style="font-size: 30px; cursor: pointer;">&larr;</span> 돌아가기
             </a>
         </div>
-    </div>
 
+        <div class="feature-cards">
+            <div class="feature-card" style="margin-right: 22px;">
+                <h2 style="color: black; font-size: 20px;">다양한 주제</h2>
+                <p style="color: black; font-size: 12px;">내가 듣고 싶은 강의를 펀딩 오픈하여 수강생을 모아보아요!</p>
+            </div>
+            <div class="feature-card" style="margin-right: 22px;">
+                <h2 style="color: black; font-size: 20px;">이런 강의 어때요?</h2>
+                <p style="color: black; font-size: 12px;">커뮤니티 게시판에서 다른 사람들과 관심있는 수업에 대해 얘기를 나누어보아요.</p>
+            </div>
+            <div class="feature-card">
+                <h2 style="color: black; font-size: 20px;">이 강의 너무 좋았어요!</h2>
+                <p style="color: black; font-size: 12px;">학습자들이 후기를 남기면 확장된 강의가 오픈될 수 있어요.</p>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div class="feature-cards">
-    <div class="feature-card">
-        <h2>다양한 주제</h2>
-        <p>내가 듣고 싶은 강의를 펀딩 오픈하여 수강생을 모아보아요!</p>
-    </div>
-    <div class="feature-card">
-        <h2>이런 강의 어때요?</h2>
-        <p>커뮤니티 게시판에서 다른 사람들과 관심있는 수업에 대해 얘기를 나누어보아요.</p>
-    </div>
-    <div class="feature-card">
-        <h2>이 강의 너무 좋았어요!</h2>
-        <p>학습자들이 후기를 남기면 확장된 강의가 오픈될 수 있어요.</p>
-    </div>
-</div>
 
-<!--<hr class="featurette-divider">-->
+
 <header th:replace="~{common/footer/footer.html :: commonfooter}"></header>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $(document).ready(function() {
-        $('#introduction').addClass('active'); // 페이지 로드 시 자동 페이드인
-    });
-</script>
 </body>
 </html>

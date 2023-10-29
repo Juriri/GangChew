@@ -128,43 +128,48 @@
         var ul = document.createElement('ul'); // 목록 생성
         ul.className = 'list-group';
 
-        for (var [index, item] of Object.entries(fundingData)) {
-            var title = item.title;
-            var writer = item.writer;
-            var description = item.description;
-            var thumbnail = item.thumbnail;
-
-            var li = document.createElement('li'); // 목록 항목 생성
-            li.className = 'list-group-item';
-
-            var image = document.createElement('img');
-            image.src = thumbnail;
-            image.alt = title;
-            image.className = 'card-img-top';
-            image.style.maxHeight = '100%'; // 사진 크기 조절
-            image.style.maxWidth = '200px'; // 사진 최대 너비 설정
-            image.style.float = 'left';
-
-            var titleElement = document.createElement('h5');
-            titleElement.className = 'card-title';
-            titleElement.textContent = title;
-
-            var writerElement = document.createElement('p');
-            writerElement.className = 'card-text';
-            writerElement.textContent = '펀딩 오픈 유저: ' + writer;
-
-            var descriptionElement = document.createElement('p');
-            descriptionElement.className = 'card-text';
-
-            li.appendChild(image);
-            li.appendChild(titleElement);
-            li.appendChild(writerElement);
-            li.appendChild(descriptionElement);
-
-            ul.appendChild(li); // 목록 항목을 목록에 추가
+        if (fundingData <= 0) {
+            var message = '<div class="col-md-12 d-flex justify-content-center align-items-center"><p style="font-size: 17px;">해당 결과가 없습니다.</p></div>';
+            container.innerHTML = message; // Set the message as the container content.
         }
+        else {
+            for (var [index, item] of Object.entries(fundingData)) {
+                var title = item.title;
+                var writer = item.writer;
+                var description = item.description;
+                var thumbnail = item.thumbnail;
 
-        container.appendChild(ul); // 목록을 컨테이너에 추가
+                var li = document.createElement('li'); // 목록 항목 생성
+                li.className = 'list-group-item';
+
+                var image = document.createElement('img');
+                image.src = thumbnail;
+                image.alt = title;
+                image.className = 'card-img-top';
+                image.style.maxHeight = '100%'; // 사진 크기 조절
+                image.style.maxWidth = '200px'; // 사진 최대 너비 설정
+                image.style.float = 'left';
+
+                var titleElement = document.createElement('h5');
+                titleElement.className = 'card-title';
+                titleElement.textContent = title;
+
+                var writerElement = document.createElement('p');
+                writerElement.className = 'card-text';
+                writerElement.textContent = '펀딩 오픈 유저: ' + writer;
+
+                var descriptionElement = document.createElement('p');
+                descriptionElement.className = 'card-text';
+
+                li.appendChild(image);
+                li.appendChild(titleElement);
+                li.appendChild(writerElement);
+                li.appendChild(descriptionElement);
+
+                ul.appendChild(li); // 목록 항목을 목록에 추가
+            }
+            container.appendChild(ul); // 목록을 컨테이너에 추가
+        }
     }
 
 </script>
