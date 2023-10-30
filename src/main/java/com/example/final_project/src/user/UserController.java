@@ -182,7 +182,7 @@ public class UserController {
         String jwtToken = getUserRes.getJwtToken();
         // 결과 반환
         CookieUtil.addCookie(response, "jwtToken", jwtToken, jwtUtil.getExpirationDateFromToken(jwtToken));
-        String redirectUrl = "http://localhost:9000/";
+        String redirectUrl = "/";
         response.sendRedirect(redirectUrl);
         /*return new BaseResponse<>(getUserRes);*/
     }
@@ -198,7 +198,7 @@ public class UserController {
     public void socialKakaoLogoutCallback(HttpServletResponse response) throws IOException, BaseException {
         // 결과 반환
         /*return new BaseResponse<>("로그아웃 되었습니다.");*/
-        response.sendRedirect("http://localhost:9000/");
+        response.sendRedirect("/");
     }
 
 
@@ -217,7 +217,7 @@ public class UserController {
         oAuthService.oAuthLogout(socialLoginType, code);
         // 결과 반환
         /*return new BaseResponse<>("로그아웃 되었습니다.");*/
-        response.sendRedirect("http://localhost:9000/");
+        response.sendRedirect("/");
     }
 
 

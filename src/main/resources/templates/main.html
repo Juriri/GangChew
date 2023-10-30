@@ -6,12 +6,12 @@
     <title>GangChew</title>
 
     <style>
+
         .custom-container {
             position: relative;
             width: 100%;
             height: 100vh;
         }
-
         .custom-container img {
             width: 100%;
             height: 100%;
@@ -33,6 +33,12 @@
             font-family: Arial, sans-serif;
             opacity: 0;
             transition: opacity 2s; /* 페이드인 효과를 2초로 지정 */
+
+            @media only screen and (max-device-width: 376px) and (orientation: portrait) {
+                height: 33%;
+                width: 70%;
+                top: 57%;
+            }
         }
 
         .introduction.active {
@@ -42,11 +48,29 @@
         .introduction h1 {
             font-size: 36px;
             margin: 10px 0;
+            @media only screen and (max-device-width: 376px) and (orientation: portrait) {
+                font-size: 20px;
+            }
         }
 
         .introduction .subtitle {
             font-size: 24px;
             margin: 10px 0;
+            @media only screen and (max-device-width: 376px) and (orientation: portrait) {
+                font-size: 14px;
+            }
+        }
+
+        .introduction .description {
+            @media only screen and (max-device-width: 376px) and (orientation: portrait) {
+                font-size: 12px;
+            }
+        }
+
+        .introduction .link {
+            @media only screen and (max-device-width: 376px) and (orientation: portrait) {
+                font-size: 12px;
+            }
         }
 
         .introduction .highlight {
@@ -71,7 +95,7 @@
         <h1>우리들이 만들어가는 클래스</h1>
         <p class="subtitle">새로운 지식과 경험의 세계 <span class="icon">🌍</span></p>
         <p class="description">우리는 학습의 주체로서, 미래를 만들어가는 중입니다!</p>
-        <div style="text-align: center; margin-top: 20px;">
+        <div style="text-align: center; margin-top: 20px;" class="link">
             <a href="/introduce" style="text-decoration: none; color: #fff;">
                 <span style="font-size: 30px; cursor: pointer;">&rarr;</span> 컨셉 소개
             </a>
