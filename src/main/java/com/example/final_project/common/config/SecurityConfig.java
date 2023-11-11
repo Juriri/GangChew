@@ -50,12 +50,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .and()
                 .authorizeRequests()
-                //.antMatchers("/", "/home", "/signup","/user/signup", "/login", "/user/login").permitAll()
+
                 .antMatchers( "/authenticate/**", "/login/**", "/signup", "/logout/**", "/authenticate", "/", "/introduce").permitAll()
                 .antMatchers("/error/**", "/swagger-ui/**","/api-docs/**", "/favicon.ico").permitAll()
-                .antMatchers("/funding/**", "/studentrequest/**").permitAll()
-                /*.anyRequest().authenticated();*/
-                .anyRequest().permitAll();
+                .antMatchers("/funding/**", "/studentrequest/**", "/fundingList", "/my/**").permitAll()
+                .anyRequest().authenticated();
+                /*.anyRequest().permitAll();*/
 
         // OAuth 로그인 경로 설정 (예: /oauth2/**)
         http

@@ -9,6 +9,9 @@
     <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.css">
     <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
     <style>
+        .container {
+            padding-top: 20px;
+        }
         .form-container {
             max-width: 1300px;
             margin: 0 auto;
@@ -443,7 +446,7 @@
                                                     if (isSuccess === true) {
                                                         console.log(data.result);
                                                         var funding_id = data.result.id;
-                                                        window.location.href = "/fundingDetail?id="+funding_id;
+                                                        window.location.href = "/funding/Detail?id="+funding_id;
                                                     } else {
                                                         alert(msg);
                                                     }

@@ -26,6 +26,7 @@ public class FundingRes {
     private Long viewCount;
     private String writer;
     private String categoryname;
+    private String deadline;
 
     public FundingRes(Funding funding, boolean liked, int achievementrate,  int totalItems) {
         this.fundingId = funding.getId();
@@ -52,7 +53,12 @@ public class FundingRes {
         this.viewCount = funding.getViewCount();
         this.writer = writer;
         this.categoryname = categoryname;
+        this.deadline  = transferLocalDateToString(funding.getDeadline());
     }
 
+    public String transferLocalDateToString (LocalDateTime dateTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        return dateTime.format(formatter);
+    }
 
 }

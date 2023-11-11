@@ -9,8 +9,106 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <style>
-        .custom-container {
-            height: 100%;
+        /*rank 시작*/
+        .rank-container {
+            width: 100%;
+        }
+
+        #loading-spinner {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+        }
+
+        h5 {
+            font-size: 25px;
+            /*text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);*/
+        }
+
+
+        .btn:hover {
+            background-color: #333;
+        }
+
+        .funding-rankings {
+            width: 100%;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .ranking-category {
+            display: inline-block;
+            width: 100%;
+            vertical-align: top;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            background-color: #fff;
+            max-width: 420px;
+            margin: 0 20px;
+        }
+
+        .ranking-category:last-child {
+            margin-right: 10px;
+        }
+
+        .category-title {
+            font-size: 20px;
+            margin: 10px 0;
+        }
+
+        .category-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .category-list li {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin: 10px 0;
+            min-height: 50px;
+        }
+
+        .rank-card-title-link {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            color: #333;
+        }
+
+        .rank-card-title-link:hover {
+            text-decoration: none;
+            color: #555;
+        }
+
+        .rank-card-title-link img {
+            width: 70px;
+            height: 50px;
+            margin-right: 10px;
+        }
+
+        .rank-card-title-link span {
+            font-size: 12px;
+            color: #333;
+        }
+
+        .category-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .category-title span {
+            color: cornflowerblue;
+        }
+        /*rank 끝*/
+
+
+
+        .funding-container {
+            margin: 20px 0;
+            padding: 20px 20px;
         }
 
         /* 책갈피 탭 스타일 */
@@ -21,35 +119,23 @@
             color: #333; /* 탭 텍스트 색상 */
         }
 
-        /*.nav-tabs .nav-link.active {
-            background: none;
-            !*border: none;*!
-            border-bottom: 3px solid #007bff; !* 활성 탭의 색상 *!
-            color: #f566f5; !* 활성 탭 텍스트 색상 *!
-        }*/
-
-        /* 마우스 호버 시 효과 (선택 사항) */
-        .nav-tabs .nav-link:hover {
-            border: none;
-            border-bottom: 3px solid #007bff; /* 호버 시 탭 색상 변경 */
-            color: #938e93; /* 호버 시 탭 텍스트 색상 변경 */
+        .funding-list {
+            max-height: 900px;
+            overflow-y: auto;
         }
 
-
-        /*#whole-card {
-            border-radius: 30px;
-        }*/
-
+        .whole-card {
+            margin-bottom: 20px;
+        }
 
         .card {
             width: 100%;
-            height: 100%; /* 원하는 높이로 조정 */
-            border: 1px solid #ccc; /* 선택적으로 테두리 추가 */
-            margin-bottom: 20px; /* 선택적으로 카드 사이의 간격 추가 */
+            height: 100%;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
             flex-direction: column;
-            display: flex;
+            /*display: flex;*/
             border-radius: 50px;
-
         }
         .card .cheader {
             position: relative;
@@ -65,19 +151,19 @@
             background: transparent; /* 버튼 배경 투명으로 설정 */
             border: none; /* 버튼 테두리 제거 */
             color: #ff0026;
-            font-size: 40px; /* 원하는 크기로 설정 */
+            font-size: 35px; /* 원하는 크기로 설정 */
         }
 
 
         .card .cheader img {
             width: 100%;
-            height: 200px;
+            height: 180px;
             object-fit: cover; /* 이미지를 상위 요소에 맞게 잘라서 표시 (확대 가능) */
         }
 
         .card .card-body {
-            flex: 2; /* 2/3 (66.66%)의 높이를 가짐 */
-            min-height: 260px;
+            flex: 1;
+            min-height: 200px;
             display: flex;
             flex-direction: column;
         }
@@ -95,7 +181,7 @@
         }
 
         .card-title-link {
-            font-size: 16px;
+            font-size: 12px;
             font-weight: bold;
             text-decoration: none; /* 밑줄 제거 */
             color: #333; /* 제목 텍스트 스타일 */
@@ -107,13 +193,16 @@
             opacity: 0.5;
         }
         .card .card-subtitle p {
-            font-size: 14px;
+            font-size: 12px;
             color: #555; /* 부제목 텍스트 스타일 */
             height: 100%;
         }
 
+        #page-list {
+            margin-bottom: 20px;
+        }
         .pagination {
-            display: flex;
+            /*display: flex;*/
             justify-content: center;
 
         }
@@ -135,19 +224,46 @@
         .page-link-next {
             font-weight: bold;
         }
+
+        .footer-container {
+            /*position: fixed;*/
+            margin-top: 20px;
+            bottom: 0;
+            width: 100%;
+        }
     </style>
 </head>
 <body>
 <header th:replace="~{common/header/header.html :: commonheader}"></header>
+<div class="rank-container">
+    <!-- Funding Rankings Section -->
+    <div class="funding-rankings">
+        <div id="loading-spinner" style="display: none;">
+            <img src="/icon/loading.gif" alt="로딩 중">
+        </div>
 
-<div class="container-fluid custom-container">
+        <div class="ranking-category feature col-md-4">
+            <h5 class="category-title category-participants pb-2 border-bottom">참여율 Top4<span style="font-size: 14px;">(24시간 기준, 마감 펀딩 포함)</span></h5>
+            <ul class="category-list category-participants" id="participants-list"></ul>
+        </div>
+        <div class="ranking-category feature col-md-4">
+            <h5 class="category-title category-likes pb-2 border-bottom">좋아요 Top4<span style="font-size: 14px;">(24시간 기준, 마감 펀딩 포함)</span></h5>
+            <ul class="category-list category-likes" id="like-list"></ul>
+        </div>
+        <div class="ranking-category feature col-md-4">
+            <h5 class="category-title category-views pb-2 border-bottom">조회수 Top4</h5>
+            <ul class="category-list category-views" id="view-list"></ul>
+        </div>
+    </div>
+</div>
+
+<div class="funding-container">
     <!-- 카테고리 분류를 탭 형식으로 표시 -->
     <ul class="nav nav-tabs" id="categoryTabs" role="tablist">
         <li class="nav-item" role="presentation">
             <a class="nav-link header-link" id="category0" data-toggle="tab" href="/funding" role="tab" data-category-id="0" aria-controls="all" aria-selected="true" style="font-weight: bold">전체</a>
         </li>
         <li class="nav-item" role="presentation">
-            <!--<a class="nav-link" id="category1-tab" data-toggle="tab"  data-category-id="1" role="tab" aria-controls="category1" aria-selected="false" style="font-weight: bold">운동&Life</a>-->
             <a class="nav-link header-link" id="category1" data-toggle="tab" href="/funding?category=1" data-category-id="1" role="tab" aria-controls="all" aria-selected="true" style="font-weight: bold">운동&Life</a>
         </li>
         <li class="nav-item" role="presentation">
@@ -170,28 +286,23 @@
         </li>
     </ul>
 
-    <!--펀딩 리스트 동적 추가-->
-    <div class="album py-5 bg-white">
-        <div class="container-fluid custom-container">
-            <div id="funding-list" class="row">
-            </div>
+    <div class="album py-2 bg-white">
+        <div id="funding-list" class="row funding-list">
+        </div>
+        <!--페이지 숫자 표시 동적 추가-->
+        <div id="page-list" class="row page-list">
+            <nav>
+                <ul id="page-nav" class="pagination justify-content-center">
+                    <!-- 페이지 숫자는 여기에 추가됩니다 -->
+                </ul>
+            </nav>
         </div>
     </div>
 
-    <!--페이지 숫자 표시 동적 추가-->
-    <div class="album py-5 bg-white">
-        <div class="container">
-            <div id="page-list" class="row">
-                <nav>
-                    <ul id="page-nav" class="pagination justify-content-center">
-                        <!-- 페이지 숫자는 여기에 추가됩니다 -->
-                    </ul>
-                </nav>
-            </div>
-        </div>
-    </div>
 </div>
-<header th:replace="~{common/footer/footer.html :: commonfooter}"></header>
+<div class="footer-container">
+    <header th:replace="~{common/footer/footer.html :: commonfooter}"></header>
+</div>
 <script type="module">
     // common-ajax.js 모듈을 import
     import { loadCall } from '/js/common-ajax.js';
@@ -204,9 +315,6 @@
         const detail_res = new loadCall(url, null);
         return detail_res.detail
             .then(data => {
-                if (data.isSuccess === true) {
-                    fundingDataCache = data.result;
-                }
                 return data;
             })
             .catch(error => {
@@ -245,7 +353,18 @@
 
     /**************서버 통신 함수 끝**************/
     /**************뷰 버튼 핸들러 시작**************/
-    var category = 0;
+    let category = 0;
+    let itemsPerPage = 8;
+    function getURLParams() {
+        var searchParams = new URLSearchParams(window.location.search);
+        var params = {};
+
+        for (var [param, value] of searchParams.entries()) {
+            params[param] = value;
+        }
+
+        return params;
+    }
 
     $(document).ready(function () {
         // 모든 탭 버튼에서 'active' 클래스를 제거합니다.
@@ -259,28 +378,90 @@
             category = 0;
             // 전체 탭 active
             $("#category0").addClass("active");
-            // 페이지를 로드할 때 초기 페이지
-            loadFundingList(1);
-
         } else {
             category = checkcategory;
             // 해당 탭 active
             $("#category" + category).addClass("active");
-            // 페이지를 로드할 때 페이지
-            loadFundingList(1);
         }
+        // 페이지를 로드할 때 초기 페이지
+        loadFundingList(1);
 
+        // 페이지 로딩 시 펀딩 데이터 가져오기
+        loadFunding();
+
+        // 10분마다 펀딩 데이터 업데이트
+        setInterval(function () {
+            loadFunding();
+        }, 60000);
+    });
+
+    $(document).on('click', '.like-button', function (e) {
+        e.stopPropagation(); // 이벤트 전파 중지
+        var fundingId = $(this).data('funding-id');
+        var page = $(this).data('page');
+
+        var url = "/funding/toggle-like?id=" + fundingId;
+        loadData(url)
+            .then(data => {
+                if (data.isSuccess === true) {
+                    console.log(data.result);
+
+                    var likeText = $(this).text();
+
+                    if ($(this).hasClass('bi-heart-fill')) {
+                        $(this).removeClass('bi-heart-fill').addClass('bi-heart');
+                        likeText = '♡'; // 빈 하트로 변경
+                    } else {
+                        $(this).removeClass('bi-heart').addClass('bi-heart-fill');
+                        likeText = '♥'; // 꽉 찬 하트로 변경
+                    }
+
+                    $(this).html('<span style="padding: 5px;">' + likeText + '</span>');
+
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error(error);
+            });
+
+    });
+
+    $(document).on('click', '.page-link', function (e) {
+        e.preventDefault(); // 링크 클릭 시 페이지 이동 방지
+        var page = $(this).data('page');
+        loadFundingList(page);
     });
     /**************뷰 버튼 핸들러 끝**************/
     /**************화면 출력 메서드 시작**************/
-    // 내 정보 불러오기
-    function loadAndDisplayList(url) {
-        insertData(url, null)
-            .then(data=> {
-                // fundingData --> 펀딩 게시글 디테일 반환 모델 데이터 값 BaseResponse<FundingDetailRes>()
+
+    // 펀딩 리스트 가져오기
+    function loadFundingList(pageNumber) {
+        var url = '/funding/all?state=IN_PROGRESS&category=' + category +"&currentpage=" + pageNumber + "&itemsPerPage=" + itemsPerPage;
+        loadData(url)
+            .then(data => {
                 if (data.isSuccess === true) {
-                    /*console.log(data.result);*/
-                    displayFundingInfo(data.result);
+                    // 펀딩 게시글이 1개 이상 일때
+                    if (data.result.length > 0){
+                        // 전체 리스트 수
+                        var totalItems = data.result[0].totalItems;
+                        var urlParams = new URLSearchParams(window.location.search);
+                        var currentpage = parseInt(urlParams.get('currentpage')) || 1;
+
+                        displayFundingInfo(data.result, pageNumber);
+                        displayPagenation(category, totalItems, currentpage, pageNumber, itemsPerPage);
+                    }
+                    // 게시글이 하나도 없을 때
+                    else {
+                        $('#funding-list').empty();
+                        $('#page-list').delegate();
+
+                        var messageDiv = $('<div class="col-md-12 d-flex justify-content-center align-items-center"></div>');
+                        var message = $('<p style="font-size: 17px;">펀딩 게시글이 없습니다.</p>');
+                        messageDiv.append(message);
+                        $('.album').append(messageDiv);
+                    }
                 } else {
                     alert(data.message);
                 }
@@ -290,66 +471,205 @@
             });
     }
 
-    /**************화면 출력 메서드 끝**************/
-</script>
-<script>
-    let itemsPerPage = 6;
-    let category = 0;
-    // url 읽기
-    function getURLParams() {
-        var searchParams = new URLSearchParams(window.location.search);
-        var params = {};
+    /*24시간 이내 펀딩 참여 유저 수 (내림차순) request url: /funding/rank?orderby="mostParticipants"&hours=24&top=5&state="IN_PROGRESS" */
+    let mostPariticipantsList = [];
+    /*24시간 이내 좋아요 수  (내림차순) request url: /funding/rank?orderby="mostLike"&hours=24&top=5&state="IN_PROGRESS" */
+    let mostLikeList = [];
+    /*펀딩 조회수 (내림차순) request url: /funding/rank?orderby="mostView"&top=5&state="IN_PROGRESS" */
+    let mostViewList = [];
+    /*최근 오픈한 펀딩 일자 순(내림차순)*/
+    let mostNewestList = [];
+    /*마감이 임박한 시간 순서에 따른 내림차순*/
+    let leastDeadlineList = [];
 
-        for (var [param, value] of searchParams.entries()) {
-            params[param] = value;
-        }
+    let top_num = 4;
 
-        return params;
+    // 함수를 통해 각 순위 카테고리에 데이터를 추가하는 예제
+    function displayRanking(category, data, containerId) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = ''; // 기존 내용 초기화
+
+        // 데이터를 카테고리에 따라 정렬
+        data.sort((a, b) => {
+            if (category === 'participants') {
+                return b.userCount - a.userCount;
+            } else if (category === 'likes') {
+                return b.likeCount - a.likeCount;
+            } else if (category === 'views') {
+                return b.viewCount - a.viewCount;
+            }
+        });
+
+        data.forEach((item, index) => {
+            const li = document.createElement('li');
+            const title = item.title.length > 10 ? item.title.slice(0, 20) + '...' : item.title;
+
+            li.innerHTML = `<a href="/funding/Detail?id=${item.id}" class="rank-card-title-link">
+                                <span style="font-size: 12px; color: #636365; font-weight: bold;">${index + 1}.</span>
+                                <img src="${item.thumbnail}" alt="${title} thumbnail" width="60" height="50">
+                                <span style="font-weight: bold; font-size: 14px;">${title} -</span>
+                                <span style="font-size: 12px; color: cornflowerblue;">
+                                    ${category === 'participants' ? '참여자 수' : category === 'likes' ? '좋아요 수' : '조회수'}:
+                                </span>
+                                <span style="font-weight: bold; font-size: 12px; color: cornflowerblue;">
+                                    ${category === 'participants' ? item.userCount : category === 'likes' ? item.likeCount : item.viewCount}
+                                </span>
+                            </a>
+                            `;
+            container.appendChild(li);
+        });
     }
 
-    // 펀딩 정보를 동적으로 생성하고 HTML에 추가하는 함수
-    function displayFundingInfo(id, title, subtitle, thumbnail, liked, achievementrate, viewCount, likeCount, pageNumber, state) {
+
+
+    function loadFunding() {
+        mostPariticipantsList = [];
+        mostLikeList = [];
+        mostViewList = [];
+        mostNewestList = [];
+        leastDeadlineList = [];
+
+        // 요청 시작 시 로딩 스피너 표시
+        $('#loading-spinner').show();
+        $('#participants-list').hide();
+        $('#like-list').hide();
+        $('#view-list').hide();
+
+        let results = [];
+        // 첫 번째 요청
+        var participantsRequest = $.ajax({
+            type: 'GET',
+            url: "funding/rank?orderby=mostParticipants&state=ACTIVE&hours=24&top="+top_num,
+            dataType: "json"
+        });
+        results.push(participantsRequest);
+
+        // 두 번째 요청
+        var likeRequest = $.ajax({
+            type: 'GET',
+            url: "/funding/rank?orderby=mostLike&hours=24&top="+top_num,
+            dataType: "json"
+        });
+        results.push(likeRequest);
+
+        // 세 번째 요청
+        var viewRequest = $.ajax({
+            type: 'GET',
+            url: "/funding/rank?orderby=mostView&state=IN_PROGRESS&top="+top_num,
+            dataType: "json"
+        });
+        results.push(viewRequest);
+
+        // Promise.all을 사용하여 모든 요청이 완료될 때까지 대기
+        Promise.all(results).then(function(results) {
+            console.log(results);
+            // results 배열에 각 요청의 응답이 들어 있음
+            /*console.log(results);*/
+            var response1 = results[0];
+            var response2 = results[1];
+            var response3 = results[2];
+
+            // 모든 처리가 완료되면 로딩 스피너 숨김
+            $('#loading-spinner').hide();
+            $('#participants-list').show();
+            $('#like-list').show();
+            $('#view-list').show();
+            /*24시간 이내 펀딩 참여 유저 수 (내림차순)*/
+            var dataMap1 = response1.result;
+            for (var [index, map] of Object.entries(dataMap1)) {
+                // 펀딩 객체 추출
+                var funding = map.funding;
+                // 달성률 추출
+                var achievementrate = map.achievementrate;
+                // 결과 리스트에 삽입
+                mostPariticipantsList.push(funding);
+            }
+            // 기존 리스트 반환
+            /*mostPariticipantsList = response1.result;*/
+            displayRanking("paritipants", mostPariticipantsList, "participants-list");
+
+
+            /*24시간 이내 좋아요 수*/
+            var dataMap2 = response2.result;
+            for (var [index, map] of Object.entries(dataMap2)) {
+                // 펀딩 객체 추출
+                var funding = map.funding;
+                // 달성률 추출
+                var achievementrate = map.achievementrate;
+                // 결과 리스트에 삽입
+                mostLikeList.push(funding);
+            }
+            /*mostLikeList = response2.result;*/
+            displayRanking("likes", mostLikeList, "like-list");
+
+            /*조회수 순*/
+            var dataMap3 = response3.result;
+            for (var [index, map] of Object.entries(dataMap3)) {
+                // 펀딩 객체 추출
+                var funding = map.funding;
+                // 달성률 추출
+                var achievementrate = map.achievementrate;
+                // 결과 리스트에 삽입
+                mostViewList.push(funding);
+            }
+            /*mostViewList  =response3.result;*/
+            /*console.log(mostViewList);*/
+            displayRanking("views", mostViewList, "view-list");
+
+        }).catch(function(error) {
+            // 오류 처리
+            console.error(error);
+        });
+    }
+/**************화면 출력 메서드 끝**************/
+</script>
+
+<script>
+    function displayFundingInfo(fundingData, pageNumber) {
         var fundingInfoDiv = $('#funding-list');
-        var statusLabel = '';
+        fundingInfoDiv.empty();
 
-        if (state === 'IN_PROGRESS') {
-            statusLabel = '오픈 예정';
-        } else if (state === 'ACTIVE') {
-            statusLabel = '진행 중';
-        } else if (state === 'FAIL') {
-            statusLabel = '펀딩 마감';
-        } else if (state === 'COMPLETE') {
-            statusLabel = '펀딩 마감';
-        }
+        for (var [index, item] of Object.entries(fundingData)) {
+            //console.log(item);
+            var id = item.fundingId;
+            var title = item.title;
+            var subtitle = item.subtitle;
+            var thumbnail = item.thumbnail;
+            var achievementrate = item.achievementrate;
+            var viewCount = item.viewCount;
+            var likeCount = item.likeCount;
+            var liked = item.liked;
+            var deadline = item.deadline;
+            // 좋아요 버튼
+            var likeButton = '<button class="like-button" data-funding-id="' + id + '" data-funding-isLiked="' + liked + '" data-page="' + pageNumber + '">' +
+                '<span class="like-icon">' + (liked ? '<span class="bi bi-heart-fill" style="padding: 5px; color: red">♥</span>' : '<span class="bi bi-heart" style="padding: 5px;">♡</span>') + '</span></button>';
 
-        // 좋아요 버튼
-        var likeButton = '<button class="like-button" data-funding-id="' + id + '" data-funding-isLiked="' + liked + '" data-page="' + pageNumber + '">' +
-            '<span class="like-icon">' + (liked ? '<span class="bi bi-heart-fill" style="padding: 5px; color: red">♥</span>' : '<span class="bi bi-heart" style="padding: 5px;">♡</span>') + '</span></button>';
-
-
-        var fundingInfoHtml = `
-            <div id="whole-card" class="col-md-4">
+            var fundingInfoHtml = `
+            <div class="col-md-3 whole-card">
                 ${likeButton}
-                <a href="/fundingDetail?id=${id}" class="card-title-link">
+                <a href="/funding/Detail?id=${id}" class="card-title-link">
                     <div class="card">
                         <div class="cheader">
                             <img src="${thumbnail}" alt="Thumbnail" class="img-fluid">
                         </div>
                         <div class="card-body">
-                            <p style="font-size: 12px; margin: 0;">
-                                Views <span style="font-size: 12px; color: cornflowerblue">${viewCount}</span>
+                            <p style="font-size: 10px; margin: 0;">
+                                Views <span style="font-size: 10px; color: cornflowerblue">${viewCount}</span>
                                 &nbsp;&nbsp;&nbsp;
-                                Likes <span style="font-size: 12px; color: cornflowerblue">${likeCount}</span>
+                                Likes <span style="font-size: 10px; color: cornflowerblue">${likeCount}</span>
                             </p>
-                            &nbsp;&nbsp;
-                                <div class="card-title">
-                                ${title}
+                            <p style="font-size: 10px; margin: 0;">
+                                마감일 <span style="font-size: 12px; color: cornflowerblue">${deadline}</span>
+                            </p>
+
+                            <div class="card-title">
+                                <span style="font-size: 14px;">${title}</span>
                             </div>
-                            &nbsp;&nbsp;
+
                             <div class="card-subtitle">
                                 <p class="card-text">${subtitle}</p>
                             </div>
-                            &nbsp;&nbsp;&nbsp;
+
                             <div class="card-bottom">
                                 <p class="card-text">달성률: ${achievementrate}%</p>
                             </div>
@@ -359,261 +679,44 @@
             </div>
         `;
 
-        // fundingInfoDiv 내에 내용을 추가합니다.
-        fundingInfoDiv.append(fundingInfoHtml);
+            // fundingInfoDiv 내에 내용을 추가합니다.
+            fundingInfoDiv.append(fundingInfoHtml);
+        }
     }
 
-    // 펀딩 리스트 가져오기
-    function loadFundingList(pageNumber) {
-        $.ajax({
-            type: 'GET',
-            cache: false,
-            url: "/login/cookie",
-            dataType: "json",
+    function displayPagenation(category, totalItems, currentpage, pageNumber, itemsPerPage) {
+        // 기존 카드 제거
+        $("#page-nav").empty();
 
-            success: function (data) {
-                var msg = data.message;
-                var isSuccess = data.isSuccess;
-                let jwtToken = "";
+        var requestUrl = '/funding/all?state=IN_PROGRESS&category=' + category +"&currentpage=" + pageNumber + "&itemsPerPage=" + itemsPerPage;
+        // 페이지네이션 숫자를 추가
+        var numPages = Math.ceil(totalItems / itemsPerPage);
+        var prevLink = '<a class="page-link page-link-prev" href="' + requestUrl + '&currentpage=' + (currentpage - 1) + '&itemsPerPage=' + itemsPerPage + '" data-page="' + (currentpage) + '">&laquo; Prev</a>';
+        var prevItem = $('<li class="page-item"></li>').append(prevLink);
 
-                if (isSuccess === true) {
-                    jwtToken = data.result;
-                }
+        if (pageNumber > 1) {
+            $("#page-nav").append(prevItem);
+        }
 
-                var requestUrl = "/funding/all?category=" + category;
+        for (var i = 1; i <= numPages; i++) {
+            var pageLink = '<a class="page-link" href="' + requestUrl + '&currentpage=' + i + '&itemsPerPage=' + itemsPerPage + '" data-page="' + i + '">' + i + '</a>';
+            var pageItem = $('<li class="page-item"></li>').append(pageLink);
 
-                $.ajax({
-                    async: true,
-                    type: 'GET',
-                    contentType: 'application/json',
-                    cache: false,
-                    url: requestUrl+"&currentpage=" + pageNumber + "&itemsPerPage=" + itemsPerPage,
-                    dataType: "json",
-                    beforeSend: function(xhr) {
-                        // JWT 토큰을 헤더에 추가
-                        xhr.setRequestHeader("Authorization", "Bearer " + jwtToken);
-                    },
-                    success: function (data) {
-                        var msg = data.message;
-                        var isSuccess = data.isSuccess;
-
-                        if (isSuccess === true) {
-                            //1. 페이지 네이션
-
-                            // 펀딩글이 하나 이상일 떄,
-                            if (data.result.length > 0){
-                                // 전체 리스트 수
-                                totalItems = data.result[0].totalItems;
-
-                                var urlParams = new URLSearchParams(window.location.search);
-                                var page = parseInt(urlParams.get('currentpage')) || 1; // Default to page 1 if the parameter is missing
-
-                                // 기존 카드 제거
-                                $("#page-nav").empty();
-
-                                // 페이지네이션 숫자를 추가
-                                var numPages = Math.ceil(totalItems / itemsPerPage);
-                                var prevLink = '<a class="page-link page-link-prev" href="' + requestUrl + '&currentpage=' + (page - 1) + '&itemsPerPage=' + itemsPerPage + '" data-page="' + (page) + '">&laquo; Prev</a>';
-                                var prevItem = $('<li class="page-item"></li>').append(prevLink);
-
-                                if (pageNumber > 1) {
-                                    $("#page-nav").append(prevItem);
-                                }
-
-                                for (var i = 1; i <= numPages; i++) {
-                                    var pageLink = '<a class="page-link" href="' + requestUrl + '&currentpage=' + i + '&itemsPerPage=' + itemsPerPage + '" data-page="' + i + '">' + i + '</a>';
-                                    var pageItem = $('<li class="page-item"></li>').append(pageLink);
-
-                                    // Highlight
-                                    if (pageNumber === i) {
-                                        pageItem.addClass('active');
-                                    }
-
-                                    $("#page-nav").append(pageItem);
-                                }
-
-                                var nextLink = '<a class="page-link page-link-next" href="' + requestUrl + '&currentpage=' + (page + 1) + '&itemsPerPage=' + itemsPerPage + '" data-page="' + (page + 1) + '">Next &raquo;</a>';
-                                var nextItem = $('<li class="page-item"></li>').append(nextLink);
-
-                                if (page < numPages) {
-                                    $("#page-nav").append(nextItem);
-                                }
-
-                                var fundingMap = data.result;
-                                // 기존 카드 제거
-                                $("#funding-list").empty();
-
-                                // 2. 패이지 리스트를 추가
-                                for (var [index, funding] of Object.entries(fundingMap)) {
-                                    /*console.log(funding);*/
-                                    var id = funding.fundingId;
-                                    var title = funding.title;
-                                    var subtitle = funding.subtitle;
-                                    var thumbnail = funding.thumbnail;
-                                    var liked = funding.liked;
-                                    var achievementrate = funding.achievementrate;
-                                    var totalItems = funding.totalItems;
-                                    var viewCount = funding.viewCount;
-                                    var likeCount = funding.likeCount;
-                                    var state = funding.state;
-                                    displayFundingInfo(id, title, subtitle, thumbnail, liked, achievementrate, viewCount, likeCount, pageNumber, state);
-
-                                }
-                            }
-
-                            // 결과가 하나도 없을때,
-                            else {
-                                // 기존 카드 제거
-                                $("#page-nav").empty();
-                                // 기존 카드 제거
-                                $("#funding-list").empty();
-
-                                var message = '<div class="col-md-12 d-flex justify-content-center align-items-center"><p style="font-size: 17px;">해당 결과가 없습니다.</p></div>';
-                                // funding-list 요소에 카드를 추가합니다.
-                                $("#funding-list").append(message);
-                            }
-                        }
-                        else {
-                            console.log(msg);
-                        }
-                    },
-                    error: function (error) {
-                        console.log(error);
-                        alert("오류가 발생했습니다. 오류 메시지: " + error)   ;
-                    }
-                });
-            },
-            error: function (error) {
-                console.log(error);
-                alert("오류가 발생했습니다. 오류 메시지: " + error);
+            // Highlight
+            if (pageNumber === i) {
+                pageItem.addClass('active');
             }
-        });
+
+            $("#page-nav").append(pageItem);
+        }
+
+        var nextLink = '<a class="page-link page-link-next" href="' + requestUrl + '&currentpage=' + (currentpage + 1) + '&itemsPerPage=' + itemsPerPage + '" data-page="' + (currentpage + 1) + '">Next &raquo;</a>';
+        var nextItem = $('<li class="page-item"></li>').append(nextLink);
+
+        if (currentpage < numPages) {
+            $("#page-nav").append(nextItem);
+        }
     }
-
-
-    $(document).ready(function () {
-        // url에서 funding id 추출
-        var urlParams = getURLParams();
-        var checkcategory = urlParams.category;
-
-        // 모든 탭 버튼에서 'active' 클래스를 제거합니다.
-        $(".nav-link").removeClass("active");
-
-        if (checkcategory === undefined  || checkcategory === "") {
-            category = 0;
-            // 전체 탭 active
-            $("#category0").addClass("active");
-            // 페이지를 로드할 때 초기 페이지
-            loadFundingList(1);
-        }
-        else {
-            category = checkcategory;
-            // 해당 탭 active
-            $("#category" + category).addClass("active");
-            // 페이지를 로드할 때 페이지
-            loadFundingList(1);
-        }
-    });
-
-
-
-    // Handle page number clicks
-    $(document).on('click', '.page-link', function (e) {
-        e.preventDefault(); // 링크 클릭 시 페이지 이동 방지
-        var page = $(this).data('page');
-        loadFundingList(page);
-    });
-
-
-    // Handle like button clicks
-    $(document).on('click', '.like-button', function (e) {
-        e.stopPropagation(); // 이벤트 전파 중지
-        // Find the like-icon element within the clicked button
-        var likeIcon = $(this).find('.like-icon');
-        if (likeIcon.hasClass('bi-heart-fill')) {
-            likeIcon.removeClass('bi-heart-fill').addClass('bi-heart');
-        } else {
-            likeIcon.removeClass('bi-heart').addClass('bi-heart-fill');
-        }
-
-        var fundingId = $(this).data('funding-id');
-        var page = $(this).data('page');
-
-        $.ajax({
-            type: 'GET',
-            cache: false,
-            url: "/login/cookie",
-            dataType: "json",
-
-            success: function (data) {
-                var msg = data.message;
-                var isSuccess = data.isSuccess;
-
-                if (isSuccess === true) {
-                    var jwtToken = data.result;
-                    $.ajax({
-                        /*async: true,*/
-                        type: 'GET',
-                        contentType: 'application/json',
-                        cache: false,
-                        url: "/funding/toggle-like?id=" + fundingId,
-                        dataType: "json",
-                        beforeSend: function(xhr) {
-                            // JWT 토큰을 헤더에 추가
-                            xhr.setRequestHeader("Authorization", "Bearer " + jwtToken);
-                        },
-                        success: function (data) {
-                            console.log(data);
-                            var msg = data.message;
-                            var isSuccess = data.isSuccess;
-
-                            if (isSuccess === true) {
-                                // 페이지 재로딩
-                                loadFundingList(page);
-
-                            }
-                            else {
-                                console.log(msg);
-                                alert(msg);
-                            }
-                        },
-                        error: function (error) {
-                            alert("로그인이 필요합니다.");
-                            window.location.href = "/login";
-                        }
-                    });
-                }
-                else {
-                    alert(msg);
-                }
-            },
-            error: function (error) {
-                alert("로그인이 필요합니다.");
-                window.location.href = "/login";
-            }
-        });
-
-
-        /*// 카테고리 탭 선택 핸들러
-        $(document).on('click', '.header-link', function (e) {
-            e.preventDefault(); // Prevent default link behavior
-
-            var categoryID = $(this).data('category-id');
-            alert(categoryID);
-            var page = 1; // You may reset the page to 1 when switching categories
-
-            // Load the funding list based on the new category
-            loadFundingList(page);
-        });*/
-
-
-        // 이미지 클릭 핸들러
-        $(document).on('click', '.card img', function () {
-            var fundingId = $(this).closest('.card').find('.like-button').data('funding-id');
-            window.location.href = "/fundingDetail?id="+fundingId;
-        });
-
-    });
 </script>
 </body>
 </html>

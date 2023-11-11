@@ -147,6 +147,7 @@ public class Funding extends BaseEntity {
 
         // 펀딩 변경 상태가 fail로 들어오면 매개변수의 참여자 리스트 상태값도 환불 필요 상태로 변경
         if (funding_forward_state.equals(Constant.FundingState.FAIL)) {
+            this.state = Constant.FundingState.FAIL;
             for (FundingParticipants fundingParticipants: fundingParticipantsList) {
                 fundingParticipants.updateFundingParticipantsState(Constant.FundingParticipantsState.REFUND_NEEDED);
 
@@ -154,6 +155,7 @@ public class Funding extends BaseEntity {
         }
         // 펀딩 변경 상태가 complete으로 들어오면 매개변수의 참여자 리스트 상태값도 펀딩 성공 상태로 변경
         else if (funding_forward_state.equals(Constant.FundingState.COMPLETE)) {
+            this.state = Constant.FundingState.COMPLETE;
             for (FundingParticipants fundingParticipants: fundingParticipantsList) {
                 fundingParticipants.updateFundingParticipantsState(Constant.FundingParticipantsState.COMPLETE);
             }

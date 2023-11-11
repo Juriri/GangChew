@@ -11,11 +11,38 @@
             height: 400px; /* 원하는 높이 설정 */
             overflow: hidden; /* 넘치는 이미지를 숨깁니다. */
             text-align: left;
+            position: relative;
         }
 
         .image-container img {
             width: auto;
-            height: 100%; /* 이미지 높이를 100%로 설정하여 가로 비율에 맞게 조정됩니다. */
+            height: 100%;
+        }
+
+        .image-state {
+            position: fixed;
+            top: 50%;
+            left: 60%;
+
+            z-index: 1;
+            color: black;
+            font-weight: bold;
+            font-size: 30px;
+            background-color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .like-button {
+            position: absolute;
+            z-index: 1;
+            top: 0;
+            left: +10px;
+            background: transparent;
+            border: none;
+            color: #ff0026;
+            font-size: 50px;
         }
 
         #header-viewer {
@@ -232,7 +259,7 @@
     /**************뷰 버튼 핸들러 시작**************/
     $(document).ready(function () {
         loadAndDisplayFundingDetail();
-        loadAndDisplayCommentData();
+        //loadAndDisplayCommentData();
 
         // 서버로 장바구니 추가할 펀딩 정보 전송
         $(document).on('click', '#addIntoCartButton', function () {
@@ -254,7 +281,7 @@
 
         // 펀딩 수정창 뷰 이동
         $(document).on('click', '#updateButton', function () {
-            window.location.href = "/fundingEdit?id=" + funding_request_id;
+            window.location.href = "/funding/Edit?id=" + funding_request_id;
         });
 
         // 펀딩 참여 서버 요청
@@ -285,6 +312,17 @@
                                     setTimeout(function() {
                                         alert('참여 등록이 완료 되었습니다.');
                                     }, 2000); //3초
+
+                                    url = "/fundingcart/delete?funding="+funding_request_id;
+
+                                    loadData(url, null)
+                                        .then(data => {
+                                            window.location.reload();
+                                        })
+                                        .catch(error => {
+                                            console.error(error);
+                                        });
+
                                 } else {
                                     console.log(data.message);
                                     setTimeout(function() {
@@ -311,7 +349,7 @@
 
         $(document).on('click', '#deleteCommentButton', function () {
             var commentId = $(this).closest('.comment-block').data('comment-id');
-            var url = '/fundingcomment/delete?id='+commentId;
+            var url = '/funding/comment/delete?id='+commentId;
             deleteData(url)
                 .then(data=> {
                     // fundingData --> 펀딩 게시글 디테일 반환 모델 데이터 값 BaseResponse<FundingDetailRes>()
@@ -332,7 +370,7 @@
         // 수정한 댓글 내용 서버로 전송
         $(document).on('click', '#commentEditSubmit', function () {
             var commentId = $(this).data('comment-id');
-            var url = '/fundingcomment/update';
+            var url = '/funding/comment/update';
             var requestData = {
                 "comment_id" : commentId,
                 "content" : $('#comment-text').val()
@@ -356,7 +394,7 @@
 
         // 댓글 추가 버튼 클릭 핸들러
         $(document).on('click', '#addCommentButton', function () {
-            var url = '/fundingcomment/create';
+            var url = '/funding/comment/create';
             var requestData = {
                 "funding_id" : funding_request_id,
                 "content" : $('#comment-text').val()
@@ -376,6 +414,81 @@
                     console.error(error);
                 });
         });
+
+
+        // 펀딩 활성화 버튼 클릭 핸들러제
+        $(document).on('click', '#activeButton', function () {
+            var fundingId = $(this).data('funding-id');
+            var url = '/funding/update/state?id='+fundingId+'&state=IN_PROGRESS';
+
+            loadData(url)
+                .then(data => {
+                    if (data.isSuccess) {
+                        alert('펀딩이 시작되었습니다.');
+                        window.location.reload();
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        });
+
+        // 펀딩 삭제 버튼 클릭 핸들러
+        $(document).on('click', '#deleteButton', function () {
+            var fundingId = $(this).data('funding-id');
+            var url = '/funding/update/state?id='+fundingId+'&state=DELETE';
+
+            if (window.confirm("삭제 하시겠습니까?")) {
+                loadData(url)
+                    .then(data => {
+                        if (data.isSuccess) {
+                            alert('펀딩이 삭제되었습니다.');
+                            window.location.reload();
+                        } else {
+                            alert(data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+            }
+
+        });
+
+        $(document).on('click', '.like-button', function (e) {
+            e.stopPropagation(); // 이벤트 전파 중지
+            var fundingId = $(this).data('funding-id');
+
+            var url = "/funding/toggle-like?id=" + fundingId;
+            loadData(url)
+                .then(data => {
+                    if (data.isSuccess === true) {
+                        console.log(data.result);
+
+                        var likeText = $(this).text(); // 이모티콘 텍스트 가져오기
+
+                        if ($(this).hasClass('bi-heart-fill')) {
+                            $(this).removeClass('bi-heart-fill').addClass('bi-heart');
+                            likeText = '♡'; // 빈 하트로 변경
+                        } else {
+                            $(this).removeClass('bi-heart').addClass('bi-heart-fill');
+                            likeText = '♥'; // 꽉 찬 하트로 변경
+                        }
+
+                        //$(this).html('<span style="padding: 5px;">' + likeText + '</span>');
+                        $(this).html(likeText);
+
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+
+        });
     });
 
 
@@ -391,6 +504,12 @@
                 // fundingData --> 펀딩 게시글 디테일 반환 모델 데이터 값 BaseResponse<FundingDetailRes>()
                 if (data.isSuccess === true) {
                     displayFundingDetailInfo(data.result);
+                    var state = data.result.funding.state;
+                    if (state === "IN_PROGRESS") {
+                        loadAndDisplayCommentData();
+                    } else{
+                        $('.custom-comment-container').hide();
+                    }
                 } else {
                     alert(data.message);
                 }
@@ -402,10 +521,9 @@
 
     // 댓글 정보를 불러오고 화면에 표시
     function loadAndDisplayCommentData() {
-        var url = '/fundingcomment?funding=' + funding_request_id;
+        var url = '/funding/comment?funding=' + funding_request_id;
         loadData(url, null)
             .then(data => {
-                // commentData --> 펀딩 댓글 리스트 반환 모델 데이터 값 BaseResponse<List<FundingComment>()
                 if (data.isSuccess === true) {
                     displayCommentInfo(data.result);
                 } else {
@@ -417,6 +535,9 @@
             });
     }
 
+
+
+</script>
 
 </script>
 <!-- TUI 에디터 JS CDN -->
@@ -436,47 +557,16 @@
     function displayFundingDetailInfo(fundingData) {
         // 펀딩 게시글 디테일 클래스의 반환 값 재정의
         var funding = fundingData.funding;
-        var fundingCategory = fundingData.fundingCategory;
-        var writer = fundingData.writer;
-        var achievementrate = fundingData.achievementrate;
-        var deadline = fundingData.deadline;
+        deadline = funding.deadline;
         var liked = fundingData.liked;
-        var loginUser = fundingData.loginUser;
         price = fundingData.funding.amount;
 
         // 이미지 컨테이너의 이미지를 설정
         var imageContainer = $('.image-container');
         imageContainer.find('img').attr('src', funding.thumbnail);
 
-        // 펀딩 요약 정보 출력
-        var headerViewer = document.getElementById("header-viewer");
-        var headerInfoHtml = `
-            <p style="font-size: 18px; flex: 1;">${funding.title}</h2>
-            <p style="font-size: 18px; flex: 1;">${funding.subtitle}</p>
-            <p style="font-size: 18px; flex: 1;">펀딩 오픈 유저: ${writer}</p>
-            <p style="font-size: 18px; flex: 1;">목표 금액:  ${new Intl.NumberFormat("ko-KR").format(funding.amount)} 원</p>
-            <p style="font-size: 18px; flex: 1;">달성률: ${achievementrate}%</p>
-            <p style="font-size: 18px; flex: 1;">마감일: ${deadline}</p>
-        `;
+        updateUIBasedOnFundingState(fundingData);
 
-        // 작성자와 로그인한 유저 일치 판별
-        // 펀딩 작성자와 로그인 유저가 동일한 경우,
-        if (loginUser) {
-            headerInfoHtml += `
-                <div class="button-container">
-                    <button id="updateButton" class="btn btn-primary" data-funding-id="${funding.id}">펀딩 수정</button>
-                </div>
-            `;
-        } else { // 펀딩 작성자와 로그인 유저가 동일하지 않은 경우,
-            headerInfoHtml += `
-                <div class="button-container">
-                    <button id="addIntoCartButton" class="btn btn-success" data-funding-id="${funding.id}">장바구니 담기</button>
-                    <button id="joinFundingButton" class="btn btn-success" data-funding-id="${funding.id}">펀딩 참여하기</button>
-                </div>
-            `;
-        }
-        /*headerViewer.html(headerInfoHtml);*/
-        headerViewer.innerHTML = headerInfoHtml;
 
         // toast viewer 설정
         var fundingContent = funding.content;
@@ -556,6 +646,96 @@
     }
 
 
+
+    // 펀딩 상태에 따라 화면을 업데이트
+    function updateUIBasedOnFundingState(fundingData ) {
+        console.log(fundingData);
+        var funding = fundingData.funding;
+        var fundingCategory = fundingData.fundingCategory;
+        var writer = fundingData.writer;
+        var achievementrate = fundingData.achievementrate;
+        var formattedDeadline = fundingData.deadline;
+        deadline = funding.deadline;
+        var liked = fundingData.liked;
+        var loginUser = fundingData.loginUser;
+        var state = funding.state;
+        price = fundingData.funding.amount;
+
+        var headerViewer = $('#header-viewer');
+        var headerInfoHtml = `
+            <h2 style="font-size: 30px; font-weight: bold;">${funding.title}</h2>
+            <p style="font-size: 18px; ">${funding.subtitle}</p>
+            <p style="font-size: 18px; font-weight: bold;">카테고리: <span style="font-size: 16px; color: cornflowerblue">${fundingCategory.categoryName}</span></p>
+            <p style="font-size: 18px; font-weight: bold;">펀딩 오픈 유저: <span style="font-size: 16px; color: cornflowerblue">${writer}</span></p>
+            <p style="font-size: 18px; font-weight: bold;">목표 금액: <span style="font-size: 16px; color: cornflowerblue">${new Intl.NumberFormat("ko-KR").format(funding.amount)} 원</span></p>
+            <p style="font-size: 18px; font-weight: bold;">달성률: <span style="font-size: 16px; color: cornflowerblue">${achievementrate}%</span></p>
+            <div style="margin-bottom: 10px;">
+                <progress value="${achievementrate}" max="100"></progress>
+            </div>
+            <p style="font-size: 18px;  font-weight: bold;">마감일: <span style="font-size: 16px; color: cornflowerblue">${formattedDeadline}</span></p>
+        `;
+        if (state === "ACTIVE") {
+            if(loginUser) {
+                headerInfoHtml += `
+                    <button id="activeButton" class="btn btn-primary" data-funding-id="${funding.id}">펀딩 시작</button>
+                    <button id="updateButton" class="btn btn-primary" data-funding-id="${funding.id}">펀딩 수정</button>
+                `;
+            }
+
+            var imageContainer = document.querySelector('.image-container');
+            var image = imageContainer.querySelector('img');
+            image.style.opacity = '0.5';
+
+            var textElement = document.createElement('div');
+            textElement.textContent = '오픈 예정'; // 원하는 텍스트 내용을 여기에 추가
+            textElement.classList.add('image-state');
+
+            // 텍스트 엘리먼트를 이미지 컨테이너에 추가
+            imageContainer.appendChild(textElement);
+
+        } else if (state === "IN_PROGRESS") {
+            if(!loginUser) {
+                // 좋아요 버튼 생성
+                var likeButton = document.createElement('button');
+                likeButton.className = 'like-button ' + (liked ? 'bi-heart-fill' : 'bi-heart');
+                likeButton.textContent = liked ? '♥' : '♡'; // 텍스트 내용을 설정하여 아이콘을 표시
+                likeButton.setAttribute('data-funding-id', funding.id);
+
+                var imageContainer = document.querySelector('.image-container');
+                imageContainer.appendChild(likeButton);
+
+                // 텍스트 엘리먼트를 이미지 컨테이너에 추가
+                imageContainer.appendChild(likeButton);
+
+                headerInfoHtml += `
+                    <button id="joinFundingButton" class="btn btn-primary" data-funding-id="${funding.id}">펀딩 참여하기</button>
+                    <button id="addIntoCartButton" class="btn btn-primary" data-funding-id="${funding.id}">장바구니 담기</button>
+                `;
+            }
+
+        } else if (state === "COMPLETE" || state === "FAIL") {
+            if(loginUser) {
+                headerInfoHtml += `
+                    <button id="deleteButton" class="btn btn-primary" data-funding-id="${funding.id}">펀딩 삭제</button>
+                `;
+            }
+
+            var imageContainer = document.querySelector('.image-container');
+            var image = imageContainer.querySelector('img');
+            image.style.opacity = '0.5';
+
+            var textElement = document.createElement('div');
+            textElement.textContent = '마감된 펀딩'; // 원하는 텍스트 내용을 여기에 추가
+            textElement.classList.add('image-state');
+
+            // 텍스트 엘리먼트를 이미지 컨테이너에 추가
+            imageContainer.appendChild(textElement);
+        }
+        headerViewer.html(headerInfoHtml);
+    }
+
+
+    let deadline;
     $(document).ready(function () {
         var IMP = window.IMP;
         IMP.init("imp78413620");
@@ -566,6 +746,7 @@
         var seconds = today.getSeconds();  // 초
         var milliseconds = today.getMilliseconds();
         var makeMerchantUid = hours +  minutes + seconds + milliseconds;
+
     });
 </script>
 </body>

@@ -11,8 +11,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
 
-        .custom-container {
-
+        .student-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
         }
 
         .like-button {
@@ -24,6 +26,18 @@
             border: none; /* 버튼 테두리 제거 */
             color: #ff0026;
             font-size: 40px; /* 원하는 크기로 설정 */
+        }
+
+        .empty-heart {
+            color: gray; /* Customize the color for the empty heart */
+            font-size: 40px;
+            padding: 5px;
+        }
+
+        .filled-heart {
+            color: red; /* Customize the color for the filled heart */
+            font-size: 40px;
+            padding: 5px;
         }
 
         .card-title-link {
@@ -43,8 +57,8 @@
 <body>
 <header th:replace="~{common/header/header.html :: commonheader}"></header>
 
-<div class="custom-container">
-    <div class="header-container" style="position: relative;">
+<div class="student-container">
+    <div class="student-header-container" style="position: relative;">
         <!-- 헤더 이미지 -->
         <img src="/icon/class.jpg" alt="헤더 이미지" style="width: 100%; max-height: 500px; object-fit: cover;">
 
@@ -54,39 +68,37 @@
             <a class="btn btn-lg btn-primary" href="/funding" style="text-decoration: none; color: #fff; background-color: #555; border-color: #555; padding: 10px 20px; border-radius: 5px;">더 많은 펀딩 강의 구경하기</a>
         </div>
     </div>
-</div>
-<div class="container">
     <a class="btn btn-lg btn-primary" href="/studentrequest/create" style="text-decoration: none; color: #fff; background-color: #555; border-color: #555; border-radius: 5px; padding: 5px 5px; margin: 10px 0;">
         <span style="font-size: 16px;">글쓰기</span>
     </a>
-        <!-- 카테고리 분류를 탭 형식으로 표시 -->
-        <ul class="nav nav-tabs" id="categoryTabs" role="tablist">
-            <li class="nav-item" role="presentation">
-                <a class="nav-link header-link" id="category0" data-toggle="tab" href="/studentrequest" role="tab" data-category-id="0" aria-controls="all" aria-selected="true" style="font-weight: bold">전체</a>
-            </li>
-            <li class="nav-item" role="presentation">
-                <!--<a class="nav-link" id="category1-tab" data-toggle="tab"  data-category-id="1" role="tab" aria-controls="category1" aria-selected="false" style="font-weight: bold">운동&Life</a>-->
-                <a class="nav-link header-link" id="category1" data-toggle="tab" href="/studentrequest?category=1" data-category-id="1" role="tab" aria-controls="all" aria-selected="true" style="font-weight: bold">운동&Life</a>
-            </li>
-            <li class="nav-item" role="presentation">
-                <a class="nav-link header-link" id="category2" data-toggle="tab" href="/studentrequest?category=2" data-category-id="2" role="tab" aria-controls="category2" aria-selected="false" style="font-weight: bold">경제&금융</a>
-            </li>
-            <li class="nav-item" role="presentation">
-                <a class="nav-link header-link" id="category3" data-toggle="tab" href="/studentrequest?category=3" data-category-id="3" role="tab" aria-controls="category3" aria-selected="false" style="font-weight: bold">n잡&부업</a>
-            </li>
-            <li class="nav-item" role="presentation">
-                <a class="nav-link header-link" id="category4" data-toggle="tab" href="/studentrequest?category=4" data-category-id="4" role="tab" aria-controls="category4" aria-selected="false" style="font-weight: bold">커리어</a>
-            </li>
-            <li class="nav-item" role="presentation">
-                <a class="nav-link header-link" id="category5" data-toggle="tab" href="/studentrequest?category=5" data-category-id="5" role="tab" aria-controls="category5" aria-selected="false" style="font-weight: bold">언어</a>
-            </li>
-            <li class="nav-item" role="presentation">
-                <a class="nav-link header-link" id="category6" data-toggle="tab" href="/studentrequest?category=6" data-category-id="6" role="tab" aria-controls="category6" aria-selected="false" style="font-weight: bold">프로그래밍</a>
-            </li>
-            <li class="nav-item" role="presentation">
-                <a class="nav-link header-link" id="category7" data-toggle="tab" href="/studentrequest?category=7" data-category-id="7" role="tab" aria-controls="category7" aria-selected="false" style="font-weight: bold">비지니스&마케팅</a>
-            </li>
-        </ul>
+    <!-- 카테고리 분류를 탭 형식으로 표시 -->
+    <ul class="nav nav-tabs" id="categoryTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link header-link" id="category0" data-toggle="tab" href="/studentrequest" role="tab" data-category-id="0" aria-controls="all" aria-selected="true" style="font-weight: bold">전체</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <!--<a class="nav-link" id="category1-tab" data-toggle="tab"  data-category-id="1" role="tab" aria-controls="category1" aria-selected="false" style="font-weight: bold">운동&Life</a>-->
+            <a class="nav-link header-link" id="category1" data-toggle="tab" href="/studentrequest?category=1" data-category-id="1" role="tab" aria-controls="all" aria-selected="true" style="font-weight: bold">운동&Life</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link header-link" id="category2" data-toggle="tab" href="/studentrequest?category=2" data-category-id="2" role="tab" aria-controls="category2" aria-selected="false" style="font-weight: bold">경제&금융</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link header-link" id="category3" data-toggle="tab" href="/studentrequest?category=3" data-category-id="3" role="tab" aria-controls="category3" aria-selected="false" style="font-weight: bold">n잡&부업</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link header-link" id="category4" data-toggle="tab" href="/studentrequest?category=4" data-category-id="4" role="tab" aria-controls="category4" aria-selected="false" style="font-weight: bold">커리어</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link header-link" id="category5" data-toggle="tab" href="/studentrequest?category=5" data-category-id="5" role="tab" aria-controls="category5" aria-selected="false" style="font-weight: bold">언어</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link header-link" id="category6" data-toggle="tab" href="/studentrequest?category=6" data-category-id="6" role="tab" aria-controls="category6" aria-selected="false" style="font-weight: bold">프로그래밍</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link header-link" id="category7" data-toggle="tab" href="/studentrequest?category=7" data-category-id="7" role="tab" aria-controls="category7" aria-selected="false" style="font-weight: bold">비지니스&마케팅</a>
+        </li>
+    </ul>
 
     <div class="album py-5 bg-white">
         <ul id="student-list" class="row">
@@ -103,6 +115,7 @@
         </div>
     </div>
 </div>
+
 
 <header th:replace="~{common/footer/footer.html :: commonfooter}"></header>
 
@@ -126,13 +139,15 @@
         var fundingInfoDiv = $('#student-list');
 
         // 좋아요 버튼
+       /* var likeButton = '<button class="like-button" data-studentrequest-id="' + id + '" data-studentrequest-isLiked="' + liked + '" data-page="' + pageNumber + '">' +
+            '<span class="like-icon">' + (liked ? '<span class="bi bi-heart-fill" style="padding: 5px; color: red">♥</span>' : '<span class="bi bi-heart" style="padding: 5px;">♡</span>') + '</span></button>';*/
         var likeButton = '<button class="like-button" data-studentrequest-id="' + id + '" data-studentrequest-isLiked="' + liked + '" data-page="' + pageNumber + '">' +
-            '<span class="like-icon">' + (liked ? '<span class="bi bi-heart-fill" style="padding: 5px; color: red">♥</span>' : '<span class="bi bi-heart" style="padding: 5px;">♡</span>') + '</span></button>';
+            '<span class="' + (liked ? 'filled-heart' : 'empty-heart') + '">♥</span></button>';
 
         var fundingInfoHtml = `
             <li class="list-group-item" style="width: 100%; margin: 0 0;">
             ${likeButton}
-            <a href="/studentrequestDetail?id=${id}" class="card-title-link">
+            <a href="/studentrequest/Detail?id=${id}" class="card-title-link">
                 <div class="row featurette" style="padding: 10px">
                     <div class="col-md-9">
                         <div class="title" style="height=100%; vertical-align: middle; padding-top: 10px;">
@@ -330,11 +345,13 @@
     $(document).on('click', '.like-button', function (e) {
         e.stopPropagation(); // 이벤트 전파 중지
         // Find the like-icon element within the clicked button
-        var likeIcon = $(this).find('.like-icon');
-        if (likeIcon.hasClass('bi-heart-fill')) {
-            likeIcon.removeClass('bi-heart-fill').addClass('bi-heart');
-        } else {
+        var likeIcon = $(this).find('.filled-heart'); // Find the filled-heart icon
+        var isLiked = !likeIcon.hasClass('bi-heart-fill');
+
+        if (isLiked) {
             likeIcon.removeClass('bi-heart').addClass('bi-heart-fill');
+        } else {
+            likeIcon.removeClass('bi-heart-fill').addClass('bi-heart');
         }
 
         var studentRequestId = $(this).data('studentrequest-id');

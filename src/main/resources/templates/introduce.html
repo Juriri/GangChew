@@ -20,10 +20,11 @@
         }
 
         .introduction {
+            width: 80%;
             position: absolute;
-            top: 10%; /* 변경된 위치 */
+            top: 50%; /* 변경된 위치 */
             left: 50%;
-            transform: translateX(-50%); /* 가운데 정렬 유지 */
+            transform: translate(-50%, -50%);
             text-align: center;
             background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
             padding: 20px;
@@ -35,7 +36,7 @@
             @media only screen and (max-device-width: 376px) and (orientation: portrait) {
                 height: auto; /* 자동 높이 조정 */
                 width: 70%;
-                top: 10%;
+                top: 50%;
             }
         }
 
@@ -103,11 +104,11 @@
         .feature-card {
             width: 100%;
             background-color: #fff;
-            padding: 20px;
+            padding: 10px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
             text-align: center;
-            margin-right: 22px;
+            margin-right: 20px;
 
             @media only screen and (max-device-width: 376px) and (orientation: portrait) {
                 margin: 0 auto;
@@ -117,7 +118,7 @@
 
         .feature-card h2 {
             color: black;
-            font-size: 20px;
+            font-size: 22px;
 
             @media only screen and (max-device-width: 376px) and (orientation: portrait) {
                 font-size: 10px;
@@ -126,7 +127,7 @@
 
         .feature-card p {
             color: black;
-            font-size: 12px;
+            font-size: 14px;
 
             @media only screen and (max-device-width: 376px) and (orientation: portrait) {
                 font-size: 8px;

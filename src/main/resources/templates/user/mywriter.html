@@ -14,27 +14,26 @@
             max-width: 250px;
         }
 
-        .myfunding-container {
+        .mywriter-container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
 
-
         .list {
             overflow-y: auto;
             max-height: 900px;
             padding: 10px 0;
+            border: none;
         }
 
         .card {
             border: none;
         }
 
-        /* 섹션 타이틀 스타일링 */
         .featurette-heading {
             font-size: 27px;
-            margin-bottom: 10px; /* 타이틀 아래 공백 추가 */
+            margin-bottom: 10px;
         }
 
         .featurette-divider {
@@ -52,9 +51,8 @@
             margin: 0 0;
         }
 
-        /* 버튼 스타일링 */
         .btn {
-            margin-right: 10px; /* 버튼 사이의 간격 추가 */
+            margin-right: 10px;
         }
 
         .funding-item {
@@ -81,6 +79,16 @@
             margin: 0 0;
         }
 
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
     </style>
 </head>
 <body>
@@ -88,28 +96,28 @@
 <div class="sidebar-container">
     <header th:replace="~{common/sidebar/sidebar.html :: commonsidebar}"></header>
 </div>
-<div class="myfunding-container">
+<div class="mywriter-container">
     <div class="list">
         <div class="card" style="border: none;">
             <h2 class="featurette-heading fw-normal lh-1" style="font-size: 27px;">
-                나의 참여 내역
+                나의 작성 내역
             </h2>
             <hr class="featurette-divider">
             <div class="section">
-                <h5>참여중인 펀딩</h5>
+                <h5>펀딩 대기중</h5>
+                <div id="active"></div>
+            </div>
+            <div class="section">
+                <h5>펀딩 진행중</h5>
                 <div id="in-progress"></div>
             </div>
             <div class="section">
-                <h5>모집 성공 펀딩</h5>
+                <h5>펀딩 모집 완료</h5>
                 <div id="complete"></div>
             </div>
             <div class="section">
-                <h5>환불이 필요한 펀딩</h5>
-                <div id="refund-needed"></div>
-            </div>
-            <div class="section">
-                <h5>환불 완료된 펀딩</h5>
-                <div id="refund-complete"></div>
+                <h5>펀딩 모집 실패</h5>
+                <div id="fail"></div>
             </div>
         </div>
     </div>
@@ -169,17 +177,14 @@
     /**************뷰 버튼 핸들러 시작**************/
     // Call the functions when the page loads
     document.addEventListener('DOMContentLoaded', function () {
-        loadAndDisplayParticipants('/participants/currentuser?state=ACTIVE', '#in-progress');
-        loadAndDisplayParticipants('/participants/currentuser?state=COMPLETE', '#complete');
-        loadAndDisplayParticipants('/participants/currentuser?state=REFUND_NEEDED', '#refund-needed');
-        loadAndDisplayParticipants('/participants/currentuser?state=REFUND_COMPLETE', '#refund-complete');
+        loadAndDisplayParticipants('/funding/mywriter');
     });
 
-    function loadAndDisplayParticipants(url, sectionSelector) {
+    function loadAndDisplayParticipants(url) {
         loadData(url)
             .then(data => {
                 if (data.isSuccess) {
-                    displayParticipantsInfo(data.result, sectionSelector);
+                    displayParticipantsInfo(data.result);
                 } else {
                     alert(data.message);
                 }
@@ -190,73 +195,77 @@
     }
 
     // 내가 참여중인 펀딩 목록 출력
-    function displayParticipantsInfo(data, sectionSelector) {
-        var section = document.querySelector(sectionSelector);
+    function displayParticipantsInfo(data) {
         var userInfoHtml = '';
+
+        $('#active').empty();
+        $('#in-progress').empty();
+        $('#complete').empty();
+        $('#fail').empty();
 
         // Process and format the data as needed
         for (var [index, item] of Object.entries(data)) {
-            var buttonText = ''; // 버튼 텍스트 초기화
-            console.log(item);
-            if (item.state === 'ACTIVE' && item.funding.state === 'IN_PROGRESS') {
-                // 펀딩이 진행 중인 경우
-                buttonText = '참여 취소';
+            var funding = item.funding;
+            var deadline = funding.deadline;
+            var year = deadline[0];
+            var month = String(deadline[1]).padStart(2, '0');
+            var day = String(deadline[2]).padStart(2, '0');
+            var formattedDate = year + '-' + month + '-' + day;
 
-                // buttonText 값이 존재하는 경우에만 버튼 생성
-                userInfoHtml += `
-                <div class="funding-item">
-                    <a href="/funding/Detail?id=${item.funding.id}" class="funding-link">
-                        ${item.funding.title}
-                    </a>
-                    <span style="font-size: 16px;">
-                        <button class="btn btn-outline-secondary cancel-button" type="button" data-funding-id="${item.funding.id}">
-                            ${buttonText}
-                        </button>
-                    </span>
-                </div>
-            `;
-            } else if (item.state === 'COMPLETE') {
-                userInfoHtml += `
-                <div class="funding-item">
-                <a href="/funding/Detail?id=${item.funding.id}" class="funding-link">
-                    <p>${item.funding.title} /
-                         강의실 위치 <span style="font-size: 16px; color: cornflowerblue">${item.funding.location}</span>
-                    </p>
-                </div>
-            `;
-            } else if (item.state === 'REFUND_NEEDED') {
-                // 환불 필요한 경우
-                buttonText = '환불 신청';
-
-                // buttonText 값이 존재하는 경우에만 버튼 생성
-                userInfoHtml += `
-                <div class="funding-item">
-                <a href="/funding/Detail?id=${item.funding.id}" class="funding-link">
-                    <p>${item.funding.title} /
-                         환불금액 <span style="font-size: 16px; color: cornflowerblue">${new Intl.NumberFormat("ko-KR").format(item.funding.amount)}원</span>
-                         <button class="btn btn-outline-secondary" type="button" id="refundButton" data-funding-id="${item.funding.id}">
-                            ${buttonText}
-                        </button>
-                    </p>
-                </div>
-            `;
-            } else if (item.state === 'REFUND_COMPLETE') {
-                userInfoHtml += `
-                <div class="funding-item">
-                <a href="/funding/Detail?id=${item.funding.id}" class="funding-link">
-                    <p>${item.funding.title} /
-                         환불금액 <span style="font-size: 16px; color: cornflowerblue">${new Intl.NumberFormat("ko-KR").format(item.funding.amount)}원</span> /
-                    </p>
-                </div>
-            `;
+            /*console.log(item);*/
+            if (funding.state === 'ACTIVE') {
+                $('#active').append(`
+                    <div class="funding-item">
+                        <a href="/funding/Detail?id=${funding.id}" class="funding-link">
+                            ${funding.title}
+                        </a>
+                        <span style="font-size: 16px;">
+                            <button class="btn btn-outline-secondary active-button" type="button" data-funding-id="${funding.id}">
+                                펀딩 시작
+                            </button>
+                            <button class="btn btn-outline-secondary delete-button" type="button" data-funding-id="${funding.id}">
+                                펀딩 삭제
+                            </button>
+                        </span>
+                    </div>
+                `);
+            } else if (funding.state === 'IN_PROGRESS') {
+                $('#in-progress').append(`
+                    <div class="funding-item">
+                    <a href="/funding/Detail?id=${funding.id}">
+                        <p>${funding.title} /
+                         마감일 <span style="font-size: 16px; color: cornflowerblue">${formattedDate}</span> /
+                         달성률 <span style="font-size: 16px; color: cornflowerblue">${item.achievementrate}%</span>
+                        </p>
+                    </div>
+                `);
+            } else if (funding.state === 'COMPLETE') {
+                $('#complete').append(`
+                    <div class="funding-item">
+                    <a href="/funding/Detail?id=${funding.id}" class="funding-link">
+                        <p>${funding.title} /
+                         마감일 <span style="font-size: 16px; color: cornflowerblue">${formattedDate}</span> /
+                         달성률 <span style="font-size: 16px; color: cornflowerblue">${item.achievementrate}%</span>
+                        </p>
+                    </div>
+                `);
+            } else if (funding.state === 'FAIL') {
+                $('#fail').append(`
+                    <div class="funding-item">
+                    <a href="/funding/Detail?id=${funding.id}" class="funding-link">
+                        <p>${funding.title} /
+                         마감일 <span style="font-size: 16px; color: cornflowerblue">${formattedDate}</span> /
+                         달성률 <span style="font-size: 16px; color: cornflowerblue">${item.achievementrate}%</span>
+                        </p>
+                    </div>
+                `);
             }
         }
-        // Update the section with the generated HTML
-        section.innerHTML = userInfoHtml;
+
+        appendEmptyMessage('#active');
         appendEmptyMessage('#in-progress');
         appendEmptyMessage('#complete');
-        appendEmptyMessage('#refund-needed');
-        appendEmptyMessage('#refund-complete');
+        appendEmptyMessage('#fail');
     }
 
     function appendEmptyMessage(sectionId) {
@@ -270,15 +279,15 @@
     }
     /**************뷰 버튼 핸들러 끝**************/
     // 펀딩 참여 취소 버튼 클릭 핸들러
-    $(document).on('click', '.cancel-button', function () {
+    $(document).on('click', '.active-button', function () {
         var fundingId = $(this).data('funding-id');
-        var url = '/participants/delete?funding='+fundingId;
+        var url = '/funding/update/state?id='+fundingId+'&state=IN_PROGRESS';
 
         loadData(url)
             .then(data => {
                 if (data.isSuccess) {
-                    alert('펀딩 취소가 완료 되었습니다.');
-                    loadAndDisplayParticipants('/participants/currentuser?state=ACTIVE', '#in-progress');
+                    alert('펀딩이 시작되었습니다.');
+                    loadAndDisplayParticipants('/funding/mywriter');
                 } else {
                     alert(data.message);
                 }
@@ -291,22 +300,25 @@
 
     /**************뷰 버튼 핸들러 끝**************/
     // 펀딩 환볼 신청 버튼 클릭 핸들러
-    $(document).on('click', '#refundButton', function () {
+    $(document).on('click', '.delete-button', function () {
         var fundingId = $(this).data('funding-id');
-        var url = '/participants/refund?funding='+fundingId;
+        var url = '/funding/update/state?id='+fundingId + '&state=DELETE';
 
-        loadData(url)
-            .then(data => {
-                if (data.isSuccess) {
-                    alert('환불 신청이 완료되었습니다. 환불액은 2-3일내 계좌로 입금될 예정입니다.');
-                    loadAndDisplayParticipants('/participants/currentuser?state=REFUND_COMPLETE', '.refund-complete');
-                } else {
-                    alert(data.message);
-                }
-            })
-            .catch(error => {
-                console.error(error);
-            });
+        if (window.confirm("삭제 하시겠습니까?")) {
+            loadData(url)
+                .then(data => {
+                    if (data.isSuccess) {
+                        alert('펀딩 삭제가 완료되었습니다.');
+                        loadAndDisplayParticipants('/funding/mywriter');
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        }
+
     });
     /**************화면 출력 메서드 시작**************/
 

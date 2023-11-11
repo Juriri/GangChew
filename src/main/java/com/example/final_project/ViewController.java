@@ -19,21 +19,12 @@ public class ViewController {
     public String toHomePage() {
         return "main";
     }
-    @RequestMapping(value = "/rank", method = RequestMethod.GET)
-    public String toMainPage() {
-        return "rank";
-    }
 
     @RequestMapping(value = "/introduce", method = RequestMethod.GET)
     public String toMain3Page() {
         return "introduce";
     }
-/*
-    @RequestMapping(value = "/home", method = RequestMethod.POST)
-    public String toHomePage_p() {
-        return "main";
-    }
-*/
+
 
     /**
      * 로그인 화면
@@ -65,7 +56,7 @@ public class ViewController {
     /**
      * 마이페이지 화면
      */
-    @RequestMapping(value = "/mypage", method = RequestMethod.GET)
+    @RequestMapping(value = "/my/page", method = RequestMethod.GET)
     public String toMyPage() {
         return "user/mypage";
     }
@@ -83,7 +74,7 @@ public class ViewController {
     /**
      * 펀딩글 작성 화면
      */
-    @RequestMapping(value = "/fundingCreate", method = RequestMethod.GET)
+    @RequestMapping(value = "/funding/Create", method = RequestMethod.GET)
     public String toFundingInsertPage() {
         return "funding/fundingCreate";
     }
@@ -92,7 +83,7 @@ public class ViewController {
     /**
      * 펀딩글 상세 화면
      */
-    @RequestMapping(value = "/fundingDetail", method = RequestMethod.GET)
+    @RequestMapping(value = "/funding/Detail", method = RequestMethod.GET)
     public String toFundingDetailPage() {
         return "funding/fundingDetail";
     }
@@ -100,7 +91,7 @@ public class ViewController {
     /**
      * 펀딩글 수정 화면
      */
-    @RequestMapping(value = "/fundingEdit", method = RequestMethod.GET)
+    @RequestMapping(value = "/funding/Edit", method = RequestMethod.GET)
     public String toFundingEditPage() {
         return "funding/fundingEdit";
     }
@@ -110,7 +101,7 @@ public class ViewController {
     /**
      * 장바구니 화면
      */
-    @RequestMapping(value = "/mycart", method = RequestMethod.GET)
+    @RequestMapping(value = "/my/cart", method = RequestMethod.GET)
     public String toMyCartPage() {return "fundingcart/myCart";}
 
     /**
@@ -128,7 +119,7 @@ public class ViewController {
     /**
      * 강의요청글 상세 화면
      */
-    @RequestMapping(value = "/studentrequestDetail", method = RequestMethod.GET)
+    @RequestMapping(value = "/studentrequest/Detail", method = RequestMethod.GET)
     public String toStudentRequestDetailPage() {
         return "fundingrequest/requestDetail";
     }
@@ -137,7 +128,7 @@ public class ViewController {
      * 강의요청글 수정 화면
      */
     
-    @RequestMapping(value = "/studentRequestEdit", method = RequestMethod.GET)
+    @RequestMapping(value = "/studentrequest/Edit", method = RequestMethod.GET)
     public String toStudentRequestEditPage() {
         return "fundingrequest/requestEdit";
     }
@@ -162,18 +153,35 @@ public class ViewController {
 
 
     /**
-     * 마이페이지 정보 화면
+     * 나의 참여 내역 정보 화면
      */
-    @RequestMapping(value = "/myfunding", method = RequestMethod.GET)
+    @RequestMapping(value = "/my/funding", method = RequestMethod.GET)
     public String toMyfundingPage() {
         return "user/myfunding";
     }
 
     /**
+     * 나의 작성 내역 정보 화면
+     */
+    @RequestMapping(value = "/my/writer", method = RequestMethod.GET)
+    public String toMywriterPage() {
+        return "user/mywriter";
+    }
+
+
+    /**
      * 검색 화면
      */
-    @RequestMapping(value = "/search", method = RequestMethod.GET)
+    @RequestMapping(value = "/my/search", method = RequestMethod.GET)
     public String toMysearchPage() {
         return "funding/fundingSearch";
+    }
+
+    /**
+     * 마감 펀딩글
+     */
+    @RequestMapping(value = "/funding/After", method = RequestMethod.GET)
+    public String toAfterPage() {
+        return "funding/fundingAfter";
     }
 }

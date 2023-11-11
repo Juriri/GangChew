@@ -7,47 +7,115 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        login-body {
+            background-color: #f7f7f7;
+        }
+
+        .login-container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 27px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #loginForm {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .login-form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        .btn-login, .btn-signup {
+            width: 48%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007BFF;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-login:hover, .btn-signup:hover {
+            background-color: #0056b3;
+        }
+
+
+        .btn-social {
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .btn-social a {
+            text-decoration: none;
+        }
+
+        .btn-social img {
+            max-height: 40px;
+            max-width: 40px;
+            margin: 0 10px;
+            transition: transform 0.2s;
+        }
+
+        .btn-social img:hover {
+            transform: scale(1.1);
+        }
+
+        .footer-container {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
     </style>
 </head>
-<body>
+<body class="login-body">
 <header th:replace="~{common/header/header.html :: commonheader}"></header>
-<div class="container" style="margin-bottom: 20px; margin-top: 20px;">
-    <div class="row featurette">
-        <div class="col-md-7">
-            <h2 class="featurette-heading fw-normal lh-1" style="font-size: 27px;">로그인</h2>
+<div class="login-container">
+    <h2>로그인</h2>
+    <form id="loginForm" name="loginForm" action="/login" method="post">
+        <div class="login-form-group">
+            <label for="username">아이디</label>
+            <input type="text" id="username" class="form-control" name="username" placeholder="아이디를 입력하세요">
         </div>
-    </div>
-    <hr class="featurette-divider" style="border-color: black; border-width: 2px;">
-        <div class="album py-5 bg-light">
-            <div class="container">
-                <form id="loginForm" name="loginForm" action="/login" method="post">
-                    <div class="form-group">
-                        <label for="username">아이디</label>
-                        <input type="text" id="username" class="form-control" name="username">
-                    </div>
-                    <div class="form-group">
-                        <label for="password">비밀번호</label>
-                        <input type="password" id="password" class="form-control" name="password">
-                        <p id="passwordFeedback" class="text-danger"></p>
-                    </div>
-
-                    <button type="submit" id="loginButton" class="btn btn-primary">로그인</button>
-                    <a href="/signup" id="signupButton" class="btn btn-primary">회원가입</a>
-                </form>
-                <br>
-                <a href="/oauth2/authorization/naver">
-                    <img src="/icon/naver.png" alt="네이버 로그인" style="max-height: 50px; max-width: 50px;">
-                </a>
-                <a href="/oauth2/authorization/kakao">
-                    <img src="/icon/kakao.png" alt="카카오 로그인" style="min-height: 60px; min-width: 60px; max-width: 100px;">
-                </a>
-
-            </div>
+        <div class="login-form-group">
+            <label for="password">비밀번호</label>
+            <input type="password" id="password" class="form-control" name="password" placeholder="비밀번호를 입력하세요">
+            <p id="passwordFeedback" class="text-danger"></p>
         </div>
+
+        <button type="submit" id="loginButton" class="btn btn-login login">로그인</button>
+        <button type="button" id="signupButton" class="btn btn-signup signup" onclick="window.location.href='/signup'">회원가입</button>
+
+        <div class="btn-social">
+            <a href="/oauth2/authorization/kakao">
+                <img src="/icon/kakao.jpg" alt="카카오 로그인">
+            </a>
+            <a href="/oauth2/authorization/naver">
+                <img src="/icon/naver.jpg" alt="네이버 로그인">
+            </a>
+        </div>
+    </form>
+
 </div>
 
+<div class="footer-container">
+    <header th:replace="~{common/footer/footer.html :: commonfooter}"></header>
+</div>
 
-<header th:replace="~{common/footer/footer.html :: commonfooter}"></header>
 <!-- Alert을 출력하기 위한 JavaScript 코드 -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <script type="text/javascript">

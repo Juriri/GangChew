@@ -431,6 +431,12 @@ public class FundingService {
             }
         }
 
+        // 4. 작성자 이름에서 부분 일치하는 객체 목록 가져오기
+        List<User> userList = userRepository.findUserByUsernameContaining(keyword);
+        for(User user : userList){
+            List<Funding> fundings4 =  fundingRepository.findFundingsByWriter(user);
+            combinedFundings.addAll(getActiveFundingList(fundings4));
+        }
         // 중복 제거
         Set<Funding> uniqueFundings = new HashSet<>(combinedFundings);
         combinedFundings.clear();
@@ -589,7 +595,7 @@ public class FundingService {
 
 
     @Transactional(readOnly = true)
-    public List<Funding> OrderByWriter (HttpServletRequest request) {
+    public List<FundingMainRes> OrderByWriter (HttpServletRequest request) {
         // 헤더에서 jwt 토큰 추출
         String jwtToken = jwtUtil.extractJwtTokenFromHeader(request);
         if(jwtToken == null) {
@@ -600,7 +606,14 @@ public class FundingService {
                 .orElseThrow(() -> new BaseException(NOT_FIND_USER));
 
         // 해당 유저가 작성한 리스트 가져오기
-        return getActiveFundingList(fundingRepository.findFundingsByWriter(user));
+        List<Funding> fundingList = getActiveFundingList(fundingRepository.findFundingsByWriter(user));
+        List<FundingMainRes> fundingMainResList = new ArrayList<>();
+        for(Funding funding : fundingList) {
+            // 펀딩 객체별 달성률 계산
+            int achievementrate = calculateAchievementRate(funding.getId());
+            fundingMainResList.add(new FundingMainRes(funding, achievementrate, false));
+        }
+        return fundingMainResList;
 
     }
 

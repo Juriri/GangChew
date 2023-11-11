@@ -12,15 +12,20 @@
             top: 0;
             bottom: 0;
             left: 0;
-            width: 150px;
-            padding: 0;
-            /*height: 100vh;*/
-            height: 600px;
-            background-color: #f8f9fa;
-            border-right: 1px solid #dee2e6;
-            overflow-y: auto;
-
+            width: 170px;
+            height: 100vh;
+            background-color: #ffffff;
+            color: #142333;
+            padding: 20px;
+            border-right: 1px solid #95989b;
+            transition: width 0.3s;
         }
+
+        .sidebar:hover {
+            width: 200px;
+        }
+
+
         .nav-link.sidebar-link {
             display: flex;
             align-items: center;
@@ -33,10 +38,6 @@
             text-decoration: none; /* Remove underline from links */
         }
 
-        .nav-link.sidebar-link.active a {
-            font-weight: bold; /* Highlight text for active link */
-            border-bottom: 2px solid #007BFF; /* Customize the border for active link */
-        }
     </style>
     <div class="position-sticky">
         <ul class="nav flex-column">
@@ -48,6 +49,11 @@
             <li class="nav-item">
                 <a class="nav-link sidebar-link" id="myfundingButton">
                     나의 참여 내역
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link sidebar-link" id="mywriterButton">
+                    나만의 펀딩
                 </a>
             </li>
         </ul>
@@ -62,7 +68,7 @@
             $("#myfundingButton").removeClass("active");
             $("#mypayButton").removeClass("active");
 
-            window.location.href = '/mypage';
+            window.location.href = '/my/page';
         });
 
     // 마이페이지 버튼 클릭 시
@@ -74,8 +80,20 @@
         $("#myfundingButton").addClass("active");
         $("#mypayButton").removeClass("active");
 
-        window.location.href = '/myfunding';
+        window.location.href = '/my/funding';
     });
+
+        // 마이페이지 버튼 클릭 시
+        document.getElementById('mywriterButton').addEventListener('click', function () {
+            // 마이페이지 버튼에 active 클래스 추가
+            $("#mywriterButton").addClass("active");
+
+            // 다른 버튼에서 active 클래스 제거
+            $("#myfundingButton").removeClass("active");
+            $("#mypayButton").removeClass("active");
+
+            window.location.href = '/my/writer';
+        });
     </script>
 </header>
 </html>

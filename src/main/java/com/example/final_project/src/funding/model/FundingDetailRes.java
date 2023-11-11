@@ -24,6 +24,7 @@ public class FundingDetailRes {
     private int achievementrate;
     private boolean isLoginUser;
     private int participants;
+    private String state;
 
     public FundingDetailRes(Funding funding, FundingCategory fundingCategory, String writer, boolean liked, int achievementrate , boolean isLoginUser, int participants) {
         this.funding = funding;
@@ -34,6 +35,7 @@ public class FundingDetailRes {
         this.achievementrate = achievementrate;
         this.isLoginUser = isLoginUser;
         this.participants = participants;
+        this.state = funding.getState().toString();
     }
 
 

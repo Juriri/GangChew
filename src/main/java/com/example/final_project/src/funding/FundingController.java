@@ -51,7 +51,7 @@ public class FundingController {
     @ResponseBody
     @Operation(summary = "jwt 인증 필요", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping("/funding/mywriter")
-    public BaseResponse<List<Funding>> readAllMyPosts(HttpServletRequest request) {
+    public BaseResponse<List<FundingMainRes>> readAllMyPosts(HttpServletRequest request) {
         return new BaseResponse<>(fundingService.OrderByWriter(request));
     }
 
@@ -64,7 +64,7 @@ public class FundingController {
      */
     @ResponseBody
     @Operation(summary = "jwt 인증 필요", security = @SecurityRequirement(name = "bearerAuth"))
-    @GetMapping("/mylike")
+    @GetMapping("/funding/mylike")
     public BaseResponse<List<GetAllRes>> readAllMyLikePosts(HttpServletRequest request) {
         return new BaseResponse<>(fundingService.getAllLikePost(request));
     }
@@ -538,14 +538,14 @@ public class FundingController {
 
     /**
      * 특정 유저의 댓글 리스트 반환 API
-     * [GET] /fundingcomment/user
+     * [GET] /funding/comment/user
      *
      * @param request HttpServletRequest
      * @return BaseResponse<List < FundingComment>>
      */
     @ResponseBody
     @Operation(summary = "jwt 인증 필요", security = @SecurityRequirement(name = "bearerAuth"))
-    @GetMapping("/fundingcomment/user")
+    @GetMapping("/funding/comment/user")
     public BaseResponse<List<CommentResDto>> readUserComments(HttpServletRequest request) {
         return new BaseResponse<>(fundingService.getCommentByUser(request));
     }
@@ -553,13 +553,13 @@ public class FundingController {
 
     /**
      * 특정 게시글의 모든 댓글 리스트 반환 API
-     * [GET] /fundingcomment
+     * [GET] /funding/comment
      * @param request
      * @param funding_id 게시글 고유 id
      * @return BaseResponse<List < FundingComment>>
      */
     @ResponseBody
-    @GetMapping("/fundingcomment")
+    @GetMapping("/funding/comment")
     public BaseResponse<List<CommentResDto>> readFundingComments(HttpServletRequest request, @RequestParam(name = "funding") Long funding_id) {
         return new BaseResponse<>(fundingService.getCommentByFunding(request, funding_id));
     }
@@ -567,13 +567,13 @@ public class FundingController {
 
     /**
      * 게시글 댓글 작성 API
-     * [POST] /fundingcomment/create
+     * [POST] /funding/comment/create
      * @param request          HttpServletRequest
      * @param commentInsertReq 댓글 생성 모델
      * @return BaseResponse<String>
      */
     @ResponseBody
-    @PostMapping("/fundingcomment/create")
+    @PostMapping("/funding/comment/create")
     public BaseResponse<String> createFundingComments(HttpServletRequest request, @RequestBody CommentInsertReq commentInsertReq) {
         log.info("펀딩 댓글 생성 모델={}, ", commentInsertReq.toString());
         return new BaseResponse<>(fundingService.insertCommentByUser(request, commentInsertReq));
@@ -581,26 +581,26 @@ public class FundingController {
 
     /**
      * 게시글 댓글 수정 API
-     * [POST] /fundingcomment/update
+     * [POST] /funding/comment/update
      * @param request          HttpServletRequest
      * @param updateReqDto     댓글 수정 모델
      * @return BaseResponse<String>
      */
     @ResponseBody
-    @PostMapping("/fundingcomment/update")
+    @PostMapping("/funding/comment/update")
     public BaseResponse<String> updateFundingComment(HttpServletRequest request, @RequestBody CommentUpdateReqDto updateReqDto) {
         return new BaseResponse<>(fundingService.updateFundingComment(request, updateReqDto));
     }
 
     /**
      * 게시글 댓글 삭제 API
-     * [DELETE] /fundingcomment/delete
+     * [DELETE] /funding/comment/delete
      * @param request     HttpServletRequest
      * @param comment_id  댓글 고유 id
      * @return BaseResponse<String>
      */
     @ResponseBody
-    @DeleteMapping("/fundingcomment/delete")
+    @DeleteMapping("/funding/comment/delete")
     public BaseResponse<String> deleteFundingComment(HttpServletRequest request, @RequestParam(name = "id") Long comment_id) {
         return new BaseResponse<>(fundingService.deleteFundingComment(request, comment_id));
     }
