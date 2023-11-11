@@ -89,7 +89,7 @@ api-server-spring-boot
 
 ```
 ## ERD
-![img_1.png](img_1.png)
+![img_1.png](src/main/resources/static/icon/ERD.png)
 
 
 
