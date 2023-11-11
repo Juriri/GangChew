@@ -1,6 +1,6 @@
 
 ### 강츄(GangChew)- 펀딩 강의 개설 웹 프로젝트
-![img.png](img.png)
+![img.png](src/main/resources/static/icon/main.png)
 > 다양한 주제: 내가 듣고 싶은 강의를 펀딩 오픈하여 수강생을 모아보아요!
 
 > 이런 강의 어때요?: 커뮤니티 게시판에서 다른 사람들과 관심있는 수업에 대해 얘기를 나누어보아요.
