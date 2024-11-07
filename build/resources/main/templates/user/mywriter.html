@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>마이페이지</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        .sidebar-container {
+            margin-right: 0;
+            height: 100vh;
+            width: 250px;
+            float: left;
+            max-width: 250px;
+        }
+
+        .mywriter-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .list {
+            overflow-y: auto;
+            max-height: 900px;
+            padding: 10px 0;
+            border: none;
+        }
+
+        .card {
+            border: none;
+        }
+
+        .featurette-heading {
+            font-size: 27px;
+            margin-bottom: 10px;
+        }
+
+        .featurette-divider {
+            border-color: #000;
+            border-width: 2px;
+            margin-top: 10px;
+        }
+
+        .section {
+            margin: 20px 0;
+            padding: 10px 0;
+        }
+
+        .section:last-child {
+            margin: 0 0;
+        }
+
+        .btn {
+            margin-right: 10px;
+        }
+
+        .funding-item {
+            padding: 0 20px;
+            border-bottom: 1px solid #ccc;
+            margin: 20px 0;
+        }
+
+        .funding-item a{
+            color: black;
+            text-decoration: none;
+        }
+
+        .funding-item a:hover {
+            text-decoration: none; /* 호버 시 밑줄 제거 */
+            color: #333; /* 호버 시 텍스트 색상 유지 */
+            opacity: 0.5;
+        }
+
+        .funding-item:first-child {
+            padding-top: 10px;
+        }
+        .funding-item:last-child {
+            margin: 0 0;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+    </style>
+</head>
+<body>
+<header th:replace="~{common/header/header.html :: commonheader}"></header>
+<div class="sidebar-container">
+    <header th:replace="~{common/sidebar/sidebar.html :: commonsidebar}"></header>
+</div>
+<div class="mywriter-container">
+    <div class="list">
+        <div class="card" style="border: none;">
+            <h2 class="featurette-heading fw-normal lh-1" style="font-size: 27px;">
+                나의 작성 내역
+            </h2>
+            <hr class="featurette-divider">
+            <div class="section">
+                <h5>펀딩 대기중</h5>
+                <div id="active"></div>
+            </div>
+            <div class="section">
+                <h5>펀딩 진행중</h5>
+                <div id="in-progress"></div>
+            </div>
+            <div class="section">
+                <h5>펀딩 모집 완료</h5>
+                <div id="complete"></div>
+            </div>
+            <div class="section">
+                <h5>펀딩 모집 실패</h5>
+                <div id="fail"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<header th:replace="~{common/footer/footer.html :: commonfooter}"></header>
+
+<script type="module">
+    // common-ajax.js 모듈을 import
+    import { loadCall } from '/js/common-ajax.js';
+    import { insertCall } from '/js/common-ajax.js';
+    import { deleteCall } from '/js/common-ajax.js';
+
+    /**************서버 통신 함수 **************/
+    // 정보를 비동기적으로 불러오는 함수
+    function loadData(url) {
+        const detail_res = new loadCall(url, null);
+        return detail_res.detail
+            .then(data => {
+                return data;
+            })
+            .catch(error => {
+                console.error(error);
+                throw error; // 오류 다시 던지기
+            });
+    }
+
+
+    // 정보 삽입 요청 함수
+    function insertData(url, requestData) {
+        const insert_res = new insertCall(url, requestData);
+        return insert_res.detail
+            .then(data => {
+                return data;
+            })
+            .catch(error => {
+                console.error(error);
+                throw error; // 오류 다시 던지기
+            });
+    }
+
+
+    // 정보 삭제 요청 함수
+    function deleteData(url) {
+        const comment_res = new deleteCall(url, null);
+        return comment_res.detail
+            .then(data => {
+                return data;
+            })
+            .catch(error => {
+                console.error(error);
+                throw error; // 오류 다시 던지기
+            });
+    }
+
+    /**************서버 통신 함수 끝**************/
+    /**************뷰 버튼 핸들러 시작**************/
+    // Call the functions when the page loads
+    document.addEventListener('DOMContentLoaded', function () {
+        loadAndDisplayParticipants('/funding/mywriter');
+    });
+
+    function loadAndDisplayParticipants(url) {
+        loadData(url)
+            .then(data => {
+                if (data.isSuccess) {
+                    displayParticipantsInfo(data.result);
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    }
+
+    // 내가 참여중인 펀딩 목록 출력
+    function displayParticipantsInfo(data) {
+        var userInfoHtml = '';
+
+        $('#active').empty();
+        $('#in-progress').empty();
+        $('#complete').empty();
+        $('#fail').empty();
+
+        // Process and format the data as needed
+        for (var [index, item] of Object.entries(data)) {
+            var funding = item.funding;
+            var deadline = funding.deadline;
+            var year = deadline[0];
+            var month = String(deadline[1]).padStart(2, '0');
+            var day = String(deadline[2]).padStart(2, '0');
+            var formattedDate = year + '-' + month + '-' + day;
+
+            /*console.log(item);*/
+            if (funding.state === 'ACTIVE') {
+                $('#active').append(`
+                    <div class="funding-item">
+                        <a href="/funding/Detail?id=${funding.id}" class="funding-link">
+                            ${funding.title}
+                        </a>
+                        <span style="font-size: 16px;">
+                            <button class="btn btn-outline-secondary active-button" type="button" data-funding-id="${funding.id}">
+                                펀딩 시작
+                            </button>
+                            <button class="btn btn-outline-secondary delete-button" type="button" data-funding-id="${funding.id}">
+                                펀딩 삭제
+                            </button>
+                        </span>
+                    </div>
+                `);
+            } else if (funding.state === 'IN_PROGRESS') {
+                $('#in-progress').append(`
+                    <div class="funding-item">
+                    <a href="/funding/Detail?id=${funding.id}">
+                        <p>${funding.title} /
+                         마감일 <span style="font-size: 16px; color: cornflowerblue">${formattedDate}</span> /
+                         달성률 <span style="font-size: 16px; color: cornflowerblue">${item.achievementrate}%</span>
+                        </p>
+                    </div>
+                `);
+            } else if (funding.state === 'COMPLETE') {
+                $('#complete').append(`
+                    <div class="funding-item">
+                    <a href="/funding/Detail?id=${funding.id}" class="funding-link">
+                        <p>${funding.title} /
+                         마감일 <span style="font-size: 16px; color: cornflowerblue">${formattedDate}</span> /
+                         달성률 <span style="font-size: 16px; color: cornflowerblue">${item.achievementrate}%</span>
+                        </p>
+                    </div>
+                `);
+            } else if (funding.state === 'FAIL') {
+                $('#fail').append(`
+                    <div class="funding-item">
+                    <a href="/funding/Detail?id=${funding.id}" class="funding-link">
+                        <p>${funding.title} /
+                         마감일 <span style="font-size: 16px; color: cornflowerblue">${formattedDate}</span> /
+                         달성률 <span style="font-size: 16px; color: cornflowerblue">${item.achievementrate}%</span>
+                        </p>
+                    </div>
+                `);
+            }
+        }
+
+        appendEmptyMessage('#active');
+        appendEmptyMessage('#in-progress');
+        appendEmptyMessage('#complete');
+        appendEmptyMessage('#fail');
+    }
+
+    function appendEmptyMessage(sectionId) {
+        if ($(sectionId).is(':empty')) {
+            $(sectionId).append(`
+            <div class="funding-item">
+                <p>펀딩 결과가 없습니다.</p>
+            </div>
+        `);
+        }
+    }
+    /**************뷰 버튼 핸들러 끝**************/
+    // 펀딩 참여 취소 버튼 클릭 핸들러
+    $(document).on('click', '.active-button', function () {
+        var fundingId = $(this).data('funding-id');
+        var url = '/funding/update/state?id='+fundingId+'&state=IN_PROGRESS';
+
+        loadData(url)
+            .then(data => {
+                if (data.isSuccess) {
+                    alert('펀딩이 시작되었습니다.');
+                    loadAndDisplayParticipants('/funding/mywriter');
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    });
+
+
+    /**************뷰 버튼 핸들러 끝**************/
+    // 펀딩 환볼 신청 버튼 클릭 핸들러
+    $(document).on('click', '.delete-button', function () {
+        var fundingId = $(this).data('funding-id');
+        var url = '/funding/update/state?id='+fundingId + '&state=DELETE';
+
+        if (window.confirm("삭제 하시겠습니까?")) {
+            loadData(url)
+                .then(data => {
+                    if (data.isSuccess) {
+                        alert('펀딩 삭제가 완료되었습니다.');
+                        loadAndDisplayParticipants('/funding/mywriter');
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        }
+
+    });
+    /**************화면 출력 메서드 시작**************/
+
+    /**************화면 출력 메서드 끝**************/
+</script>
+
+
+<script>
+</script>
+</body>
+</html>

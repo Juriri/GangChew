@@ -1,0 +1,81 @@
+.custom-header-container {
+    width: 80%;
+    /*height: 30%;*/
+    margin: 0 auto; /* 가운데 정렬을 위한 마진 설정 */
+}
+
+#userDropdown {
+    position: relative;
+    display: inline-block;
+}
+
+#userDropdownContent {
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    min-width: 300px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 2;
+}
+#userDropdown:hover #userDropdownContent {
+    display: block;
+}
+
+
+.user-info {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+#fundingMenu {
+    cursor: pointer;
+    color: #282727;
+    transition: background-color 0.3s;
+}
+
+#fundingMenu:hover {
+    color: #95989b;
+}
+
+
+
+#fundingSubMenu {
+    display: none;
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 0;
+}
+
+
+#fundingSubMenu .dropdown-item {
+    padding: 10px 20px;
+    color: #333;
+    font-weight: bold;
+}
+
+#fundingSubMenu .dropdown-item:active,
+#fundingSubMenu .dropdown-item:checked,
+#fundingSubMenu .dropdown-item:focus {
+    background-color: #fbfbfc;;
+}
+
+#fundingDropdown:hover #fundingSubMenu {
+    display: block;
+}
+
+#message_title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 30px;  /* 원하는 너비로 설정 (예: 150px) */
+}
+.nav-link {
+    color: #282727;
+}
+.nav-link:hover {
+    color: #95989b;
+}
+
+.custom-header-container img:hover {
+    transform: scale(1.2);
+}
