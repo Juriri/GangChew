@@ -18,10 +18,10 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Set up JDK
-      uses: actions/setup-java@v2
+      uses: actions/setup-java@v3
       with:
-        java-version: '17'  # or another JDK version
-        distribution: 'adoptium'  # Correct distribution
+        java-version: '17'  # Replace with the version you need
+        distribution: 'adoptium'  # Use the 'adoptium' distribution
         java-package: jdk
         architecture: x64
         check-latest: false
