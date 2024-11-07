@@ -59,7 +59,7 @@ out/
 
 
 ### application.yml###
-*.yml
+application.yml
 
 ### application.properties###
 *.properties
