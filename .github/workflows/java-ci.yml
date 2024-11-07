@@ -21,6 +21,7 @@ jobs:
       uses: actions/setup-java@v2
       with:
         java-version: '17'  # 사용할 JDK 버전 (예: 11, 17 등)
+        distribution: 'adoptopenjdk'
 
     - name: Build with Maven
       run: mvn clean install --no-transfer-progress
