@@ -1,0 +1,461 @@
+<!--템플릿-->
+<div class="row box-content box-content-p ng-scope" ng-if="titlebar == true">
+    <div class="col-xs-7">
+        <h4 class="ng-binding">{{ form.site_name.value }}({{ form.seller_nickname.value || form.seller_id.value }})</h4>
+    </div>
+    <div class="col-xs-5 text-right"><button class="btn btn-primary btn-lg" ng-click="user_setform_submit()">저장</button>
+    </div>
+</div>
+<div class="box-tab">
+    <ul class="nav nav-tabs nav-tabs-lg no-margin border-bottom-grey-600">
+        <li ng-class="{active: tab_active == 0}"><a data-toggle="tab" ng-click="tab_active = 0">기본정보</a></li>
+        <li ng-class="{active: tab_active == 1}"><a data-toggle="tab" ng-click="tab_active = 1">옵션정보</a></li>
+        <li ng-class="{active: tab_active == 2}"><a data-toggle="tab" ng-click="tab_active = 2">배송정보</a></li>
+    </ul>
+</div>
+<div class="box-content box-content-tabon p-20 tab-content tabbable border-color-85">
+    <div class="tab-pane" ng-class="{active:tab_active == 0}">
+        <!-- 기본정보 -->
+        <table class="table table-p">
+            <colgroup>
+                <col width="16%" />
+                <col width="84%" />
+            </colgroup>
+            <tbody>
+                <tr>
+                    <th>
+                        <div class="ast"></div>템플릿명
+                    </th>
+                    <td>
+                        <div class="row">
+                            <div class="col-xs-4">
+                                <input class="form-control" type="text" ng-model="form.name.value" required="" />
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        <div>
+                            판매 정보
+                        </div>
+                    </th>
+                    <td>
+                        <div class="row">
+                            <table class="table table-p">
+                                <colgroup>
+                                    <col width="16%" />
+                                    <col width="84%" />
+                                </colgroup>
+                                <tbody>
+                                    <tr>
+                                        <th>
+                                            재입고 상품
+                                        </th>
+                                        <td>
+                                            <div class="resp_checkbox">
+                                                <label>
+                                                    <input type="checkbox" name="restockNotifyUse" value = "1">
+                                                    품절 시  재입고 알림 사용
+                                                </label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            재고에 따른 판매
+                                        </th>
+                                        <td>
+                                            <div class="resp_radio">
+                                                <label><input type="radio" name="runout_type" value="shop" checked="checked" onclick="toggleOptions(this)"> 통합 설정</label>
+                                                <label><input type="radio" name="runout_type" value="goods" onclick="toggleOptions(this)"> 개별 설정</label>
+                                            </div>
+                                            <div class="resp_radio" id="individual_options" style="display:none;">
+                                                <select name="individual_option">
+                                                    <option value="stock">재고가 있으면 판매</option>
+                                                    <option value="ableStock">가용 재고가 있으면 판매</option>
+                                                    <option value="unlimited">재고와 상관 없이 판매</option>
+                                                </select>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            노출 여부
+                                        </th>
+                                        <td>
+                                            <div class="resp_radio">
+                                                <label><input type="radio" name="goodsView" value="look" checked="checked"> 노출</label>
+                                                <label><input type="radio" name="goodsView" value="notLook"> 미노출</label>
+                                                <label><input type="radio" name="goodsView" value="reservation"> 노출 예약</label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            과세 여부
+                                        </th>
+                                        <td>
+                                            <div class="resp_radio">
+                                                <label><input type="radio" name="tax" value="tax" checked="checked"> 과세</label>
+                                                <label><input type="radio" name="tax" value="exempt"> 비과세</label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            청약철회
+                                        </th>
+                                        <td>
+                                            <div class="resp_radio">
+                                                <label class="mr10"><input type="radio" name="cancel_type" value="0" checked="checked"> 가능</label>
+                                                <label><input type="radio" name="cancel_type" value="1"> 불가 (취소/교환/반품 불가)</label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            성인 인증
+                                        </th>
+                                        <td>
+                                            <div class="resp_radio">
+                                                <label class="mr10"><input type="radio" name="adult_goods" value="Y"> 사용</label>
+                                                <label><input type="radio" name="adult_goods" value="N" checked="checked"> 사용 안 함</label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            개인 통관 부호
+                                        </th>
+                                        <td>
+                                            <div class="resp_radio">
+                                                <label class="mr10"><input type="radio" name="option_international_shipping_status" value="y"> 수집</label>
+                                                <label><input type="radio" name="option_international_shipping_status" value="n" checked="checked"> 수집 안함</label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <tr>
+                        <th>
+                            이벤트
+                        </th>
+                        <td>
+                            <div class="row">
+                                <table class="table table-p">
+                                    <colgroup>
+                                        <col width="16%" />
+                                        <col width="84%" />
+                                    </colgroup>
+                                    <tbody>
+                                        <tr>
+                                            <th>
+                                                구매 수량 할인
+                                            </th>
+                                            <td>
+                                                <div class="resp_checkbox">
+                                                    <label><input type="radio" name="sale" value="shop" checked="checked" onclick="toggleOptions(this)"> 사용</label>
+                                                    <label><input type="radio" name="sale" value="goods" onclick="toggleOptions(this)"> 사용 안함</label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                </tr>
+                <tr>
+                    <tr>
+                        <th>
+                            기타 정보
+                        </th>
+                        <td>
+                            <div class="row">
+                                <table class="table table-p">
+                                    <colgroup>
+                                        <col width="16%" />
+                                        <col width="84%" />
+                                    </colgroup>
+                                    <tbody>
+                                        <tr>
+                                            <th>
+                                                최소 구매 수량
+                                            </th>
+                                            <td>
+                                                <label><input type="radio" name="minimum" value="shop" checked="checked" onclick="toggleOptions(this)">최소1개</label>
+                                            </td>
+                                            <td>
+                                                <label><input type="radio" name="minimum" value="shop" checked="" onclick="toggleOptions(this)">
+                                                    최소<input type="text" value=""> 개 이상 구매 가능
+                                                </label>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>
+                                                최대 구매 수량
+                                            </th>
+                                            <td>
+                                                <label><input type="radio" name="maximum" value="shop" checked="checked" onclick="toggleOptions(this)">제한 없음</label>
+                                            </td>
+                                            <td>
+                                                <label><input type="radio" name="maximum" value="shop" checked="" onclick="toggleOptions(this)">
+                                                    최대<input type="text" value="" /> 개 이하 구매 가능
+                                                </label>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>
+                                                구매 대상 제한
+                                            </th>
+                                            <td>
+                                                <label><input type="radio" name="access" value="shop" checked="checked" onclick="toggleOptions(this)">제한 없음</label>
+                                            </td>
+                                            <td>
+                                                <label><input type="radio" name="access" value="shop" checked="" onclick="toggleOptions(this)">
+                                                    구매 대상 제한
+                                                </label>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                </tr>
+                
+                <!-- <tr>
+                    <th>
+                        최소 구매 수량 설정
+                    </th>
+                    <td>
+                        <div class="row">
+                            <div class="col-xs-4">
+                                <label class="radio-inline">
+                                    <input type="radio" value="T" ng-model="form.key_IsUnit.value" />
+                                    설정함
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" value="F" ng-model="form.key_IsUnit.value" />
+                                    설정안함
+                                </label>
+                            </div>
+                        </div><br />
+                        <div class="row" ng-if="form.key_IsUnit.value === 'T'">
+                            <div class="col-xs-4">
+                                최소구매수량 [
+                                <input type="text" ng-model="form.key_minEa.value" style="width: 30px"
+                                    ng-required="form.key_IsUnit.value === 'T'" />
+                                ]개, 구매단위[
+                                <input type="text" ng-model="form.key_buyUnit.value" style="width: 30px"
+                                    ng-required="form.key_IsUnit.value === 'T'" />
+                                ]개 (기본값1개)
+                            </div>
+                        </div>
+                    </td>
+                </tr> -->
+            </tbody>
+        </table>
+    </div>
+    <div class="tab-pane" ng-class="{active:tab_active == 1}">
+        <!-- 옵션정보 -->
+        <table class="table table-p">
+            <colgroup>
+                <col width="16%" />
+                <col width="84%" />
+            </colgroup>
+            <tbody>
+                <tr>
+                    <th>
+                        조합형 옵션 타입
+                        <span class="fl-r" data-popup="tooltlp" data-placement="top"
+                            data-original-title="조합형 옵션 사용시 설정되는 항목입니다."><i class="icon-help"></i></span>
+                    </th>
+                    <td>
+                        <div class="row">
+                            <div class="col-xs-4">
+                                <label class="radio-inline">
+                                    <input type="radio" value="A" ng-model="form.key_nChkOpt_type.value" />
+                                    옵션 분리형
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" value="B" ng-model="form.key_nChkOpt_type.value" />
+                                    옵션 합체형
+                                </label>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        신규/기존 옵션
+                        <span class="fl-r" data-popup="tooltlp" data-placement="top"
+                            data-original-title="옵션에 사용되는 1+1 설정입니다."><i class="icon-help"></i></span>
+                    </th>
+                    <td>
+                        <div class="row">
+                            <div class="col-xs-4">
+                                <label class="radio-inline">
+                                    <input type="radio" value="T" ng-model="form.key_IsPlusOne.value" />
+                                    신규 생성
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" value="F" ng-model="form.key_IsPlusOne.value" />
+                                    기존 옵션
+                                </label>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="tab-pane" ng-class="{active:tab_active == 2}">
+        <!-- 배송정보 -->
+        <table class="table table-p">
+            <colgroup>
+                <col width="16%" />
+                <col width="84%" />
+            </colgroup>
+            <tbody>
+                <tr>
+                    <th>
+                        배송비
+                        <span class="fl-r" data-popup="tooltlp" data-placement="top"
+                            data-original-title="기본정보에 있는 배송비 정보를 사용할지 템플릿으로 배송비 정보를 설정할지 선택합니다."><i
+                                class="icon-help"></i></span>
+                    </th>
+                    <td>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <label class="radio-inline">
+                                    <input type="radio" value="default" ng-model="form.key_delivery_type.value" />
+                                    기본정보 사용
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" value="template" ng-model="form.key_delivery_type.value" />
+                                    템플릿정보 사용
+                                </label>
+                            </div>
+                            <table class="table table-p" ng-if="form.key_delivery_type.value === 'template'">
+                                <colgroup>
+                                    <col width="16%" />
+                                    <col width="84%" />
+                                </colgroup>
+                                <tbody>
+                                    <tr>
+                                        <th>
+                                            배송비 옵션
+                                        </th>
+                                        <td>
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <label class="radio-inline">
+                                                        <input type="radio" value="920"
+                                                            ng-model="form.key_deliveryMethod.value" />
+                                                        판매자정책(판매자의 기본정책을 따릅니다.)
+                                                    </label>
+                                                </div>
+                                                <div class="col-xs-12">
+                                                    <label class="radio-inline">
+                                                        <input type="radio" value="990"
+                                                            ng-model="form.key_deliveryMethod.value" />
+                                                        기본정책(쇼핑몰의 기본정책을 따릅니다.)
+                                                    </label>
+                                                </div>
+                                                <div class="col-xs-12">
+                                                    <label class="radio-inline">
+                                                        <input type="radio" value="101"
+                                                            ng-model="form.key_deliveryMethod.value" />
+                                                        무료배송(해당 상품을 무료배송합니다.)
+                                                    </label>
+                                                </div>
+                                                <div class="col-xs-12">
+                                                    <label class="radio-inline">
+                                                        <input type="radio" value="103"
+                                                            ng-model="form.key_deliveryMethod.value" />
+                                                        착불
+                                                    </label>
+                                                </div>
+                                                <div class="col-xs-12" ng-if="form.key_deliveryMethod.value === '103'">
+                                                    <input type="text" ng-model="form.key_deliveryFeeCollect.value"
+                                                        class="width60"
+                                                        ng-required="form.key_deliveryMethod.value === '103'" />원 (
+                                                    <input type="text" ng-model="form.key_deliveryLimitCollect.value"
+                                                        class="width60"
+                                                        ng-required="form.key_deliveryMethod.value === '103'" />
+                                                    원 이상 주문시 무료)
+                                                </div>
+                                                <div class="col-xs-12">
+                                                    <label class="radio-inline">
+                                                        <input type="radio" value="102"
+                                                            ng-model="form.key_deliveryMethod.value" />
+                                                        선불
+                                                    </label>
+                                                </div>
+                                                <div class="col-xs-12" ng-if="form.key_deliveryMethod.value === '102'">
+                                                    <input type="text" ng-model="form.key_deliveryFeePrepay.value"
+                                                        class="width60"
+                                                        ng-required="form.key_deliveryMethod.value === '102'" />원 (
+                                                    <input type="text" ng-model="form.key_deliveryLimitPrepay.value"
+                                                        class="width60"
+                                                        ng-required="form.key_deliveryMethod.value === '102'" />
+                                                    원 이상 주문시 무료)
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        추가 배송료 설정
+                        <span class="fl-r" data-popup="tooltlp" data-placement="top"
+                            data-original-title="기본정보에 있는 배송비 정보를 사용할지 템플릿으로 배송비 정보를 설정할지 선택합니다."><i
+                                class="icon-help"></i></span>
+                    </th>
+                    <td>
+                        <div class="row">
+                            <div class="col-xs-auto">
+                                <label class="checkbox_inline">
+                                    <input type="checkbox" ng-model="form.key_addMoutainDeliveryFeeFlag.value"
+                                        ng-true-value="'T'" ng-false-value="'F'"> 추가 도서산간 배송비
+                                </label>
+                            </div>
+                            <div class="input-group col-xs-2">
+                                <input class="form-control" type="text" ng-disabled="form.key_addMoutainDeliveryFeeFlag.value !== 'T'"
+                                    ng-model="form.key_addMoutainDeliveryFee.value" />
+                                <span class="input-group-addon no-border-left">원</span>
+                            </div>
+                            <div class="col-xs-auto">
+                                <label class="checkbox_inline">
+                                    <input type="checkbox" ng-model="form.key_addDeliveryFeeFlag.value"
+                                        ng-true-value="'T'" ng-false-value="'F'"> 단위별 추가 배송비
+                                </label>
+                            </div>
+                            <div class="col-xs-auto">
+                                <select class="form-control" ng-model="form.key_addDeliveryFeeMethod.value" ng-disabled="form.key_addDeliveryFeeFlag.value !== 'T'">
+                                  <option value="''">선택</option>
+                                  <option value="'amount'">수량</option>
+                                </select>
+                            </div>
+                            <div class="input-group col-xs-2">
+                                <input class="form-control" type="text" ng-disabled="form.key_addDeliveryFeeFlag.value !== 'T'"
+                                    ng-model="form.key_addDeliveryFeeUnit.value" />
+                                <span class="input-group-addon no-border-left">개</span>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,579 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"
+  integrity="sha512-rMGGF4wg1R73ehtnxXBt5mbUfN9JUJwbk21KMlnLZDJh7BkPmeovBuddZCENJddHYYMkCh9hPFnPmS9sspki8g=="
+  crossorigin="anonymous" referrerpolicy="no-referrer">
+  </script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css"
+  integrity="sha512-yVvxUQV0QESBt1SyZbNJMAwyKvFTLMyXSyBHDO4BG5t7k/Lw34tyqlSDlKIrIENIzCl+RVUNjmCPG+V/GMesRw=="
+  crossorigin="anonymous" referrerpolicy="no-referrer" />
+<div class="row box-content box-content-p ng-scope" ng-if="titlebar == true">
+  <div class="col-xs-7">
+    <h4 class="ng-binding">{{ form.site_name.value }}({{ form.seller_nickname.value || form.seller_id.value }})</h4>
+  </div>
+  <div class="col-xs-5 text-right">
+    <button class="btn btn-primary btn-lg" ng-click="user_setform_submit()">저장</button>
+  </div>
+</div>
+<div class="box-tab">
+  <ul class="nav nav-tabs nav-tabs-lg no-margin border-bottom-grey-600">
+    <li ng-class="{active:tab_active == 0}"><a data-toggle="tab" ng-click="tab_active = 0">기본정보</a></li>
+    <li ng-class="{active:tab_active == 1}"><a data-toggle="tab" ng-click="tab_active = 1">배송정보</a></li>
+  </ul>
+</div>
+<div class="box-content box-content-tabon p-20 tab-content tabbable border-color-85">
+  <div class="tab-pane" ng-class="{active:tab_active == 0}">
+    <!-- 기본정보-->
+    <table class="table table-p">
+      <colgroup>
+        <col width="20%" />
+        <col width="80%" />
+      </colgroup>
+      <tbody>
+        <tr>
+          <th>
+            <div class="ast">템플릿명</div>
+          </th>
+          <td>
+            <div class="row">
+              <div class="col-xs-4">
+                <input class="form-control" type="text" ng-model="form.name.value" required="required" />
+              </div>
+            </div>
+          </td>
+        </tr>
+        <!-- <tr> 전시매장 카테고리 관리로...
+          <th>전시 매장 정보</th>
+          <td style="overflow: unset;">
+            <div class="row" error-handle-v5="전시 매장 정보" ng-hide="engine_v5.get_display_stores() | errored">
+              <div class="col-xs-12">
+                <select ng-model="form.key_DISP_CLSSF_CD.value" data-placeholder="입력 또는 선택" class="chosen-select"
+                  multiple>
+                  <option value=""></option>
+                  <option ng-repeat="store in engine_v5.get_display_stores().data.display_stores"
+                    value="<{{store.catalog_id}}, {{store.catagroup_id_child}}>">
+                    {{store.catalog_name}} ({{store.display_category_name}})</option>
+                </select>
+              </div>
+            </div>
+          </td>
+        </tr> -->
+        <tr>
+          <th>
+            <div class="ast">
+              마진률
+            </div>
+          </th>
+          <td>
+            <div class="row">
+              <div class="col-xs-2">
+                <label>
+                  <input class="form-control checkbox-inline" type="number" min="0" max="100"
+                    ng-model="form.key_margin.value">%
+                </label>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <th>
+            <div>
+              기타유형체크
+            </div>
+          </th>
+          <td>
+            <div class="row">
+              <div class="col-xs-12">
+                <label class="checkbox-inline">
+                  <input type="checkbox" ng-model="form.key_INST_GOODS_YN.value" ng-true-value="'Y'"
+                    ng-false-value="'N'" />설치 상품 여부
+                </label>
+                <label class="checkbox-inline">
+                  <input type="checkbox" ng-model="form.key_PRSNT_PACK_YN.value" ng-true-value="'Y'"
+                    ng-false-value="'N'" />선물포장 여부
+                </label>
+                <label class="checkbox-inline">
+                  <input type="checkbox" ng-model="form.key_MSG_CARD_WRITE_YN.value" ng-true-value="'Y'"
+                    ng-false-value="'N'" />메시지 카드 작성 여부
+                </label>
+                <label class="checkbox-inline">
+                  <input type="checkbox" ng-model="form.key_GIFT_YN.value" ng-true-value="'Y'"
+                    ng-false-value="'N'" />선물하기 여부
+                </label>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <th>
+            <div class="ast">MD 명</div>
+          </th>
+          <td>
+            <div class="row">
+              <div class="col-xs-12">
+                <select class="form-control" name="md" id="md" ng-model="form.key_SRCG_MD.value">
+                  <option value="">--선택--</option>
+                  <option ng-repeat="md in engine_v5.get_md_list().data.mds | orderBy:'name'" value={{md.code}}>{{md.name}}({{md.code}})</option>
+                </select>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <th>
+            <div class="ast">1회 최대구매수량</div>
+          </th>
+          <td>
+            <div class="row">
+              <div class="col-xs-2">
+                <label>
+                  <input class="form-control checkbox-inline" type="number"
+                    ng-model="form.key_ONCE_MAX_ORDER_POSS_QTY.value" min="1" />개
+                </label>
+              </div>
+            </div>
+            <div class="row"><span class="help-block ml-10">1회 구매 시, 최대 구매할 수 있는 수량을 제한합니다.</span></div>
+          </td>
+        </tr>
+        <tr>
+          <th>
+            <div>과세 구분</div>
+          </th>
+          <td>
+            <div class="row">
+              <div class="col-xs-12">
+                <select class="form-control" ng-model="form.key_BUY_TAX_TYPE_CD.value">
+                  <option value="10">면세</option>
+                  <option value="20">과세</option>
+                  <option value="30">영세</option>
+                  <option value="40">비과세</option>
+                </select>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <th>
+            <div class="ast">상품상태</div>
+          </th>
+          <td>
+            <div class="row">
+              <div class="col-xs-3">
+                <select class="form-control" ng-model="form.key_GOODS_STAT_CD.value" required="required">
+                  <option value="">--선택--</option>
+                  <option value="100">신상품</option>
+                  <option value="101">중고</option>
+                  <option value="102">리퍼</option>
+                  <option value="103">전시</option>
+                  <option value="104">반품</option>
+                  <option value="105">스크래치</option>
+                </select>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <th>
+            <div class="ast">판매방식</div>
+          </th>
+          <td>
+            <div class="row">
+              <div class="col-xs-3">
+                <select class="form-control" ng-model="form.key_SALE_MEANS_CD.value" required="required">
+                  <option value="">--선택--</option>
+                  <option value="200">일반상품</option>
+                  <option value="201">도매</option>
+                  <option value="202">렌탈</option>
+                  <option value="203">대여</option>
+                  <option value="204">할부</option>
+                  <option value="205">예약판매</option>
+                  <option value="206">오프라인 구매대행</option>
+                </select>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <th>
+            <div class="ast">해외여부</div>
+          </th>
+          <td>
+            <div class="row">
+              <div class="col-xs-3">
+                <select class="form-control" ng-model="form.key_DMST_OVS_MEANS_CD.value" required="required">
+                  <option value="">--선택--</option>
+                  <option value="300">국내(일반)</option>
+                  <option value="301">해외구매대행</option>
+                  <option value="302">병행수입</option>
+                </select>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <th>
+            <div>주문제작여부</div>
+          </th>
+          <td>
+            <div class="row">
+              <div class="col-xs-3">
+                <label class="checkbox-inline">
+                  <input type="checkbox" ng-model="form.key_ORDER_PRDT_YN.value" ng-true-value="'Y'"
+                    ng-false-value="'N'" />사용함
+                </label>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <th>
+            <div>별도설치비 발생 가능</div>
+          </th>
+          <td>
+            <div class="row">
+              <div class="col-xs-3">
+                <label class="checkbox-inline">
+                  <input type="checkbox" ng-model="form.key_EXTRA_INSTF_YN.value" ng-true-value="'Y'"
+                    ng-false-value="'N'" />사용함
+                </label>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <th>
+            <div>차등배송비 유무</div>
+          </th>
+          <td>
+            <div class="row">
+              <div class="col-xs-12">
+                <label class="checkbox-inline">
+                  <input type="checkbox" ng-model="form.key_DSCR_DLVRF_YN.value" ng-true-value="'Y'"
+                    ng-false-value="'N'" />사용함
+                </label>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr ng-show="form.key_DSCR_DLVRF_YN.value === 'Y'">
+          <th>
+            <div class="ast">차등배송비 내용</div>
+          </th>
+          <td>
+            <div class="row">
+              <div class="col-xs-12">
+                <input class="form-control" type="input" ng-model="form.key_DSCR_DLVRF_CTNT.value" />
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <th>
+            <div>도서 정보 타입</div>
+          </th>
+          <td>
+            <div class="row">
+              <div class="col-xs-3">
+                <select class="form-control" ng-model="form.key_BOOK_TYPE.value" required="required">
+                  <option value="P">지류도서</option>
+                  <option value="E">E북</option>
+                  <option value="A">오디오북</option>
+                </select>
+              </div>
+            </div>
+            <div class="row"><span class="help-block ml-10">도서카테고리 선택시에만 전송됩니다.</span></div>
+          </td>
+        </tr>
+        <tr>
+          <th>도서/잡지 여부</th>
+          <td>
+            <div class="row">
+              <div class="col-xs-12">
+                <label class="radio-inline">
+                  <input type="radio" ng-model="form.key_BOOK_GUBUN.value" value="B" />도서
+                </label>
+                <label class="radio-inline">
+                  <input type="radio" ng-model="form.key_BOOK_GUBUN.value" value="J" />잡지
+                </label>
+              </div>
+            </div>
+            <div class="row"><span class="help-block ml-10">도서카테고리 선택시에만 전송됩니다.</span></div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="tab-pane" ng-class="{active:tab_active == 1}">
+    <!-- 배송정보-->
+    <table class="table table-p">
+      <colgroup>
+        <col width="20%" />
+        <col width="80%" />
+      </colgroup>
+      <tbody>
+        <tr>
+          <th>
+            <div class="ast">출고지</div>
+          </th>
+          <td>
+            <div class="row">
+              <div class="col-xs-6">
+                <select class="form-control" ng-model="form.key_OUTGO_LOC_ID.value"
+                  ng-change="setWarehouse('OUTGO_LOC')" required>
+                  <option ng-if="!form.key_OUTGO_LOC_ID.value" value="">--선택--</option>
+                  <option ng-repeat="warehouse in warehouses" value={{warehouse.code}}>{{warehouse.address}}</option>
+                </select>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xs-4">
+                <select class="form-control" ng-model="form.key_OUTGO_LOC_LSC.value" required="required">
+                  <option ng-if="!form.key_OUTGO_LOC_ID.value" value="">--출고지를 선택해주세요--</option>
+                  <option ng-repeat="carrier_code in OUTGO_LOC.carrier_codes" value={{carrier_code}}>
+                    {{carriers[carrier_code]}}</option>
+                </select>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <th>
+            <div class="ast">반송지</div>
+          </th>
+          <td>
+            <div class="row">
+              <div class="col-xs-6">
+                <select class="form-control" ng-model="form.key_RTN_ID.value" ng-change="setWarehouse('RTN')" required>
+                  <option ng-if="!form.key_RTN_ID.value" value="">--선택--</option>
+                  <option ng-repeat="warehouse in warehouses" value={{warehouse.code}}>{{warehouse.address}}</option>
+                </select>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xs-4">
+                <select class="form-control" ng-model="form.key_RTN_LSC.value" required="required">
+                  <option ng-if="!form.key_RTN_ID.value" value="">--반송지를 선택해주세요--</option>
+                  <option ng-repeat="carrier_code in RTN.carrier_codes" value={{carrier_code}}>
+                    {{carriers[carrier_code]}}</option>
+                </select>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <th>
+            <div class="ast">A/S 출고지</div>
+          </th>
+          <td>
+            <div class="row">
+              <div class="col-xs-6">
+                <select class="form-control" ng-model="form.key_AS_OUTGO_LOC_ID.value"
+                  ng-change="setWarehouse('AS_OUTGO_LOC')" required>
+                  <option ng-if="!form.key_AS_OUTGO_LOC_ID.value" value="">--선택--</option>
+                  <option ng-repeat="warehouse in warehouses" value={{warehouse.code}}>{{warehouse.address}}</option>
+                </select>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xs-4">
+                <select class="form-control" ng-model="form.key_AS_OUTGO_LOC_LSC.value" required="required">
+                  <option ng-if="!form.key_AS_OUTGO_LOC_ID.value" value="">--A/S 출고지를 선택해주세요--</option>
+                  <option ng-repeat="carrier_code in AS_OUTGO_LOC.carrier_codes" value={{carrier_code}}>
+                    {{carriers[carrier_code]}}</option>
+                </select>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <th>
+            <div class="ast">A/S 반송지</div>
+          </th>
+          <td>
+            <div class="row">
+              <div class="col-xs-6">
+                <select class="form-control" ng-model="form.key_AS_RTN_ID.value" ng-change="setWarehouse('AS_RTN')"
+                  required>
+                  <option ng-if="!form.key_AS_RTN_ID.value" value="">--선택--</option>
+                  <option ng-repeat="warehouse in warehouses" value={{warehouse.code}}>{{warehouse.address}}</option>
+                </select>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xs-4">
+                <select class="form-control" ng-model="form.key_AS_RTN_LSC.value" required="required">
+                  <option ng-if="!form.key_AS_RTN_ID.value" value="">--A/S 반송지를 선택해주세요--</option>
+                  <option ng-repeat="carrier_code in AS_RTN.carrier_codes" value={{carrier_code}}>
+                    {{carriers[carrier_code]}}</option>
+                </select>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <th>배송방법</th>
+          <td>
+            <div class="row">
+              <div class="col-xs-4">
+                <select class="form-control" ng-model="form.key_DLVR_WAY_CD2.value">
+                  <option value="10">택배직송</option>
+                  <option value="20">업체직송</option>
+                  <option value="30">자체</option>
+                  <option value="40">중량화물</option>
+                </select>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <th>수거방법</th>
+          <td>
+            <div class="row">
+              <div class="col-xs-12">
+                <select class="form-control" ng-model="form.key_RTN_GTHR_HOST_CD.value">
+                  <option value="10">업체수거</option>
+                  <option value="20">센터수거</option>
+                </select>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <th>보관방법</th>
+          <td>
+            <div class="row">
+              <div class="col-xs-4">
+                <select class="form-control" ng-model="form.key_KEEP_WAY_CD.value">
+                  <option value="10">상온</option>
+                  <option value="20">냉장</option>
+                  <option value="30">냉동</option>
+                </select>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <th>
+            <div class="ast">약정기일</div>
+          </th>
+          <td>
+            <div class="row">
+              <div class="col-xs-2">
+                <label for="">
+                  <input class="form-control checkbox-inline" type="text" ng-model="form.key_AGREE_DLINE.value" />일
+                </label>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <th>편의점 반품 여부</th>
+          <td>
+            <div class="row">
+              <div class="col-xs-12">
+                <label class="checkbox-inline">
+                  <input type="checkbox" ng-model="form.key_CVS_RTN_YN.value" ng-true-value="'Y'"
+                    ng-false-value="'N'">사용함
+                </label>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <th>반품비(편도)</th>
+          <td>
+            <div class="row">
+              <div class="col-xs-12">
+                <label for="">
+                  <input class="form-control checkbox-inline" type="text" ng-model="form.key_RTN_EXPNS.value" />원
+                </label>
+              </div>
+            </div>
+            <div class="row"><span class="help-block ml-10">교환비용은 <b>(반품비(편도) * 2)</b> 로 계산됩니다.</span></div>
+          </td>
+        </tr>
+        <tr>
+          <th>
+            <div>
+              도서지역 배송비
+            </div>
+          </th>
+          <td>
+            <div class="row">
+              <div class="col-xs-12">
+                <label class="radio-inline">
+                  <input class="radio-inline" type="radio" ng-model="form.key_RMA_DLVR_YN.value" value="Y" />도서/제주 배달
+                </label>
+                <label class="radio-inline">
+                  <input class="radio-inline" type="radio" ng-model="form.key_RMA_DLVR_YN.value" value="N" />도서/제주
+                  배달불가
+                </label>
+              </div>
+              <div class="col-xs-12">
+                <label>
+                  도서지역 추가 배송비
+                  <input class="form-control checkbox-inline" type="number" min='0'
+                    ng-model="form.key_RMA_GNRL_REGN_DLVR_EXPNS.value"
+                    ng-disabled="form.key_RMA_DLVR_YN.value === 'N'">원
+                </label>
+              </div>
+              <div class="col-xs-12">
+                <label>
+                  제주지역 추가 배송비
+                  <input class="form-control checkbox-inline" type="number" min='0'
+                    ng-model="form.key_RMA_JEJU_REGN_DLVR_EXPNS.value"
+                    ng-disabled="form.key_RMA_DLVR_YN.value === 'N'">원
+                </label>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <th>환불형태</th>
+          <td>
+            <div class="row">
+              <div class="col-xs-12">
+                <label class="radio-inline">
+                  <input type="radio" ng-model="form.key_RFND_SHAPE_CD.value" value="PST" />후환불
+                </label>
+                <label class="radio-inline">
+                  <input type="radio" ng-model="form.key_RFND_SHAPE_CD.value" value="PRE" />선환불
+                </label>
+              </div>
+            </div>
+            <div class="row"><span class="help-block ml-10">선환불일 경우는 상품수거 없이 먼저 반품결제 처리합니다</span></div>
+          </td>
+        </tr>
+        <tr>
+          <th>
+            <div class="ast">고객철회일</div>
+          </th>
+          <td>
+            <div class="row">
+              <div class="col-xs-12">
+                <label>
+                  <input class="form-control checkbox-inline" type="number" min="0"
+                    ng-model="form.key_CUST_RCALL_DD.value" />일
+                </label>
+              </div>
+            </div>
+            <div class="row"><span class="help-block ml-10">주문 후 반품 가능한 일자를 등록합니다</span></div>
+          </td>
+        </tr>
+        <tr>
+          <th>
+            <div class="ast">반품수거일</div>
+          </th>
+          <td>
+            <div class="row">
+              <div class="col-xs-12">
+                <label>
+                  <input class="form-control checkbox-inline" type="number" min="0"
+                    ng-model="form.key_RTN_GTHRDD.value" />일
+                </label>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
